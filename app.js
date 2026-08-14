@@ -1,27 +1,27 @@
 // ==========================================
-// CONSTANTES Y CONFIGURACIÓN
+// CONSTANTS & CONFIGURATION
 // ==========================================
 const GUILD_ID = '1418575611840172139';
 const CHANNEL_ID = '1445872336250343425';
-const API_BASE = ''; // Las peticiones /api/* pasan por el proxy local (server.js)
-const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutos
+const API_BASE = ''; // /api/* requests proxied locally or via vercel.json
+const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
 // ==========================================
-// ESTADO GLOBAL
+// GLOBAL STATE
 // ==========================================
 let state = {
-  players: [],        // Todos los jugadores del leaderboard
-  eloTable: {},       // playerId -> MMR actual
+  players: [],        // All players in the leaderboard
+  eloTable: {},       // playerId -> current MMR
   selectedPlayer: null,
-  playerStats: {},    // Cache de stats: playerId -> stats
-  matchInfoCache: {}, // game_num -> match data con oponentes
-  chart: null,        // Instancia de Chart.js
+  playerStats: {},    // Stats cache: playerId -> stats
+  matchInfoCache: {}, // game_num -> match data with opponents
+  chart: null,        // Chart.js instance
   backgroundQueue: [],
-  showCount: 50       // Jugadores visibles en el leaderboard
+  showCount: 50       // Visible players in leaderboard
 };
 
 // ==========================================
-// UTILIDADES
+// UTILITIES
 // ==========================================
 
 function escapeHTML(str) {
@@ -97,7 +97,7 @@ async function fetchLeaderboard(retry = false) {
       const allTimeData = data.months.find(m => m.month === 'alltime') || data.months[0];
       state.players = allTimeData.data;
 
-      // Construir tabla de ELO para cálculos de winrate segmentado
+      // Build ELO lookup table
       state.eloTable = {};
       state.players.forEach(p => { state.eloTable[p.id] = p.stats.mmr; });
 
@@ -117,7 +117,6 @@ async function fetchLeaderboard(retry = false) {
 
 async function fetchServerMatches() {
   try {
-    // 1. Obtener partidas en vivo
     const resLive = await fetch(`${API_BASE}/api/v1/matches/${GUILD_ID}`);
     if (resLive.ok) {
       const liveData = await resLive.json();
@@ -128,7 +127,6 @@ async function fetchServerMatches() {
       }
     }
 
-    // 2. Obtener últimas partidas del historial
     const resHist = await fetch(`${API_BASE}/api/v1/history/${GUILD_ID}?page=1&page_size=100&order=desc`);
     if (resHist.ok) {
       const histData = await resHist.json();
@@ -161,7 +159,7 @@ async function fetchPlayerStats(playerId) {
 }
 
 // ==========================================
-// RENDERIZADO DE LEADERBOARD
+// LEADERBOARD RENDERING
 // ==========================================
 
 function renderLeaderboard() {
@@ -207,7 +205,6 @@ function renderLeaderboard() {
   });
 
   updateTimestamp();
-  // Cargar stats del top 30 en segundo plano
   startBackgroundLoading(topPlayers.slice(0, 30));
 }
 
@@ -235,7 +232,7 @@ function updateTableRow(playerId, playerStats) {
 }
 
 // ==========================================
-// BACKGROUND LOADING (escalonado)
+// BACKGROUND LOADING
 // ==========================================
 
 function startBackgroundLoading(playersToLoad) {
@@ -255,12 +252,12 @@ function processBackgroundQueue() {
     });
   } else {
     updateTableRow(playerId, state.playerStats[playerId]);
-    setTimeout(processBackgroundQueue, 50); // Sin delay si ya está cacheado
+    setTimeout(processBackgroundQueue, 50);
   }
 }
 
 // ==========================================
-// PERFIL DE JUGADOR
+// PLAYER PROFILE
 // ==========================================
 
 async function loadPlayerProfile(playerId) {
@@ -269,12 +266,10 @@ async function loadPlayerProfile(playerId) {
 
   state.selectedPlayer = basePlayer;
 
-  // Marcar fila activa en el leaderboard
   document.querySelectorAll('#leaderboardBody tr').forEach(tr => tr.classList.remove('active'));
   const activeRow = document.getElementById(`row-${playerId}`);
   if (activeRow) activeRow.classList.add('active');
 
-  // Mostrar panel de perfil con estado de carga
   const profilePanel = document.getElementById('profilePanel');
   profilePanel.classList.remove('profile--hidden');
   profilePanel.innerHTML = `
@@ -282,7 +277,7 @@ async function loadPlayerProfile(playerId) {
       <img class="profile__avatar" src="${defaultAvatar(basePlayer.avatar_url)}" alt="">
       <div class="profile__info">
         <div class="profile__name">${escapeHTML(basePlayer.name)}</div>
-        <div style="color:var(--text-secondary)">Cargando estadísticas...</div>
+        <div style="color:var(--text-secondary)">Loading stats...</div>
       </div>
     </div>
     <div class="profile__content" style="display:flex;align-items:center;justify-content:center;min-height:200px">
@@ -300,7 +295,7 @@ async function loadPlayerProfile(playerId) {
         <img class="profile__avatar" src="${defaultAvatar(basePlayer.avatar_url)}" alt="">
         <div class="profile__info">
           <div class="profile__name">${escapeHTML(basePlayer.name)}</div>
-          <div style="color:var(--negative-red)">Error al cargar el perfil</div>
+          <div style="color:var(--negative-red)">Error loading profile</div>
         </div>
       </div>
     `;
@@ -323,13 +318,13 @@ function renderProfile(player, stats) {
         <div class="profile__badges">
           <span class="badge ${tier.class}">${tier.label}</span>
           <span class="badge badge--silver">Rank #${player.stats.rank}</span>
-          <span class="badge badge--diamond">${q.totalgames} Partidas Totales</span>
+          <span class="badge badge--diamond">${q.totalgames} Total Matches</span>
         </div>
         <div class="profile__record-summary">
           <div class="profile__record-text">
-            <span style="color:var(--positive-emerald)">${q.wins} Victorias (W)</span>
+            <span style="color:var(--positive-emerald)">${q.wins} Wins (W)</span>
             <span style="color:var(--text-secondary)">-</span>
-            <span style="color:var(--negative-red)">${q.losses} Derrotas (L)</span>
+            <span style="color:var(--negative-red)">${q.losses} Losses (L)</span>
             <span style="font-size:0.85rem;color:var(--text-secondary);font-weight:500">(${totalWr.toFixed(1)}% WR)</span>
           </div>
           <div class="profile__record-bar">
@@ -343,17 +338,17 @@ function renderProfile(player, stats) {
     <div class="profile__content fade-in">
       <!-- Stats Grid -->
       <div>
-        <h3 class="profile__section-title" data-i18n="prof_main_stats">${typeof t === 'function' ? t('prof_main_stats') : 'Estadísticas Principales'}</h3>
+        <h3 class="profile__section-title">Main Statistics</h3>
         <div class="profile__stats-grid">
           <div class="profile__stat-card">
-            <div class="profile__stat-label" data-i18n="prof_mmr_peak">${typeof t === 'function' ? t('prof_mmr_peak') : 'MMR Actual / Pico'}</div>
+            <div class="profile__stat-label">Current MMR / Peak</div>
             <div class="profile__stat-value">
               <span style="color:var(--accent-cyan-light)">${q.mmr.toFixed(1)}</span>
               <span style="font-size:0.9rem;color:var(--text-secondary);font-weight:400">/ ${q.peak_mmr.toFixed(1)}</span>
             </div>
           </div>
           <div class="profile__stat-card">
-            <div class="profile__stat-label" data-i18n="prof_wl">${typeof t === 'function' ? t('prof_wl') : 'Ganados - Perdidos (W - L)'}</div>
+            <div class="profile__stat-label">Wins - Losses (W - L)</div>
             <div class="profile__stat-value">
               <span style="color:var(--positive-emerald)">${q.wins}W</span>
               <span style="color:var(--text-secondary);font-size:1.2rem"> - </span>
@@ -361,26 +356,26 @@ function renderProfile(player, stats) {
             </div>
           </div>
           <div class="profile__stat-card">
-            <div class="profile__stat-label" data-i18n="prof_winrate">${typeof t === 'function' ? t('prof_winrate') : 'Winrate Total'}</div>
+            <div class="profile__stat-label">Total Winrate</div>
             <div class="profile__stat-value ${getWrClass(totalWr)}">${totalWr.toFixed(1)}%
-              <span style="font-size:0.875rem;color:var(--text-secondary);font-weight:400">(${q.totalgames} partidas)</span>
+              <span style="font-size:0.875rem;color:var(--text-secondary);font-weight:400">(${q.totalgames} matches)</span>
             </div>
           </div>
           <div class="profile__stat-card">
-            <div class="profile__stat-label" data-i18n="prof_streak">${typeof t === 'function' ? t('prof_streak') : 'Racha / Pico de Racha'}</div>
+            <div class="profile__stat-label">Streak / Peak Streak</div>
             <div class="profile__stat-value">${q.streak > 0 ? '+' : ''}${q.streak}
               <span style="font-size:0.875rem;color:var(--text-secondary);font-weight:400">/ ${q.peak_streak}</span>
             </div>
           </div>
           <div class="profile__stat-card">
-            <div class="profile__stat-label" data-i18n="prof_wr_1300">${typeof t === 'function' ? t('prof_wr_1300') : 'WR vs >1300 ELO'}</div>
+            <div class="profile__stat-label">WR vs >1300 ELO</div>
             <div class="profile__stat-value">
               <span class="${getWrClass(s1300.winrate)}">${formatPercent(s1300.winrate)}</span>
               <span style="font-size:0.875rem;color:var(--text-secondary);font-weight:400">(${s1300.wins}W - ${s1300.losses}L)</span>
             </div>
           </div>
           <div class="profile__stat-card">
-            <div class="profile__stat-label" data-i18n="prof_wr_1500">${typeof t === 'function' ? t('prof_wr_1500') : 'WR vs >1500 ELO'}</div>
+            <div class="profile__stat-label">WR vs >1500 ELO</div>
             <div class="profile__stat-value">
               <span class="${getWrClass(s1500.winrate)}">${formatPercent(s1500.winrate)}</span>
               <span style="font-size:0.875rem;color:var(--text-secondary);font-weight:400">(${s1500.wins}W - ${s1500.losses}L)</span>
@@ -389,46 +384,46 @@ function renderProfile(player, stats) {
         </div>
       </div>
 
-      <!-- Gráfico de MMR -->
+      <!-- MMR Chart -->
       <div>
-        <h3 class="profile__section-title" data-i18n="prof_chart">${typeof t === 'function' ? t('prof_chart') : 'Evolución de MMR'}</h3>
+        <h3 class="profile__section-title">MMR Evolution</h3>
         <div class="profile__chart-container" style="height:220px">
           <canvas id="mmrChart"></canvas>
         </div>
       </div>
 
-      <!-- Forma reciente y Racha -->
+      <!-- Recent Form -->
       <div>
-        <h3 class="profile__section-title" data-i18n="prof_recent">${typeof t === 'function' ? t('prof_recent') : 'Racha Reciente'}</h3>
+        <h3 class="profile__section-title">Recent Form</h3>
         <div class="profile__recent-form" id="recentForm"></div>
       </div>
 
-      <!-- Historial de Últimas Partidas Ordenado por Fecha -->
+      <!-- Match History -->
       <div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-          <h3 class="profile__section-title" style="margin-bottom:0" data-i18n="prof_last_matches">${typeof t === 'function' ? t('prof_last_matches') : 'Últimas Partidas (Por Fecha)'}</h3>
+          <h3 class="profile__section-title" style="margin-bottom:0">Last Matches (By Date)</h3>
           <span style="font-size:0.8rem;color:var(--text-secondary)" id="matchesCountLabel"></span>
         </div>
         <div class="profile__match-history" id="matchHistoryList"></div>
       </div>
 
-      <!-- Enfrentamientos -->
+      <!-- Matchups -->
       <div class="profile__matchups">
-        <h3 class="profile__section-title" data-i18n="prof_matchups">${typeof t === 'function' ? t('prof_matchups') : 'Enfrentamientos por Rival (Matchups)'}</h3>
+        <h3 class="profile__section-title">Opponent Matchups</h3>
         <div class="profile__matchups-filters">
-          <button class="filter-btn active" onclick="window.filterMatchups(0, this)" data-i18n="btn_all">${typeof t === 'function' ? t('btn_all') : 'Todos'}</button>
-          <button class="filter-btn" onclick="window.filterMatchups(1300, this)">&gt;1300 ELO</button>
-          <button class="filter-btn" onclick="window.filterMatchups(1500, this)">&gt;1500 ELO</button>
+          <button class="filter-btn active" onclick="window.filterMatchups(0, this)">All</button>
+          <button class="filter-btn" onclick="window.filterMatchups(1300, this)">>1300 ELO</button>
+          <button class="filter-btn" onclick="window.filterMatchups(1500, this)">>1500 ELO</button>
         </div>
         <div style="overflow-x:auto">
           <table class="profile__matchups-table">
             <thead>
               <tr>
-                <th onclick="window.sortMatchups('name')" data-i18n="col_opponent">${typeof t === 'function' ? t('col_opponent') : 'Oponente ↕'}</th>
-                <th onclick="window.sortMatchups('mmr')" data-i18n="col_opp_mmr">${typeof t === 'function' ? t('col_opp_mmr') : 'MMR ↕'}</th>
-                <th onclick="window.sortMatchups('total')" data-i18n="col_opp_matches">${typeof t === 'function' ? t('col_opp_matches') : 'Partidas ↕'}</th>
-                <th onclick="window.sortMatchups('wins')" data-i18n="col_record">${typeof t === 'function' ? t('col_record') : 'Récord (V - D) ↕'}</th>
-                <th onclick="window.sortMatchups('winrate')" data-i18n="col_opp_winrate">${typeof t === 'function' ? t('col_opp_winrate') : 'Winrate ↕'}</th>
+                <th onclick="window.sortMatchups('name')">Opponent ↕</th>
+                <th onclick="window.sortMatchups('mmr')">MMR ↕</th>
+                <th onclick="window.sortMatchups('total')">Matches ↕</th>
+                <th onclick="window.sortMatchups('wins')">Record (W - L) ↕</th>
+                <th onclick="window.sortMatchups('winrate')">Winrate ↕</th>
               </tr>
             </thead>
             <tbody id="matchupsBody"></tbody>
@@ -438,24 +433,21 @@ function renderProfile(player, stats) {
     </div>
   `;
 
-  // Renderizar componentes interactivos
   renderRecentForm(q.games);
   renderMatchHistory(q.games, stats.name, player.id);
   renderChart(q.games);
 
-  // Configurar matchups
   window.currentMatchups = q.matchups;
   window.currentMatchupThreshold = 0;
   window.currentSortCol = 'total';
   window.currentSortDesc = true;
   renderMatchups(window.currentMatchups, 0);
 
-  // Iniciar resolución en segundo plano de oponentes para el historial
   resolveMatchOpponents(q.matchups, player.id, stats.name, q.games);
 }
 
 // ==========================================
-// RESOLUCIÓN AUTOMÁTICA DE OPONENTES POR PARTIDA
+// OPPONENT RESOLUTION
 // ==========================================
 
 async function resolveMatchOpponents(matchups, playerId, playerName, games) {
@@ -463,17 +455,14 @@ async function resolveMatchOpponents(matchups, playerId, playerName, games) {
   const oppIds = Object.keys(matchups);
   if (oppIds.length === 0) return;
 
-  // Build a Set of the current player's game_nums for fast lookup
   const playerGameNums = new Set(games.map(g => g.game_num));
 
-  // Download opponents in parallel batches of 10
   const batchSize = 10;
   for (let i = 0; i < oppIds.length; i += batchSize) {
     const chunk = oppIds.slice(i, i + batchSize);
     let newMatchesFound = false;
 
     await Promise.all(chunk.map(async (oppId) => {
-      // Skip if the opponent ID is the player themselves
       if (oppId === playerId) return;
 
       try {
@@ -484,8 +473,6 @@ async function resolveMatchOpponents(matchups, playerId, playerName, games) {
         const oppAvatar = matchups[oppId]?.avatar_url || oppData?.avatar_url;
 
         for (const g of oppGames) {
-          // ONLY cache if this game_num is also in the current player's games
-          // This prevents attributing wrong opponents from unrelated matches
           if (playerGameNums.has(g.game_num) && !state.matchInfoCache[g.game_num]) {
             state.matchInfoCache[g.game_num] = {
               opponent: {
@@ -503,7 +490,6 @@ async function resolveMatchOpponents(matchups, playerId, playerName, games) {
       }
     }));
 
-    // If new matches found and profile is still open, refresh match list
     if (newMatchesFound && state.selectedPlayer?.id === playerId) {
       renderMatchHistory(games, playerName, playerId);
     }
@@ -511,15 +497,15 @@ async function resolveMatchOpponents(matchups, playerId, playerName, games) {
 }
 
 function formatGameDate(timestamp) {
-  if (!timestamp) return 'Fecha desconocida';
+  if (!timestamp) return 'Unknown date';
   const d = new Date(timestamp.replace(' ', 'T'));
   if (isNaN(d.getTime())) return timestamp;
-  const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-  const dia = d.getDate();
-  const mes = meses[d.getMonth()];
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const day = d.getDate();
+  const month = months[d.getMonth()];
   const hrs = String(d.getHours()).padStart(2, '0');
   const mins = String(d.getMinutes()).padStart(2, '0');
-  return `${dia} ${mes}, ${hrs}:${mins}`;
+  return `${month} ${day}, ${hrs}:${mins}`;
 }
 
 function renderMatchHistory(games, playerName, playerId) {
@@ -529,12 +515,10 @@ function renderMatchHistory(games, playerName, playerId) {
   container.innerHTML = '';
 
   if (!games || games.length === 0) {
-    const msg = typeof t === 'function' ? t('no_history') : 'Sin historial de partidas';
-    container.innerHTML = `<div style="text-align:center;padding:1.5rem;color:var(--text-secondary)">${msg}</div>`;
+    container.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--text-secondary)">No match history</div>';
     return;
   }
 
-  // Ordenar explícitamente de más reciente a más antigua por timestamp / game_num
   const sortedGames = [...games].sort((a, b) => {
     const dateA = new Date((a.timestamp || '').replace(' ', 'T')).getTime() || 0;
     const dateB = new Date((b.timestamp || '').replace(' ', 'T')).getTime() || 0;
@@ -544,7 +528,7 @@ function renderMatchHistory(games, playerName, playerId) {
 
   const displayGames = sortedGames.slice(0, 30);
   if (countLabel) {
-    countLabel.textContent = typeof t === 'function' ? t('showing_last', displayGames.length, games.length) : `Mostrando últimas ${displayGames.length} de ${games.length}`;
+    countLabel.textContent = `Showing last ${displayGames.length} of ${games.length}`;
   }
 
   displayGames.forEach(g => {
@@ -553,9 +537,7 @@ function renderMatchHistory(games, playerName, playerId) {
     const changeFormatted = changeVal > 0 ? `+${changeVal.toFixed(1)}` : changeVal.toFixed(1);
     const dateFormatted = formatGameDate(g.timestamp);
 
-    // Buscar oponente en cache de partidas
-    const fallbackTag = typeof t === 'function' ? t('match_tag', g.game_num || '-') : `Partida #${g.game_num || '-'}`;
-    let opponentHtml = `<span style="font-size:0.85rem;color:var(--text-secondary)">${fallbackTag}</span>`;
+    let opponentHtml = `<span style="font-size:0.85rem;color:var(--text-secondary)">Match #${g.game_num || '-'}</span>`;
     const cachedMatch = state.matchInfoCache[g.game_num];
     let opp = cachedMatch?.opponent;
 
@@ -570,7 +552,6 @@ function renderMatchHistory(games, playerName, playerId) {
     }
 
     if (opp?.name) {
-      // Skip if the resolved opponent is actually the player themselves
       if (opp.id === playerId || opp.name === playerName) {
         opp = null;
       }
@@ -589,9 +570,7 @@ function renderMatchHistory(games, playerName, playerId) {
       `;
     }
 
-    const resultText = isWin 
-      ? (typeof t === 'function' ? t('win') : 'Victoria') 
-      : (typeof t === 'function' ? t('loss') : 'Derrota');
+    const resultText = isWin ? 'Win' : 'Loss';
     const resultClass = isWin ? 'match-item__badge--win' : 'match-item__badge--loss';
 
     const div = document.createElement('div');
@@ -620,17 +599,16 @@ function renderMatchHistory(games, playerName, playerId) {
 }
 
 // ==========================================
-// FORMA RECIENTE
+// RECENT FORM
 // ==========================================
 
 function renderRecentForm(games) {
   const container = document.getElementById('recentForm');
   if (!games || games.length === 0) {
-    container.innerHTML = '<span style="color:var(--text-secondary)">Sin partidas registradas</span>';
+    container.innerHTML = '<span style="color:var(--text-secondary)">No matches recorded</span>';
     return;
   }
 
-  // Las partidas vienen ordenadas, obtenemos las últimas 10 más recientes
   const sortedGames = [...games].sort((a, b) => {
     const dateA = new Date((a.timestamp || '').replace(' ', 'T')).getTime() || 0;
     const dateB = new Date((b.timestamp || '').replace(' ', 'T')).getTime() || 0;
@@ -651,21 +629,19 @@ function renderRecentForm(games) {
     container.appendChild(el);
   });
 
-  // Mostrar winrate reciente vs global
   const last20 = sortedGames.slice(0, 20);
   const recent20wins = last20.filter(g => (g.result || '').toLowerCase().includes('win')).length;
   const recent20wr = last20.length > 0 ? (recent20wins / last20.length * 100) : 0;
   const historyCount = last20.length;
-  const wr = recent20wr;
 
   const formLabel = document.createElement('span');
   formLabel.style.cssText = 'margin-left:12px;font-size:0.8rem;color:var(--text-secondary)';
-  formLabel.innerHTML = typeof t === 'function' ? t('last_20_wr', historyCount, Math.round(wr)) : `Últimas ${historyCount}: ${Math.round(wr)}% WR`;
+  formLabel.innerHTML = `Last ${historyCount}: <span class="${getWrClass(recent20wr)}" style="font-weight:600">${recent20wr.toFixed(0)}% WR</span>`;
   container.appendChild(formLabel);
 }
 
 // ==========================================
-// GRÁFICO DE MMR
+// MMR CHART
 // ==========================================
 
 function renderChart(games) {
@@ -676,7 +652,6 @@ function renderChart(games) {
 
   if (state.chart) state.chart.destroy();
 
-  // Ordenar de más antigua a más reciente para la línea temporal
   const sorted = [...games].sort((a, b) => {
     const dateA = new Date((a.timestamp || '').replace(' ', 'T')).getTime() || 0;
     const dateB = new Date((b.timestamp || '').replace(' ', 'T')).getTime() || 0;
@@ -723,7 +698,7 @@ function renderChart(games) {
           borderWidth: 1,
           padding: 12,
           callbacks: {
-            title: (ctx) => `Fecha: ${ctx[0].label}`,
+            title: (ctx) => `Date: ${ctx[0].label}`,
             label: (ctx) => {
               const item = sorted[ctx.dataIndex];
               const change = item.mmr_change != null ? (item.mmr_change > 0 ? `+${item.mmr_change.toFixed(1)}` : item.mmr_change.toFixed(1)) : '';
@@ -763,7 +738,7 @@ function renderMatchups(matchups, eloThreshold) {
       const total = wins + losses;
       if (total > 0) {
         list.push({
-          name: m.name || 'Desconocido',
+          name: m.name || 'Unknown',
           avatar: m.avatar_url,
           mmr: oppMmr,
           wins,
@@ -775,7 +750,6 @@ function renderMatchups(matchups, eloThreshold) {
     }
   }
 
-  // Aplicar ordenamiento
   list.sort((a, b) => {
     let va = a[window.currentSortCol];
     let vb = b[window.currentSortCol];
@@ -784,7 +758,7 @@ function renderMatchups(matchups, eloThreshold) {
   });
 
   if (list.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-secondary)">Sin enfrentamientos para este filtro</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-secondary)">No matchups found for this filter</td></tr>';
     return;
   }
 
@@ -800,9 +774,9 @@ function renderMatchups(matchups, eloThreshold) {
       <td class="cell-stat">${m.mmr ? m.mmr.toFixed(0) : '-'}</td>
       <td class="cell-stat">${m.total}</td>
       <td class="cell-stat">
-        <span style="color:var(--positive-emerald);font-weight:700">${m.wins}V</span>
+        <span style="color:var(--positive-emerald);font-weight:700">${m.wins}W</span>
         <span style="color:var(--text-secondary)"> - </span>
-        <span style="color:var(--negative-red);font-weight:700">${m.losses}D</span>
+        <span style="color:var(--negative-red);font-weight:700">${m.losses}L</span>
       </td>
       <td><span class="wr-badge ${getWrClass(m.winrate)}">${m.winrate.toFixed(1)}%</span></td>
     `;
@@ -810,7 +784,6 @@ function renderMatchups(matchups, eloThreshold) {
   });
 }
 
-// Funciones globales para onclick en HTML
 window.filterMatchups = function(threshold, btn) {
   document.querySelectorAll('.profile__matchups-filters .filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -829,7 +802,7 @@ window.sortMatchups = function(col) {
 };
 
 // ==========================================
-// BÚSQUEDA
+// SEARCH
 // ==========================================
 
 function setupSearch() {
@@ -876,14 +849,12 @@ function setupSearch() {
     }
   });
 
-  // Cerrar dropdown al hacer clic fuera
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.topbar__search-container')) {
       results.classList.remove('active');
     }
   });
 
-  // Cerrar con Escape
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       results.classList.remove('active');
@@ -893,21 +864,20 @@ function setupSearch() {
 }
 
 // ==========================================
-// AUTO-REFRESH Y TIMESTAMP
+// AUTO-REFRESH & TIMESTAMP
 // ==========================================
 
 function updateTimestamp() {
   const now = new Date();
-  const timeStr = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+  const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   document.getElementById('lastUpdate').textContent = timeStr;
 }
 
 async function fetchAndRenderAll() {
-  fetchServerMatches(); // Cargar partidas del servidor en segundo plano
+  fetchServerMatches();
   const success = await fetchLeaderboard();
   if (success) {
     renderLeaderboard();
-    // Si hay un perfil abierto, refrescar sus datos
     if (state.selectedPlayer) {
       const freshStats = await fetchPlayerStats(state.selectedPlayer.id);
       if (freshStats) {
@@ -918,21 +888,17 @@ async function fetchAndRenderAll() {
 }
 
 // ==========================================
-// INICIALIZACIÓN
+// INITIALIZATION
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', () => {
   setupSearch();
 
   document.getElementById('btnRefresh').addEventListener('click', () => {
-    // Limpiar cache para forzar refetch
     state.playerStats = {};
     fetchAndRenderAll();
   });
 
-  // Carga inicial
   fetchAndRenderAll();
-
-  // Auto-refresh periódico
   setInterval(fetchAndRenderAll, REFRESH_INTERVAL);
 });

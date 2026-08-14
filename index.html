@@ -10,10 +10,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="index.css">
-  <script src="lang.js"></script>
 </head>
 <body>
-  <div id="errorMessage" data-i18n="error_api" style="background:var(--negative-red);color:#fff;padding:0.75rem;text-align:center;display:none;font-weight:500;position:fixed;top:0;left:0;right:0;z-index:200;">
+  <div id="errorMessage" style="background:var(--negative-red);color:#fff;padding:0.75rem;text-align:center;display:none;font-weight:500;position:fixed;top:0;left:0;right:0;z-index:200;">
     Error connecting to API. Retrying...
   </div>
 
@@ -24,21 +23,13 @@
       <svg class="topbar__search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
       </svg>
-      <input class="topbar__search" id="searchInput" data-i18n="search_placeholder" placeholder="Search player..." autocomplete="off" />
+      <input class="topbar__search" id="searchInput" placeholder="Search player..." autocomplete="off" />
       <div class="topbar__search-results" id="searchResults"></div>
     </div>
 
     <div class="topbar__actions">
       <div class="refresh-indicator" id="refreshIndicator">
         <span id="lastUpdate">--</span>
-      </div>
-      <div class="lang-selector">
-        <button id="langEn" class="lang-btn active" onclick="setLanguage('en')" title="English">
-          <svg viewBox="0 0 60 30" width="24" height="12"><clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath><clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><g clip-path="url(#s)"><path d="M0,0 v30 h60 v-30 z" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></g></svg>
-        </button>
-        <button id="langEs" class="lang-btn" onclick="setLanguage('es')" title="Español">
-          <svg viewBox="0 0 60 30" width="24" height="12"><rect width="60" height="30" fill="#c60b1e"/><rect width="60" height="15" y="7.5" fill="#ffc400"/></svg>
-        </button>
       </div>
     </div>
   </header>
@@ -47,29 +38,29 @@
     <div class="main-content__left" id="leaderboardPanel">
       <section class="leaderboard">
         <div class="leaderboard__header">
-          <h2 class="leaderboard__title" data-i18n="leaderboard_title">📊 Global Leaderboard</h2>
+          <h2 class="leaderboard__title">📊 Global Leaderboard</h2>
           <button class="leaderboard__refresh-btn" id="btnRefresh" title="Refresh">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="23 4 23 10 17 10"></polyline>
               <polyline points="1 20 1 14 7 14"></polyline>
               <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
             </svg>
-            <span data-i18n="btn_refresh">Refresh</span>
+            <span>Refresh</span>
           </button>
         </div>
         <div class="leaderboard__table-wrapper">
           <table class="leaderboard__table" id="leaderboardTable">
             <thead>
               <tr>
-                <th data-i18n="col_rank">#</th>
-                <th data-i18n="col_player">PLAYER</th>
-                <th data-i18n="col_mmr">MMR</th>
-                <th data-i18n="col_matches">MATCHES</th>
-                <th data-i18n="col_winrate">WINRATE</th>
-                <th data-i18n="col_matches_1300" title="Matches vs >1300 ELO">M. >1300</th>
-                <th data-i18n="col_wr_1300">WR >1300</th>
-                <th data-i18n="col_matches_1500" title="Matches vs >1500 ELO">M. >1500</th>
-                <th data-i18n="col_wr_1500">WR >1500</th>
+                <th>#</th>
+                <th>PLAYER</th>
+                <th>MMR</th>
+                <th>MATCHES</th>
+                <th>WINRATE</th>
+                <th title="Matches vs >1300 ELO">M. >1300</th>
+                <th>WR >1300</th>
+                <th title="Matches vs >1500 ELO">M. >1500</th>
+                <th>WR >1500</th>
               </tr>
             </thead>
             <tbody id="leaderboardBody">
