@@ -955,11 +955,95 @@ async function fetchAndRenderAll() {
 }
 
 // ==========================================
+// MOBILE SWIPE-TO-CLOSE GESTURE
+// ==========================================
+
+function setupProfileTouchGestures() {
+  const profilePanel = document.getElementById('profilePanel');
+  if (!profilePanel) return;
+
+  let startX = 0;
+  let startY = 0;
+  let currentX = 0;
+  let isSwiping = false;
+  let isEligible = false;
+
+  profilePanel.addEventListener('touchstart', (e) => {
+    // Only handle swipe if profile is visible
+    if (profilePanel.classList.contains('profile--hidden')) return;
+    if (e.touches.length !== 1) return;
+
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    currentX = startX;
+    isSwiping = false;
+    isEligible = true;
+    profilePanel.style.transition = 'none';
+  }, { passive: true });
+
+  profilePanel.addEventListener('touchmove', (e) => {
+    if (!isEligible || e.touches.length !== 1) return;
+
+    currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    const deltaX = currentX - startX;
+    const deltaY = currentY - startY;
+
+    // Detect horizontal swipe from left to right
+    if (!isSwiping) {
+      if (deltaX > 15 && deltaX > Math.abs(deltaY) * 1.2) {
+        isSwiping = true;
+      } else if (Math.abs(deltaY) > 15) {
+        isEligible = false;
+        return;
+      }
+    }
+
+    if (isSwiping && deltaX > 0) {
+      profilePanel.style.transform = `translateX(${deltaX}px)`;
+    }
+  }, { passive: true });
+
+  profilePanel.addEventListener('touchend', () => {
+    if (!isSwiping) {
+      isEligible = false;
+      profilePanel.style.transition = '';
+      profilePanel.style.transform = '';
+      return;
+    }
+
+    const deltaX = currentX - startX;
+    profilePanel.style.transition = 'transform 0.22s cubic-bezier(0.16, 1, 0.3, 1)';
+
+    if (deltaX > 80) {
+      // Swiped far enough rightward: animate out and close
+      profilePanel.style.transform = 'translateX(100%)';
+      setTimeout(() => {
+        profilePanel.style.transition = '';
+        profilePanel.style.transform = '';
+        window.closeProfile();
+      }, 200);
+    } else {
+      // Snap back into place
+      profilePanel.style.transform = 'translateX(0)';
+      setTimeout(() => {
+        profilePanel.style.transition = '';
+        profilePanel.style.transform = '';
+      }, 220);
+    }
+
+    isSwiping = false;
+    isEligible = false;
+  }, { passive: true });
+}
+
+// ==========================================
 // INITIALIZATION
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', () => {
   setupSearch();
+  setupProfileTouchGestures();
 
   const handleRefresh = () => {
     state.playerStats = {};
