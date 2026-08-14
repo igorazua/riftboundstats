@@ -77,8 +77,8 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`\n  🏆 TCGA Stats Dashboard`);
-  console.log(`  ───────────────────────`);
+  console.log(`\n  🏆 Riftbound Stats Dashboard`);
+  console.log(`  ───────────────────────────`);
   console.log(`  Local:   http://localhost:${PORT}`);
   console.log(`  Proxy:   host.neatqueue.com -> /api/*`);
   console.log(`\n  Abre http://localhost:${PORT} en tu navegador\n`);
