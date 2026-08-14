@@ -182,8 +182,8 @@ function renderLeaderboard() {
     tr.onclick = () => loadPlayerProfile(player.id);
 
     tr.innerHTML = `
-      <td class="cell-rank-sticky">${getRankDisplay(rank)}</td>
-      <td class="cell-player-sticky">
+      <td>${getRankDisplay(rank)}</td>
+      <td>
         <div class="cell-player">
           <img src="${defaultAvatar(player.avatar_url)}" alt="" style="width:28px;height:28px;border-radius:50%">
           <span>${escapeHTML(player.name)}</span>
