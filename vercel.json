@@ -1,4 +1,8 @@
 {
+  "buildCommand": "",
+  "installCommand": "",
+  "framework": null,
+  "outputDirectory": ".",
   "rewrites": [
     {
       "source": "/api/:path*",
