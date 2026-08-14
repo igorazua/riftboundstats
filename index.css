@@ -83,8 +83,8 @@ body {
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 0 24px;
+  gap: 24px;
   z-index: 100;
 }
 
@@ -95,10 +95,100 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .topbar__title span {
   color: var(--accent-cyan-light);
+}
+
+.topbar__search-container {
+  position: relative;
+  width: 320px;
+  margin: 0 auto;
+  flex-shrink: 1;
+}
+
+.topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+/* Language Selector */
+.lang-selector {
+  display: flex;
+  gap: 4px;
+}
+
+.lang-btn {
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  padding: 4px 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.45;
+  display: flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.lang-btn:hover {
+  opacity: 0.8;
+}
+
+.lang-btn.active {
+  opacity: 1;
+  border-color: var(--accent-cyan-light);
+  background: rgba(0, 163, 255, 0.08);
+}
+
+/* Leaderboard Header & Refresh */
+.leaderboard__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.leaderboard__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.leaderboard__refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.leaderboard__refresh-btn:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--accent-cyan-light);
+}
+
+.leaderboard__refresh-btn svg {
+  transition: transform 0.4s ease;
+}
+
+.leaderboard__refresh-btn:active svg {
+  transform: rotate(180deg);
 }
 
 .topbar__search-container {

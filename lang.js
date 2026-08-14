@@ -33,7 +33,10 @@ const translations = {
     "unknown_date": "Fecha desconocida",
     "match_tag": "Partida #{0}",
     "win": "Victoria",
-    "loss": "Derrota"
+    "loss": "Derrota",
+    "prof_main_stats": "Estadísticas Principales",
+    "prof_mmr_peak": "MMR Actual / Pico",
+    "prof_wl": "Ganados - Perdidos (W - L)"
   },
   en: {
     "leaderboard_title": "📊 Global Leaderboard",
@@ -69,11 +72,14 @@ const translations = {
     "unknown_date": "Unknown date",
     "match_tag": "Match #{0}",
     "win": "Win",
-    "loss": "Loss"
+    "loss": "Loss",
+    "prof_main_stats": "Main Stats",
+    "prof_mmr_peak": "Current MMR / Peak",
+    "prof_wl": "Wins - Losses (W - L)"
   }
 };
 
-let currentLang = 'es';
+let currentLang = 'en';
 
 function t(key, ...args) {
   let text = translations[currentLang][key] || key;

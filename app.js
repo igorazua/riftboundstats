@@ -463,22 +463,30 @@ async function resolveMatchOpponents(matchups, playerId, playerName, games) {
   const oppIds = Object.keys(matchups);
   if (oppIds.length === 0) return;
 
-  // Descargar oponentes en lotes paralelos de 10
+  // Build a Set of the current player's game_nums for fast lookup
+  const playerGameNums = new Set(games.map(g => g.game_num));
+
+  // Download opponents in parallel batches of 10
   const batchSize = 10;
   for (let i = 0; i < oppIds.length; i += batchSize) {
     const chunk = oppIds.slice(i, i + batchSize);
     let newMatchesFound = false;
 
     await Promise.all(chunk.map(async (oppId) => {
+      // Skip if the opponent ID is the player themselves
+      if (oppId === playerId) return;
+
       try {
         const oppData = await fetchPlayerStats(oppId);
         const oppGames = oppData?.queues?.player_stats?.games || [];
         const oppMmr = oppData?.queues?.player_stats?.mmr || state.eloTable[oppId] || 0;
-        const oppName = matchups[oppId]?.name || oppData?.name || 'Desconocido';
+        const oppName = matchups[oppId]?.name || oppData?.name || 'Unknown';
         const oppAvatar = matchups[oppId]?.avatar_url || oppData?.avatar_url;
 
         for (const g of oppGames) {
-          if (!state.matchInfoCache[g.game_num]) {
+          // ONLY cache if this game_num is also in the current player's games
+          // This prevents attributing wrong opponents from unrelated matches
+          if (playerGameNums.has(g.game_num) && !state.matchInfoCache[g.game_num]) {
             state.matchInfoCache[g.game_num] = {
               opponent: {
                 id: oppId,
@@ -495,7 +503,7 @@ async function resolveMatchOpponents(matchups, playerId, playerName, games) {
       }
     }));
 
-    // Si encontramos partidas nuevas y el perfil sigue abierto, refrescar la lista de partidas
+    // If new matches found and profile is still open, refresh match list
     if (newMatchesFound && state.selectedPlayer?.id === playerId) {
       renderMatchHistory(games, playerName, playerId);
     }
@@ -558,6 +566,13 @@ function renderMatchHistory(games, playerName, playerId) {
       const oppTeam = inTeam0 ? team1 : team0;
       if (oppTeam.length > 0 && oppTeam[0]?.name) {
         opp = oppTeam[0];
+      }
+    }
+
+    if (opp?.name) {
+      // Skip if the resolved opponent is actually the player themselves
+      if (opp.id === playerId || opp.name === playerName) {
+        opp = null;
       }
     }
 
