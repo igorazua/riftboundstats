@@ -276,6 +276,50 @@ body.profile-open-mobile {
   position: relative;
 }
 
+/* Leaderboard Footer / Load More */
+.leaderboard__footer {
+  padding: 14px 20px;
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-load-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-load-more:hover {
+  background: rgba(88, 166, 255, 0.15);
+  border-color: var(--accent-cyan-light);
+  color: var(--accent-cyan-light);
+}
+
+.btn-load-more:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.leaderboard__count-info {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
 /* Zebra Striped Leaderboard Table */
 .leaderboard__table {
   width: 100%;
@@ -639,6 +683,34 @@ body.profile-open-mobile {
   align-items: center;
   gap: 10px;
   min-width: 0;
+}
+
+.match-opponent-clickable {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-left: -6px;
+  transition: all 0.15s ease;
+}
+
+.match-opponent-clickable:hover {
+  background-color: rgba(88, 166, 255, 0.18);
+}
+
+.match-opponent-clickable:hover .match-opponent-name {
+  color: var(--accent-cyan-light) !important;
+  text-decoration: underline;
+}
+
+.match-opponent-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  transition: color 0.15s ease;
 }
 
 .match-item__badge {

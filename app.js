@@ -17,7 +17,11 @@ let state = {
   matchInfoCache: {}, // game_num -> match data with opponents
   chart: null,        // Chart.js instance
   backgroundQueue: [],
-  showCount: 50       // Number of visible players
+  showCount: 50,      // Number of visible players
+  loadedPages: 1,     // Highest page loaded from API
+  totalPages: 1,      // Total pages according to API pagination
+  totalItems: 0,      // Total players in database (e.g. 2066)
+  isLoadingMore: false
 };
 
 // ==========================================
@@ -85,10 +89,10 @@ function calculateSegmentedWinrates(playerStats, eloTable, threshold) {
 // API LAYER
 // ==========================================
 
-async function fetchLeaderboard(retry = false) {
+async function fetchLeaderboard(retry = false, page = 1) {
   try {
     const response = await fetch(
-      `${API_BASE}/api/v2/leaderboard/${GUILD_ID}/${CHANNEL_ID}?sort=mmr&month=alltime&page=1`
+      `${API_BASE}/api/v2/leaderboard/${GUILD_ID}/${CHANNEL_ID}?sort=mmr&month=alltime&page=${page}`
     );
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
@@ -97,11 +101,28 @@ async function fetchLeaderboard(retry = false) {
       const allTimeData = data.months.find(m => m.month === 'alltime') || data.months[0];
       const rawPlayers = allTimeData.data || [];
 
+      if (allTimeData.pagination) {
+        state.totalPages = allTimeData.pagination.total_pages || 1;
+        state.totalItems = allTimeData.pagination.total_items || rawPlayers.length;
+      } else {
+        state.totalItems = rawPlayers.length;
+      }
+
+      if (page === 1) {
+        state.players = rawPlayers;
+        state.loadedPages = 1;
+      } else {
+        const existingIds = new Set(state.players.map(p => p.id));
+        rawPlayers.forEach(p => {
+          if (!existingIds.has(p.id)) state.players.push(p);
+        });
+        state.loadedPages = page;
+      }
+
       // Sort strictly by MMR descending to guarantee correct sequential rank 1, 2, 3, 4...
-      state.players = rawPlayers.sort((a, b) => (b.stats?.mmr || 0) - (a.stats?.mmr || 0));
+      state.players.sort((a, b) => (b.stats?.mmr || 0) - (a.stats?.mmr || 0));
 
       // Build ELO lookup table
-      state.eloTable = {};
       state.players.forEach(p => { state.eloTable[p.id] = p.stats.mmr; });
 
       document.getElementById('errorMessage').style.display = 'none';
@@ -110,9 +131,9 @@ async function fetchLeaderboard(retry = false) {
     return false;
   } catch (error) {
     console.error('Error fetching leaderboard:', error);
-    if (!retry) {
+    if (!retry && page === 1) {
       document.getElementById('errorMessage').style.display = 'block';
-      setTimeout(() => fetchLeaderboard(true), 2000);
+      setTimeout(() => fetchLeaderboard(true, 1), 2000);
     }
     return false;
   }
@@ -209,9 +230,55 @@ function renderLeaderboard() {
     tbody.appendChild(tr);
   });
 
+  // Update footer button and count info
+  const countInfo = document.getElementById('leaderboardCountInfo');
+  const btnLoadMore = document.getElementById('btnLoadMore');
+  const visibleCount = Math.min(state.showCount, state.players.length);
+  const totalDisplay = state.totalItems || state.players.length;
+
+  if (countInfo) {
+    countInfo.textContent = `Showing ${visibleCount} of ${totalDisplay} players`;
+  }
+
+  if (btnLoadMore) {
+    if (visibleCount >= totalDisplay && state.loadedPages >= state.totalPages) {
+      btnLoadMore.style.display = 'none';
+    } else {
+      btnLoadMore.style.display = 'inline-flex';
+      btnLoadMore.disabled = false;
+      const span = btnLoadMore.querySelector('span');
+      if (span) span.textContent = 'Load 50 More Players';
+    }
+  }
+
   updateTimestamp();
   startBackgroundLoading(topPlayers.slice(0, 30));
 }
+
+window.loadMorePlayers = async function() {
+  const btnLoadMore = document.getElementById('btnLoadMore');
+  if (state.isLoadingMore) return;
+
+  state.showCount += 50;
+
+  // If we need more players from the next API page
+  if (state.showCount > state.players.length && state.loadedPages < state.totalPages) {
+    state.isLoadingMore = true;
+    if (btnLoadMore) {
+      btnLoadMore.disabled = true;
+      const span = btnLoadMore.querySelector('span');
+      if (span) span.textContent = 'Loading players...';
+    }
+    await fetchLeaderboard(false, state.loadedPages + 1);
+    state.isLoadingMore = false;
+  }
+
+  renderLeaderboard();
+
+  // Background load winrates for newly displayed players
+  const startIndex = Math.max(0, state.showCount - 50);
+  startBackgroundLoading(state.players.slice(startIndex, state.showCount));
+};
 
 function updateTableRow(playerId, playerStats) {
   const stats1300 = calculateSegmentedWinrates(playerStats, state.eloTable, 1300);
@@ -275,13 +342,17 @@ window.closeProfile = function() {
 
 async function loadPlayerProfile(playerId) {
   const playerIndex = state.players.findIndex(p => p.id === playerId);
-  if (playerIndex === -1) return;
+  let basePlayer = playerIndex !== -1 ? state.players[playerIndex] : null;
+  const playerRank = playerIndex !== -1 ? playerIndex + 1 : '-';
 
-  const basePlayer = state.players[playerIndex];
-  const playerRank = playerIndex + 1;
-  state.selectedPlayer = basePlayer;
+  state.selectedPlayer = basePlayer || {
+    id: playerId,
+    name: 'Player',
+    avatar_url: null,
+    stats: { mmr: state.eloTable[playerId] || 0, rank: '-' }
+  };
 
-  // Highlight active row
+  // Highlight active row if present in table
   document.querySelectorAll('#leaderboardBody tr').forEach(tr => tr.classList.remove('active'));
   const activeRow = document.getElementById(`row-${playerId}`);
   if (activeRow) activeRow.classList.add('active');
@@ -290,6 +361,9 @@ async function loadPlayerProfile(playerId) {
   document.body.classList.add('profile-open-mobile');
   const profilePanel = document.getElementById('profilePanel');
   profilePanel.classList.remove('profile--hidden');
+
+  const initialName = basePlayer ? basePlayer.name : 'Player';
+  const initialAvatar = basePlayer ? defaultAvatar(basePlayer.avatar_url) : defaultAvatar(null);
 
   profilePanel.innerHTML = `
     <div class="profile__top-bar">
@@ -309,9 +383,9 @@ async function loadPlayerProfile(playerId) {
     </div>
 
     <div class="profile__header">
-      <img class="profile__avatar" src="${defaultAvatar(basePlayer.avatar_url)}" alt="">
+      <img class="profile__avatar" src="${initialAvatar}" alt="">
       <div class="profile__info">
-        <div class="profile__name">${escapeHTML(basePlayer.name)}</div>
+        <div class="profile__name">${escapeHTML(initialName)}</div>
         <div style="color:var(--text-secondary);font-size:0.85rem">Loading player statistics...</div>
       </div>
     </div>
@@ -322,6 +396,18 @@ async function loadPlayerProfile(playerId) {
 
   const detailedStats = await fetchPlayerStats(playerId);
   if (detailedStats) {
+    if (!basePlayer) {
+      basePlayer = {
+        id: playerId,
+        name: detailedStats.name,
+        avatar_url: detailedStats.avatar_url,
+        stats: {
+          mmr: detailedStats.queues?.player_stats?.mmr || state.eloTable[playerId] || 0,
+          rank: '-'
+        }
+      };
+      state.selectedPlayer = basePlayer;
+    }
     renderProfile(basePlayer, detailedStats, playerRank);
     updateTableRow(playerId, detailedStats);
   } else {
@@ -336,9 +422,9 @@ async function loadPlayerProfile(playerId) {
         </button>
       </div>
       <div class="profile__header">
-        <img class="profile__avatar" src="${defaultAvatar(basePlayer.avatar_url)}" alt="">
+        <img class="profile__avatar" src="${initialAvatar}" alt="">
         <div class="profile__info">
-          <div class="profile__name">${escapeHTML(basePlayer.name)}</div>
+          <div class="profile__name">${escapeHTML(initialName)}</div>
           <div style="color:var(--negative-red)">Error loading profile data</div>
         </div>
       </div>
@@ -352,7 +438,12 @@ function renderProfile(player, stats, playerRank) {
   const totalWr = q.totalgames > 0 ? (q.wins / q.totalgames) * 100 : 0;
   const s1300 = calculateSegmentedWinrates(stats, state.eloTable, 1300);
   const s1500 = calculateSegmentedWinrates(stats, state.eloTable, 1500);
-  const rankNumber = playerRank || (state.players.findIndex(p => p.id === player.id) + 1);
+  
+  let rankNumber = playerRank;
+  if (!rankNumber || rankNumber === '-') {
+    const idx = state.players.findIndex(p => p.id === player.id);
+    rankNumber = idx !== -1 ? idx + 1 : '-';
+  }
 
   const profilePanel = document.getElementById('profilePanel');
   profilePanel.innerHTML = `
@@ -373,12 +464,12 @@ function renderProfile(player, stats, playerRank) {
     </div>
 
     <div class="profile__header">
-      <img class="profile__avatar" src="${defaultAvatar(stats.avatar_url)}" alt="">
+      <img class="profile__avatar" src="${defaultAvatar(stats.avatar_url || player.avatar_url)}" alt="">
       <div class="profile__info">
-        <div class="profile__name">${escapeHTML(stats.name)}</div>
+        <div class="profile__name">${escapeHTML(stats.name || player.name)}</div>
         <div class="profile__badges">
           <span class="badge ${tier.class}">${tier.label}</span>
-          <span class="badge badge--silver">Rank #${rankNumber}</span>
+          ${rankNumber !== '-' ? `<span class="badge badge--silver">Rank #${rankNumber}</span>` : ''}
           <span class="badge badge--diamond">${q.totalgames} Total Matches</span>
         </div>
         <div class="profile__record-summary">
@@ -621,11 +712,14 @@ function renderMatchHistory(games, playerName, playerId) {
     if (opp?.name) {
       const oppMmr = opp.mmr || state.eloTable[opp.id] || 0;
       const tier = getMmrTier(oppMmr);
+      const oppIdAttr = opp.id ? `onclick="event.stopPropagation(); loadPlayerProfile('${opp.id}')" title="View ${escapeHTML(opp.name)}'s profile"` : '';
+      const isClickable = Boolean(opp.id);
+
       opponentHtml = `
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
+        <div class="${isClickable ? 'match-opponent-clickable' : ''}" ${oppIdAttr} style="${isClickable ? '' : 'display:flex;align-items:center;gap:8px;margin-bottom:2px'}">
           <span style="color:var(--text-secondary);font-size:0.8rem;font-weight:500">vs</span>
           <img src="${defaultAvatar(opp.avatar_url)}" style="width:22px;height:22px;border-radius:50%;border:1px solid var(--border-subtle)">
-          <span style="font-weight:600;color:var(--text-primary);font-size:0.95rem">${escapeHTML(opp.name)}</span>
+          <span class="match-opponent-name">${escapeHTML(opp.name)}</span>
           <span class="badge ${tier.class}" style="font-size:0.7rem;padding:1px 6px">${oppMmr.toFixed(0)} MMR</span>
         </div>
       `;
@@ -799,6 +893,7 @@ function renderMatchups(matchups, eloThreshold) {
       const total = wins + losses;
       if (total > 0) {
         list.push({
+          id: oppId,
           name: m.name || 'Unknown',
           avatar: m.avatar_url,
           mmr: oppMmr,
@@ -825,11 +920,14 @@ function renderMatchups(matchups, eloThreshold) {
 
   list.forEach(m => {
     const tr = document.createElement('tr');
+    tr.style.cursor = 'pointer';
+    tr.onclick = () => loadPlayerProfile(m.id);
+    tr.title = `View ${escapeHTML(m.name)}'s profile`;
     tr.innerHTML = `
       <td>
         <div class="cell-player">
           <img src="${defaultAvatar(m.avatar)}" alt="" style="width:24px;height:24px;border-radius:50%">
-          <span>${escapeHTML(m.name)}</span>
+          <span style="text-decoration:underline;text-underline-offset:2px">${escapeHTML(m.name)}</span>
         </div>
       </td>
       <td class="cell-stat">${m.mmr ? m.mmr.toFixed(0) : '-'}</td>
@@ -921,7 +1019,6 @@ function setupSearch() {
     if (e.key === 'Escape') {
       results.classList.remove('active');
       input.blur();
-      // If profile is open, close it with Escape key
       if (state.selectedPlayer) {
         window.closeProfile();
       }
@@ -969,7 +1066,6 @@ function setupProfileTouchGestures() {
   let isEligible = false;
 
   profilePanel.addEventListener('touchstart', (e) => {
-    // Only handle swipe if profile is visible
     if (profilePanel.classList.contains('profile--hidden')) return;
     if (e.touches.length !== 1) return;
 
@@ -989,7 +1085,6 @@ function setupProfileTouchGestures() {
     const deltaX = currentX - startX;
     const deltaY = currentY - startY;
 
-    // Detect horizontal swipe from left to right
     if (!isSwiping) {
       if (deltaX > 15 && deltaX > Math.abs(deltaY) * 1.2) {
         isSwiping = true;
@@ -1016,7 +1111,6 @@ function setupProfileTouchGestures() {
     profilePanel.style.transition = 'transform 0.22s cubic-bezier(0.16, 1, 0.3, 1)';
 
     if (deltaX > 80) {
-      // Swiped far enough rightward: animate out and close
       profilePanel.style.transform = 'translateX(100%)';
       setTimeout(() => {
         profilePanel.style.transition = '';
@@ -1024,7 +1118,6 @@ function setupProfileTouchGestures() {
         window.closeProfile();
       }, 200);
     } else {
-      // Snap back into place
       profilePanel.style.transform = 'translateX(0)';
       setTimeout(() => {
         profilePanel.style.transition = '';
