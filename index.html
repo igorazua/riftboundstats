@@ -12,12 +12,26 @@
   <link rel="stylesheet" href="index.css">
 </head>
 <body>
-  <div id="errorMessage" style="background:var(--negative-red);color:#fff;padding:0.75rem;text-align:center;display:none;font-weight:500;position:fixed;top:0;left:0;right:0;z-index:200;">
+  <div id="errorMessage" style="background:var(--negative-red);color:#fff;padding:0.75rem;text-align:center;display:none;font-weight:500;position:fixed;top:0;left:0;right:0;z-index:300;">
     Error connecting to API. Retrying...
   </div>
 
   <header class="topbar">
-    <h1 class="topbar__title">⚔️ <span>Riftbound</span> Stats</h1>
+    <div class="topbar__header-row">
+      <h1 class="topbar__title">⚔️ <span>Riftbound</span> Stats</h1>
+      <div class="topbar__actions">
+        <div class="refresh-indicator" id="refreshIndicator">
+          <span id="lastUpdate">--</span>
+        </div>
+        <button class="topbar__refresh-btn-mobile" id="btnRefreshMobile" title="Refresh">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
 
     <div class="topbar__search-container">
       <svg class="topbar__search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -25,12 +39,6 @@
       </svg>
       <input class="topbar__search" id="searchInput" placeholder="Search player..." autocomplete="off" />
       <div class="topbar__search-results" id="searchResults"></div>
-    </div>
-
-    <div class="topbar__actions">
-      <div class="refresh-indicator" id="refreshIndicator">
-        <span id="lastUpdate">--</span>
-      </div>
     </div>
   </header>
 
@@ -52,8 +60,8 @@
           <table class="leaderboard__table" id="leaderboardTable">
             <thead>
               <tr>
-                <th>#</th>
-                <th>PLAYER</th>
+                <th class="th-sticky-rank">#</th>
+                <th class="th-sticky-player">PLAYER</th>
                 <th>MMR</th>
                 <th>MATCHES</th>
                 <th>WINRATE</th>

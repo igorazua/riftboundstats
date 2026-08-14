@@ -3,21 +3,21 @@
 // ==========================================
 const GUILD_ID = '1418575611840172139';
 const CHANNEL_ID = '1445872336250343425';
-const API_BASE = ''; // /api/* requests proxied locally or via vercel.json
+const API_BASE = ''; // Proxied via server.js or vercel.json
 const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
 // ==========================================
 // GLOBAL STATE
 // ==========================================
 let state = {
-  players: [],        // All players in the leaderboard
+  players: [],        // All players in leaderboard sorted by MMR
   eloTable: {},       // playerId -> current MMR
   selectedPlayer: null,
   playerStats: {},    // Stats cache: playerId -> stats
   matchInfoCache: {}, // game_num -> match data with opponents
   chart: null,        // Chart.js instance
   backgroundQueue: [],
-  showCount: 50       // Visible players in leaderboard
+  showCount: 50       // Number of visible players
 };
 
 // ==========================================
@@ -95,7 +95,10 @@ async function fetchLeaderboard(retry = false) {
 
     if (data.months?.length > 0) {
       const allTimeData = data.months.find(m => m.month === 'alltime') || data.months[0];
-      state.players = allTimeData.data;
+      const rawPlayers = allTimeData.data || [];
+
+      // Sort strictly by MMR descending to guarantee correct sequential rank 1, 2, 3, 4...
+      state.players = rawPlayers.sort((a, b) => (b.stats?.mmr || 0) - (a.stats?.mmr || 0));
 
       // Build ELO lookup table
       state.eloTable = {};
@@ -168,17 +171,19 @@ function renderLeaderboard() {
 
   const topPlayers = state.players.slice(0, state.showCount);
 
-  topPlayers.forEach(player => {
+  topPlayers.forEach((player, index) => {
+    const rank = index + 1; // Strict sequential ranking: 1, 2, 3, 4...
     const s = player.stats;
     const wr = s.winrate * 100;
 
     const tr = document.createElement('tr');
     tr.id = `row-${player.id}`;
+    if (state.selectedPlayer?.id === player.id) tr.classList.add('active');
     tr.onclick = () => loadPlayerProfile(player.id);
 
     tr.innerHTML = `
-      <td>${getRankDisplay(s.rank)}</td>
-      <td>
+      <td class="cell-rank-sticky">${getRankDisplay(rank)}</td>
+      <td class="cell-player-sticky">
         <div class="cell-player">
           <img src="${defaultAvatar(player.avatar_url)}" alt="" style="width:28px;height:28px;border-radius:50%">
           <span>${escapeHTML(player.name)}</span>
@@ -188,16 +193,16 @@ function renderLeaderboard() {
       <td class="cell-stat">${s.totalgames}</td>
       <td><span class="wr-badge ${getWrClass(wr)}">${wr.toFixed(1)}%</span></td>
       <td class="cell-stat" id="games-1300-${player.id}">
-        <span class="loading" style="display:inline-block;width:40px;height:16px"></span>
+        <span class="loading" style="display:inline-block;width:36px;height:16px"></span>
       </td>
       <td id="wr-1300-${player.id}">
-        <span class="loading" style="display:inline-block;width:50px;height:16px"></span>
+        <span class="loading" style="display:inline-block;width:48px;height:16px"></span>
       </td>
       <td class="cell-stat" id="games-1500-${player.id}">
-        <span class="loading" style="display:inline-block;width:40px;height:16px"></span>
+        <span class="loading" style="display:inline-block;width:36px;height:16px"></span>
       </td>
       <td id="wr-1500-${player.id}">
-        <span class="loading" style="display:inline-block;width:50px;height:16px"></span>
+        <span class="loading" style="display:inline-block;width:48px;height:16px"></span>
       </td>
     `;
 
@@ -248,7 +253,7 @@ function processBackgroundQueue() {
   if (!state.playerStats[playerId]) {
     fetchPlayerStats(playerId).then(stats => {
       if (stats) updateTableRow(playerId, stats);
-      setTimeout(processBackgroundQueue, 500);
+      setTimeout(processBackgroundQueue, 400);
     });
   } else {
     updateTableRow(playerId, state.playerStats[playerId]);
@@ -257,67 +262,123 @@ function processBackgroundQueue() {
 }
 
 // ==========================================
-// PLAYER PROFILE
+// PLAYER PROFILE & NAVIGATION
 // ==========================================
 
-async function loadPlayerProfile(playerId) {
-  const basePlayer = state.players.find(p => p.id === playerId);
-  if (!basePlayer) return;
+window.closeProfile = function() {
+  const profilePanel = document.getElementById('profilePanel');
+  if (profilePanel) profilePanel.classList.add('profile--hidden');
+  document.body.classList.remove('profile-open-mobile');
+  document.querySelectorAll('#leaderboardBody tr').forEach(tr => tr.classList.remove('active'));
+  state.selectedPlayer = null;
+};
 
+async function loadPlayerProfile(playerId) {
+  const playerIndex = state.players.findIndex(p => p.id === playerId);
+  if (playerIndex === -1) return;
+
+  const basePlayer = state.players[playerIndex];
+  const playerRank = playerIndex + 1;
   state.selectedPlayer = basePlayer;
 
+  // Highlight active row
   document.querySelectorAll('#leaderboardBody tr').forEach(tr => tr.classList.remove('active'));
   const activeRow = document.getElementById(`row-${playerId}`);
   if (activeRow) activeRow.classList.add('active');
 
+  // Open profile (including mobile overlay)
+  document.body.classList.add('profile-open-mobile');
   const profilePanel = document.getElementById('profilePanel');
   profilePanel.classList.remove('profile--hidden');
+
   profilePanel.innerHTML = `
+    <div class="profile__top-bar">
+      <button class="profile__back-btn" onclick="window.closeProfile()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        <span>Back to Leaderboard</span>
+      </button>
+      <button class="profile__close-icon-btn" onclick="window.closeProfile()" title="Close Profile">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
     <div class="profile__header">
       <img class="profile__avatar" src="${defaultAvatar(basePlayer.avatar_url)}" alt="">
       <div class="profile__info">
         <div class="profile__name">${escapeHTML(basePlayer.name)}</div>
-        <div style="color:var(--text-secondary)">Loading stats...</div>
+        <div style="color:var(--text-secondary);font-size:0.85rem">Loading player statistics...</div>
       </div>
     </div>
-    <div class="profile__content" style="display:flex;align-items:center;justify-content:center;min-height:200px">
-      <div class="loading" style="width:100%;height:200px;border-radius:8px"></div>
+    <div class="profile__content" style="display:flex;align-items:center;justify-content:center;min-height:240px">
+      <div class="loading" style="width:100%;height:220px;border-radius:8px"></div>
     </div>
   `;
 
   const detailedStats = await fetchPlayerStats(playerId);
   if (detailedStats) {
-    renderProfile(basePlayer, detailedStats);
+    renderProfile(basePlayer, detailedStats, playerRank);
     updateTableRow(playerId, detailedStats);
   } else {
     profilePanel.innerHTML = `
+      <div class="profile__top-bar">
+        <button class="profile__back-btn" onclick="window.closeProfile()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          <span>Back to Leaderboard</span>
+        </button>
+      </div>
       <div class="profile__header">
         <img class="profile__avatar" src="${defaultAvatar(basePlayer.avatar_url)}" alt="">
         <div class="profile__info">
           <div class="profile__name">${escapeHTML(basePlayer.name)}</div>
-          <div style="color:var(--negative-red)">Error loading profile</div>
+          <div style="color:var(--negative-red)">Error loading profile data</div>
         </div>
       </div>
     `;
   }
 }
 
-function renderProfile(player, stats) {
+function renderProfile(player, stats, playerRank) {
   const q = stats.queues.player_stats;
   const tier = getMmrTier(q.mmr);
   const totalWr = q.totalgames > 0 ? (q.wins / q.totalgames) * 100 : 0;
   const s1300 = calculateSegmentedWinrates(stats, state.eloTable, 1300);
   const s1500 = calculateSegmentedWinrates(stats, state.eloTable, 1500);
+  const rankNumber = playerRank || (state.players.findIndex(p => p.id === player.id) + 1);
 
   const profilePanel = document.getElementById('profilePanel');
   profilePanel.innerHTML = `
+    <div class="profile__top-bar">
+      <button class="profile__back-btn" onclick="window.closeProfile()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        <span>Back to Leaderboard</span>
+      </button>
+      <button class="profile__close-icon-btn" onclick="window.closeProfile()" title="Close Profile">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
     <div class="profile__header">
       <img class="profile__avatar" src="${defaultAvatar(stats.avatar_url)}" alt="">
       <div class="profile__info">
         <div class="profile__name">${escapeHTML(stats.name)}</div>
         <div class="profile__badges">
           <span class="badge ${tier.class}">${tier.label}</span>
-          <span class="badge badge--silver">Rank #${player.stats.rank}</span>
+          <span class="badge badge--silver">Rank #${rankNumber}</span>
           <span class="badge badge--diamond">${q.totalgames} Total Matches</span>
         </div>
         <div class="profile__record-summary">
@@ -802,7 +863,7 @@ window.sortMatchups = function(col) {
 };
 
 // ==========================================
-// SEARCH
+// SEARCH & INPUT
 // ==========================================
 
 function setupSearch() {
@@ -824,15 +885,16 @@ function setupSearch() {
 
     if (matches.length > 0) {
       matches.forEach(p => {
+        const rankNumber = state.players.findIndex(x => x.id === p.id) + 1;
         const tier = getMmrTier(p.stats.mmr);
         const div = document.createElement('div');
         div.className = 'topbar__search-results-item';
         div.innerHTML = `
           <img src="${defaultAvatar(p.avatar_url)}" style="width:32px;height:32px;border-radius:50%">
           <div style="flex:1">
-            <div style="font-weight:500;color:var(--text-primary)">${escapeHTML(p.name)}</div>
+            <div style="font-weight:600;color:var(--text-primary)">${escapeHTML(p.name)}</div>
             <div style="font-size:0.75rem;color:var(--text-secondary)">
-              <span class="${tier.class}">${p.stats.mmr.toFixed(0)}</span> · #${p.stats.rank}
+              <span class="${tier.class}">${p.stats.mmr.toFixed(0)} MMR</span> · #${rankNumber}
             </div>
           </div>
         `;
@@ -855,10 +917,14 @@ function setupSearch() {
     }
   });
 
-  input.addEventListener('keydown', (e) => {
+  document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       results.classList.remove('active');
       input.blur();
+      // If profile is open, close it with Escape key
+      if (state.selectedPlayer) {
+        window.closeProfile();
+      }
     }
   });
 }
@@ -870,7 +936,8 @@ function setupSearch() {
 function updateTimestamp() {
   const now = new Date();
   const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-  document.getElementById('lastUpdate').textContent = timeStr;
+  const el = document.getElementById('lastUpdate');
+  if (el) el.textContent = timeStr;
 }
 
 async function fetchAndRenderAll() {
@@ -894,10 +961,16 @@ async function fetchAndRenderAll() {
 document.addEventListener('DOMContentLoaded', () => {
   setupSearch();
 
-  document.getElementById('btnRefresh').addEventListener('click', () => {
+  const handleRefresh = () => {
     state.playerStats = {};
     fetchAndRenderAll();
-  });
+  };
+
+  const btnRefresh = document.getElementById('btnRefresh');
+  if (btnRefresh) btnRefresh.addEventListener('click', handleRefresh);
+
+  const btnRefreshMobile = document.getElementById('btnRefreshMobile');
+  if (btnRefreshMobile) btnRefreshMobile.addEventListener('click', handleRefresh);
 
   fetchAndRenderAll();
   setInterval(fetchAndRenderAll, REFRESH_INTERVAL);
