@@ -1862,7 +1862,7 @@ window.showSpeyerPlayerDetail = function(playerId) {
         <div class="profile-stat-card__value" style="color:var(--accent-cyan-light)">${player.points} pts</div>
       </div>
       <div class="profile-stat-card">
-        <div class="profile-stat-card__label">Match Record</div>
+        <div class="profile-stat-card__label">Match Record (W-L-D)</div>
         <div class="profile-stat-card__value">${escapeHTML(player.matchRecord)}</div>
       </div>
       <div class="profile-stat-card">
