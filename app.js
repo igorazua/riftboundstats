@@ -1207,160 +1207,36 @@ function isOriginsLegend(fullName) {
   return ORIGINS_LEGENDS.has(shortName);
 }
 
-async function fetchTournamentAPI(endpoint) {
-  // Try relative proxy path first (works on Vercel)
-  try {
-    const res = await fetch(`/api/tournament${endpoint}`);
-    if (res.ok) return await res.json();
-  } catch (e) {
-    console.warn('Proxy fetch failed, trying direct/fallback...', e);
-  }
-
-  // Fallback via CORS proxy if needed
-  const target = `https://api.riftbound.uvsgames.com/api${endpoint}`;
-  const fallbackUrls = [
-    `https://corsproxy.io/?${encodeURIComponent(target)}`,
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(target)}`
-  ];
-
-  for (const fbUrl of fallbackUrls) {
-    try {
-      const res = await fetch(fbUrl);
-      if (res.ok) return await res.json();
-    } catch (e) {
-      console.warn('Fallback fetch failed for', fbUrl, e);
-    }
-  }
-
-  throw new Error('Failed to fetch tournament data from all endpoints');
-}
-
 window.fetchSpeyerData = async function() {
   try {
     document.getElementById('speyerStatusText').textContent = 'Fetching...';
     
-    // 1. Fetch Tournament Overview
-    const overview = await fetchTournamentAPI('/magic-events/835043/tournament_overview/');
-    
-    // 2. Find correct phase and round
-    const swissPhase = overview.tournament_phases.find(p => p.round_type === 'SWISS') || overview.tournament_phases[0];
-    if (!swissPhase) throw new Error('Could not find Swiss phase');
-    
-    let latestRound = null;
-    let roundId = null;
-    let isComplete = false;
-    
-    // Sort rounds descending by round_number
-    const rounds = [...swissPhase.rounds].sort((a, b) => b.round_number - a.round_number);
-    
-    for (const r of rounds) {
-      if (r.status === 'COMPLETE') {
-        latestRound = r;
-        roundId = r.id;
-        isComplete = true;
-        break;
-      }
-    }
-    
-    // If no complete rounds, look for IN_PROGRESS
-    if (!latestRound) {
-      for (const r of rounds) {
-        if (r.status === 'IN_PROGRESS') {
-          latestRound = r;
-          roundId = r.id;
-          isComplete = false;
-          break;
-        }
-      }
-    }
-    
-    if (!latestRound) throw new Error('No active or completed rounds found');
-    
-    // Update status UI
-    document.getElementById('speyerStatusText').textContent = `Round ${latestRound.round_number} • ${isComplete ? 'Complete' : 'In Progress'}`;
-    const dot = document.getElementById('speyerStatusDot');
-    if (isComplete) dot.classList.add('complete');
-    else dot.classList.remove('complete');
-    
-    // 3. Fetch standings
-    const standingsData = await fetchTournamentAPI(`/v2/tournament-rounds/${roundId}/standings/`);
+    const res = await fetch('/api/speyer');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
 
-    const allStandings = standingsData.standings || standingsData;
-    
-    const validStandings = (Array.isArray(allStandings) ? allStandings : []).filter(s => 
-      s.user_event_status?.deck_defining_card?.name
-    );
-    
-    speyerState.totalPlayers = validStandings.length;
+    speyerState.totalPlayers = data.totalPlayers || 0;
+    speyerState.data = data.data || [];
+
     document.getElementById('speyerPlayerCount').textContent = `${speyerState.totalPlayers} Players`;
+    document.getElementById('speyerStatusText').textContent = `Round ${data.roundNumber} • ${data.isComplete ? 'Complete' : 'In Progress'}`;
     
-    // 4. Aggregate data
-    const aggregates = {};
-    
-    for (const s of validStandings) {
-      const card = s.user_event_status.deck_defining_card;
-      const legendName = card.name;
-      const imageUrl = card.image_url;
-      const rank = s.rank;
-      
-      if (!aggregates[legendName]) {
-        aggregates[legendName] = {
-          legend: legendName,
-          image: imageUrl,
-          players: 0,
-          totalMatchWins: 0,
-          totalMatchLosses: 0,
-          totalMatchesPlayed: 0,
-          undefeated: 0,
-          noWins: 0,
-          bestRank: 999999,
-          rankSum: 0,
-          top32: 0
-        };
-      }
-      
-      const agg = aggregates[legendName];
-      agg.players += 1;
-      agg.bestRank = Math.min(agg.bestRank, rank);
-      agg.rankSum += rank;
-      if (rank <= 32) agg.top32 += 1;
-      
-      // Use user_event_status for accurate win/loss data
-      const ues = s.user_event_status;
-      const mw = ues.matches_won || 0;
-      const ml = ues.matches_lost || 0;
-      const md = ues.matches_drawn || 0;
-      
-      agg.totalMatchWins += mw;
-      agg.totalMatchLosses += ml;
-      agg.totalMatchesPlayed += (mw + ml + md);
-      
-      if (ml === 0 && mw > 0) agg.undefeated += 1;
-      if (mw === 0 && ml > 0) agg.noWins += 1;
-    }
-    
-    // Calculate final stats
-    speyerState.data = Object.values(aggregates).map(agg => {
-      agg.meta = (agg.players / speyerState.totalPlayers) * 100;
-      agg.winrate = agg.totalMatchesPlayed > 0 ? (agg.totalMatchWins / agg.totalMatchesPlayed) * 100 : 0;
-      agg.avgRank = agg.players > 0 ? agg.rankSum / agg.players : 999999;
-      agg.isOrigins = isOriginsLegend(agg.legend);
-      return agg;
-    });
-    
-    // Update last refresh time
+    const dot = document.getElementById('speyerStatusDot');
+    if (data.isComplete) dot.classList.add('complete');
+    else dot.classList.remove('complete');
+
     const now = new Date();
     document.getElementById('speyerLastUpdate').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
     speyerState.lastUpdated = now;
-    
+
     window.renderSpeyerTable();
-    
   } catch (err) {
     console.error('Error fetching Speyer data:', err);
     document.getElementById('speyerStatusText').textContent = 'Error loading data';
     const tbody = document.getElementById('speyerBody');
     if (tbody && speyerState.data.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:3rem;color:var(--negative-red)">${err.message}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:3rem;color:var(--negative-red)">${escapeHTML(err.message)}</td></tr>`;
     }
   }
 };
