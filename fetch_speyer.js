@@ -84,16 +84,12 @@ async function generateSpeyerJson() {
     agg.totalMatchLosses += ml;
     agg.totalMatchesPlayed += (mw + ml + md);
 
-    if (matchRecord === '2-0-0' || (mw >= 2 && ml === 0)) {
+    if (ml === 0 && mw > 0) {
       agg.undefeated += 1;
       agg.record20 += 1;
-    }
-
-    if (matchRecord === '1-1-0') {
+    } else if (mw > 0 && ml > 0) {
       agg.record11 += 1;
-    }
-
-    if (matchRecord === '0-2-0' || (ml >= 2 && mw === 0)) {
+    } else if (mw === 0 && ml > 0) {
       agg.record02 += 1;
       agg.noWins += 1;
     }
