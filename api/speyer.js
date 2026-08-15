@@ -1,3 +1,5 @@
+const https = require('https');
+
 const ORIGINS_LEGENDS = new Set([
   'Akali', 'Annie', 'Ashe', 'Azir', 'Diana', 'Draven', 'Ezreal', 'Fiora', 
   'Irelia', 'Ivern', 'Jax', 'Jayce', 'Jhin', 'Jinx', 'Kennen', "Kha'Zix", 
@@ -12,6 +14,48 @@ function isOriginsLegend(fullName) {
   return ORIGINS_LEGENDS.has(shortName);
 }
 
+function getJson(url) {
+  return new Promise((resolve, reject) => {
+    const u = new URL(url);
+    const options = {
+      hostname: u.hostname,
+      path: u.pathname + u.search,
+      method: 'GET',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Accept': 'application/json, text/plain, */*'
+      },
+      timeout: 8000
+    };
+
+    const req = https.request(options, (res) => {
+      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+        return getJson(res.headers.location).then(resolve).catch(reject);
+      }
+      let rawData = '';
+      res.on('data', (chunk) => { rawData += chunk; });
+      res.on('end', () => {
+        try {
+          if (res.statusCode < 200 || res.statusCode >= 300) {
+            return reject(new Error(`HTTP ${res.statusCode}: ${rawData.slice(0, 100)}`));
+          }
+          const parsed = JSON.parse(rawData);
+          resolve(parsed);
+        } catch (e) {
+          reject(e);
+        }
+      });
+    });
+
+    req.on('error', reject);
+    req.on('timeout', () => {
+      req.destroy();
+      reject(new Error(`Request timeout for ${url}`));
+    });
+    req.end();
+  });
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -22,16 +66,10 @@ module.exports = async function handler(req, res) {
   }
 
   const eventId = '835043';
-  const headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    'Accept': 'application/json, text/plain, */*'
-  };
 
   try {
     // 1. Fetch Overview
-    const overviewRes = await fetch(`https://api.riftbound.uvsgames.com/api/magic-events/${eventId}/tournament_overview/`, { headers });
-    if (!overviewRes.ok) throw new Error(`Overview HTTP ${overviewRes.status}`);
-    const overview = await overviewRes.json();
+    const overview = await getJson(`https://api.riftbound.uvsgames.com/api/magic-events/${eventId}/tournament_overview/`);
 
     const swissPhase = (overview.tournament_phases || []).find(p => p.round_type === 'SWISS') || (overview.tournament_phases || [])[0];
     if (!swissPhase) throw new Error('Swiss phase not found');
@@ -46,9 +84,7 @@ module.exports = async function handler(req, res) {
     const roundNumber = targetRound.round_number;
 
     // 2. Fetch Standings
-    const standingsRes = await fetch(`https://api.riftbound.uvsgames.com/api/v2/tournament-rounds/${roundId}/standings/`, { headers });
-    if (!standingsRes.ok) throw new Error(`Standings HTTP ${standingsRes.status}`);
-    const standingsData = await standingsRes.json();
+    const standingsData = await getJson(`https://api.riftbound.uvsgames.com/api/v2/tournament-rounds/${roundId}/standings/`);
     const rawList = standingsData.standings || (Array.isArray(standingsData) ? standingsData : []);
 
     const valid = rawList.filter(s => s.user_event_status?.deck_defining_card?.name);
