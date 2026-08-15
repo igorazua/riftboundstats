@@ -1151,6 +1151,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnRefreshMobile = document.getElementById('btnRefreshMobile');
   if (btnRefreshMobile) btnRefreshMobile.addEventListener('click', handleRefresh);
 
+  // Check initial URL route
+  checkInitialRoute();
+  window.addEventListener('popstate', checkInitialRoute);
+
   fetchAndRenderAll();
   setInterval(() => {
     fetchAndRenderAll();
@@ -1171,19 +1175,35 @@ document.addEventListener('DOMContentLoaded', () => {
 // TABS & SPEYER SHOWDOWN
 // ==========================================
 
-window.switchTab = function(tabId) {
+function checkInitialRoute() {
+  const path = (window.location.pathname || '').toLowerCase();
+  const hash = (window.location.hash || '').toLowerCase();
+  if (path === '/speyer' || path.startsWith('/speyer') || hash === '#speyer') {
+    window.switchTab('speyer', false);
+  } else {
+    window.switchTab('leaderboard', false);
+  }
+}
+
+window.switchTab = function(tabId, updateUrl = true) {
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
   document.getElementById(tabId === 'leaderboard' ? 'tabLeaderboard' : 'tabSpeyer').classList.add('active');
   
   if (tabId === 'leaderboard') {
     document.getElementById('leaderboardSection').style.display = 'block';
     document.getElementById('speyerSection').style.display = 'none';
+    if (updateUrl && window.location.pathname !== '/') {
+      history.pushState({ tab: 'leaderboard' }, '', '/');
+    }
   } else {
     // When switching to Speyer, close any open player profile so Speyer gets 100% full width
     document.body.classList.remove('profile-open-desktop');
     document.body.classList.remove('profile-open-mobile');
     document.getElementById('leaderboardSection').style.display = 'none';
     document.getElementById('speyerSection').style.display = 'flex';
+    if (updateUrl && window.location.pathname !== '/speyer') {
+      history.pushState({ tab: 'speyer' }, '', '/speyer');
+    }
     if (speyerState.data.length === 0) {
       window.fetchSpeyerData();
     }

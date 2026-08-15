@@ -5,8 +5,13 @@
   "outputDirectory": ".",
   "rewrites": [
     {
+      "source": "/speyer",
+      "destination": "/index.html"
+    },
+    {
       "source": "/api/:path*",
       "destination": "https://host.neatqueue.com/api/:path*"
     }
   ]
 }
+
