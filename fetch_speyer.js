@@ -1,5 +1,71 @@
 const fs = require('fs');
 
+const LEGEND_SETS = {
+  // Set 1: Origins (OGN)
+  'Annie': { set: 'Origins', num: 'Set 1', code: 'OGN' },
+  'Ahri': { set: 'Origins', num: 'Set 1', code: 'OGN' },
+  'Akali': { set: 'Origins', num: 'Set 1', code: 'OGN' },
+  'Darius': { set: 'Origins', num: 'Set 1', code: 'OGN' },
+  'Garen': { set: 'Origins', num: 'Set 1', code: 'OGN' },
+  'Jinx': { set: 'Origins', num: 'Set 1', code: 'OGN' },
+  'Kai\'Sa': { set: 'Origins', num: 'Set 1', code: 'OGN' },
+  'Kennen': { set: 'Origins', num: 'Set 1', code: 'OGN' },
+  'Lee Sin': { set: 'Origins', num: 'Set 1', code: 'OGN' },
+  'Leona': { set: 'Origins', num: 'Set 1', code: 'OGN' },
+  'Lux': { set: 'Origins', num: 'Set 1', code: 'OGN' },
+  'Master Yi, Wuju Bladesman': { set: 'Origins', num: 'Set 1', code: 'OGN' },
+  'Miss Fortune': { set: 'Origins', num: 'Set 1', code: 'OGN' },
+  'Nasus': { set: 'Origins', num: 'Set 1', code: 'OGN' },
+  'Renekton': { set: 'Origins', num: 'Set 1', code: 'OGN' },
+  'Sett': { set: 'Origins', num: 'Set 1', code: 'OGN' },
+  'Teemo': { set: 'Origins', num: 'Set 1', code: 'OGN' },
+  'Viktor': { set: 'Origins', num: 'Set 1', code: 'OGN' },
+  'Vi': { set: 'Origins', num: 'Set 1', code: 'OGN' },
+  'Yasuo': { set: 'Origins', num: 'Set 1', code: 'OGN' },
+  'Jayce': { set: 'Origins', num: 'Set 1', code: 'OGN' },
+
+  // Set 2: Spiritforged (SPF)
+  'Azir': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
+  'Draven': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
+  'Ezreal': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
+  'Fiora': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
+  'Irelia': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
+  'Jax': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
+  'Lucian': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
+  'Ornn': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
+  'Rek\'Sai': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
+  'Renata Glasc': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
+  'Rumble': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
+  'Sivir': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
+
+  // Set 3: Unleashed (UNL)
+  'Diana': { set: 'Unleashed', num: 'Set 3', code: 'UNL' },
+  'Ivern': { set: 'Unleashed', num: 'Set 3', code: 'UNL' },
+  'Jhin': { set: 'Unleashed', num: 'Set 3', code: 'UNL' },
+  'Kha\'Zix': { set: 'Unleashed', num: 'Set 3', code: 'UNL' },
+  'LeBlanc': { set: 'Unleashed', num: 'Set 3', code: 'UNL' },
+  'Lillia': { set: 'Unleashed', num: 'Set 3', code: 'UNL' },
+  'Poppy': { set: 'Unleashed', num: 'Set 3', code: 'UNL' },
+  'Pyke': { set: 'Unleashed', num: 'Set 3', code: 'UNL' },
+  'Rengar': { set: 'Unleashed', num: 'Set 3', code: 'UNL' },
+  'Vex': { set: 'Unleashed', num: 'Set 3', code: 'UNL' },
+
+  // Set 4: Vendetta (VDT)
+  'Ambessa': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
+  'Mel': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
+  'Shen': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
+  'Zed': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
+  'Master Yi, Wuju Master': { set: 'Vendetta', num: 'Set 4', code: 'VDT' }
+};
+
+function getLegendSet(fullName) {
+  if (!fullName) return { set: 'Origins', num: 'Set 1', code: 'OGN' };
+  if (LEGEND_SETS[fullName]) return LEGEND_SETS[fullName];
+  const short = fullName.split(',')[0].trim();
+  if (LEGEND_SETS[short]) return LEGEND_SETS[short];
+  return { set: 'Origins', num: 'Set 1', code: 'OGN' };
+}
+
 async function generateSpeyerJson() {
   const eventId = '835043';
   const headers = {
@@ -7,40 +73,42 @@ async function generateSpeyerJson() {
     'Accept': 'application/json'
   };
 
-  const ORIGINS_LEGENDS = new Set([
-    'Akali', 'Annie', 'Ashe', 'Azir', 'Diana', 'Draven', 'Ezreal', 'Fiora', 
-    'Irelia', 'Ivern', 'Jax', 'Jayce', 'Jhin', 'Jinx', 'Kennen', "Kha'Zix", 
-    'LeBlanc', 'Lillia', 'Lucian', 'Lux', 'Master Yi', 'Nasus', 'Ornn', 'Poppy', 
-    'Pyke', "Rek'Sai", 'Renekton', 'Rengar', 'Rumble', 'Sett', 'Shen', 'Sivir', 
-    'Vex', 'Vi', 'Zed'
-  ]);
-
-  function isOriginsLegend(fullName) {
-    if (!fullName) return false;
-    const shortName = fullName.split(',')[0].trim();
-    return ORIGINS_LEGENDS.has(shortName);
-  }
-
   // 1. Overview
   const overviewRes = await fetch(`https://api.riftbound.uvsgames.com/api/magic-events/${eventId}/tournament_overview/`, { headers });
   const overview = await overviewRes.json();
   const swissPhase = (overview.tournament_phases || []).find(p => p.round_type === 'SWISS') || overview.tournament_phases[0];
   const totalRounds = swissPhase.number_of_rounds || 10;
-  const rounds = [...(swissPhase.rounds || [])].sort((a, b) => b.round_number - a.round_number);
+  const rounds = [...(swissPhase.rounds || [])].sort((a, b) => a.round_number - b.round_number);
   
-  // Target Round (Round 2 IN_PROGRESS or latest)
-  const targetRound = rounds.find(r => r.status === 'IN_PROGRESS') || rounds.find(r => r.status === 'COMPLETE') || rounds[0];
-  console.log('Target round:', targetRound.round_number, 'status:', targetRound.status, 'id:', targetRound.id);
+  // Find current active/latest round
+  const descRounds = [...rounds].sort((a, b) => b.round_number - a.round_number);
+  const targetRound = descRounds.find(r => r.status === 'IN_PROGRESS') || descRounds.find(r => r.status === 'COMPLETE') || descRounds[0];
+  console.log('Target latest round:', targetRound.round_number, 'status:', targetRound.status, 'id:', targetRound.id);
 
-  // 2. Standings
-  const standingsRes = await fetch(`https://api.riftbound.uvsgames.com/api/v2/tournament-rounds/${targetRound.id}/standings/`, { headers });
-  const standingsData = await standingsRes.json();
-  const rawList = standingsData.standings || [];
+  // Fetch standings for all completed rounds + current target round to track player progression
+  const roundStandingsMap = {};
+  for (const r of rounds) {
+    if (r.round_number <= targetRound.round_number) {
+      try {
+        const sRes = await fetch(`https://api.riftbound.uvsgames.com/api/v2/tournament-rounds/${r.id}/standings/`, { headers });
+        if (sRes.ok) {
+          const sData = await sRes.json();
+          roundStandingsMap[r.round_number] = sData.standings || [];
+          console.log(`Loaded Round ${r.round_number} standings (${(sData.standings || []).length} players)`);
+        }
+      } catch (e) {
+        console.warn(`Error fetching round ${r.round_number}:`, e.message);
+      }
+    }
+  }
 
+  // 2. Latest Standings
+  const rawList = roundStandingsMap[targetRound.round_number] || [];
   const valid = rawList.filter(s => s.user_event_status?.deck_defining_card?.name);
   const totalPlayers = valid.length;
   console.log('Total valid players with decks:', totalPlayers);
 
+  // 3. Aggregate Meta Statistics by Legend
   const aggregates = {};
 
   for (const s of valid) {
@@ -49,12 +117,16 @@ async function generateSpeyerJson() {
     const imageUrl = card.image_url;
     const rank = s.rank;
     const ues = s.user_event_status;
-    const matchRecord = s.match_record || '';
 
     if (!aggregates[legendName]) {
+      const setInfo = getLegendSet(legendName);
       aggregates[legendName] = {
         legend: legendName,
         image: imageUrl,
+        set: setInfo.set,
+        setNum: setInfo.num,
+        setCode: setInfo.code,
+        isOrigins: setInfo.set === 'Origins',
         players: 0,
         totalMatchWins: 0,
         totalMatchLosses: 0,
@@ -93,14 +165,74 @@ async function generateSpeyerJson() {
     }
   }
 
-  const data = Object.values(aggregates).map(agg => {
+  const metaData = Object.values(aggregates).map(agg => {
     agg.meta = (agg.players / totalPlayers) * 100;
     agg.winrate = agg.totalMatchesPlayed > 0 ? (agg.totalMatchWins / agg.totalMatchesPlayed) * 100 : 0;
     agg.avgRank = agg.players > 0 ? agg.rankSum / agg.players : 999999;
-    agg.isOrigins = isOriginsLegend(agg.legend);
-    agg.setName = agg.isOrigins ? 'Origins' : 'Set 2';
+    agg.setName = `${agg.set} (${agg.setNum})`;
     return agg;
   });
+
+  // 4. Build Individual Player List with Round Progression
+  const playersList = valid.map(s => {
+    const pId = s.player?.id || s.user_event_status?.user?.id || s.id;
+    const pName = s.user_event_status?.best_identifier || s.player?.best_identifier || 'Unknown Player';
+    const card = s.user_event_status?.deck_defining_card;
+    const legendName = card?.name || 'Unknown';
+    const setInfo = getLegendSet(legendName);
+    const ues = s.user_event_status;
+
+    // Track round progression
+    const roundProgression = [];
+    let prevPoints = 0;
+
+    for (let rNum = 1; rNum <= targetRound.round_number; rNum++) {
+      const rStandings = roundStandingsMap[rNum] || [];
+      const rPlayerStanding = rStandings.find(ps => (ps.player?.id || ps.id) === pId);
+      
+      if (rPlayerStanding) {
+        const pts = rPlayerStanding.points !== undefined ? rPlayerStanding.points : (rPlayerStanding.match_points || 0);
+        const ptsGained = pts - prevPoints;
+        let result = 'WIN';
+        if (ptsGained === 0) result = 'LOSS';
+        else if (ptsGained === 1) result = 'DRAW';
+
+        roundProgression.push({
+          round: rNum,
+          result: result,
+          points: pts,
+          rank: rPlayerStanding.rank,
+          matchRecord: rPlayerStanding.match_record || `${rPlayerStanding.user_event_status?.matches_won || 0}-${rPlayerStanding.user_event_status?.matches_lost || 0}`
+        });
+
+        prevPoints = pts;
+      }
+    }
+
+    return {
+      id: pId,
+      name: pName,
+      avatar: ues.full_profile_picture_url || null,
+      legend: legendName,
+      legendImage: card?.image_url || null,
+      set: setInfo.set,
+      setNum: setInfo.num,
+      isOrigins: setInfo.set === 'Origins',
+      rank: s.rank,
+      matchRecord: s.match_record || `${ues.matches_won || 0}-${ues.matches_lost || 0}-${ues.matches_drawn || 0}`,
+      points: s.points !== undefined ? s.points : (s.match_points || 0),
+      matchesWon: ues.matches_won || 0,
+      matchesLost: ues.matches_lost || 0,
+      matchesDrawn: ues.matches_drawn || 0,
+      omw: s.opponent_match_win_percentage ? (s.opponent_match_win_percentage * 100) : 0,
+      gw: s.game_win_percentage ? (s.game_win_percentage * 100) : 0,
+      ogw: s.opponent_game_win_percentage ? (s.opponent_game_win_percentage * 100) : 0,
+      rounds: roundProgression
+    };
+  });
+
+  // Sort players by rank ascending (1, 2, 3...)
+  playersList.sort((a, b) => a.rank - b.rank);
 
   const payload = {
     eventName: 'Riftbound Showdown Series Germany (Speyer)',
@@ -110,11 +242,12 @@ async function generateSpeyerJson() {
     isComplete: targetRound.status === 'COMPLETE',
     totalPlayers: totalPlayers,
     updatedAt: new Date().toISOString(),
-    data: data
+    data: metaData,
+    players: playersList
   };
 
   fs.writeFileSync('speyer_data.json', JSON.stringify(payload, null, 2), 'utf8');
-  console.log('Saved speyer_data.json with', data.length, 'legends!');
+  console.log(`Saved speyer_data.json successfully with ${metaData.length} legends and ${playersList.length} players!`);
 }
 
 generateSpeyerJson().catch(console.error);

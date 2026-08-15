@@ -129,13 +129,34 @@
             </button>
           </div>
         </div>
-        <div class="speyer__table-wrapper">
+        <div class="speyer__subnav">
+          <div class="subnav-tabs">
+            <button class="subnav-btn active" id="speyerSubtabMeta" onclick="window.switchSpeyerSubtab('meta')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+              <span>Meta & Legends (40)</span>
+            </button>
+            <button class="subnav-btn" id="speyerSubtabPlayers" onclick="window.switchSpeyerSubtab('players')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              <span>Player Standings (<span id="speyerPlayersCountBadge">605</span>)</span>
+            </button>
+          </div>
+          <div class="speyer__player-search" id="speyerPlayerSearchWrapper" style="display: none;">
+            <svg class="search-box__icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="speyerPlayerSearchInput" placeholder="Search player by name..." oninput="window.filterSpeyerPlayers()">
+          </div>
+        </div>
+
+        <!-- 1. Meta / Legends View -->
+        <div class="speyer__table-wrapper" id="speyerMetaView">
           <table class="speyer__table" id="speyerTable">
             <thead>
               <tr>
                 <th onclick="window.sortSpeyerTable('rank')">#<span class="sort-indicator" id="speyerSort-rank"></span></th>
                 <th onclick="window.sortSpeyerTable('legend')">Legend<span class="sort-indicator" id="speyerSort-legend"></span></th>
-                <th onclick="window.sortSpeyerTable('isOrigins')">Set<span class="sort-indicator" id="speyerSort-isOrigins"></span></th>
+                <th onclick="window.sortSpeyerTable('set')">Set<span class="sort-indicator" id="speyerSort-set"></span></th>
                 <th onclick="window.sortSpeyerTable('players')">Players<span class="sort-indicator" id="speyerSort-players">▼</span></th>
                 <th onclick="window.sortSpeyerTable('meta')">Meta %<span class="sort-indicator" id="speyerSort-meta"></span></th>
                 <th onclick="window.sortSpeyerTable('winrate')">Match Win%<span class="sort-indicator" id="speyerSort-winrate"></span></th>
@@ -149,6 +170,27 @@
             </thead>
             <tbody id="speyerBody">
               <tr><td colspan="12" style="text-align:center;padding:3rem;">Loading tournament data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 2. Players Standings View -->
+        <div class="speyer__table-wrapper" id="speyerPlayersView" style="display: none;">
+          <table class="speyer__table" id="speyerPlayersTable">
+            <thead>
+              <tr>
+                <th onclick="window.sortSpeyerPlayers('rank')" style="width:70px;">Rank<span class="sort-indicator" id="spSort-rank">▲</span></th>
+                <th onclick="window.sortSpeyerPlayers('name')">Player<span class="sort-indicator" id="spSort-name"></span></th>
+                <th onclick="window.sortSpeyerPlayers('legend')">Legend Played<span class="sort-indicator" id="spSort-legend"></span></th>
+                <th onclick="window.sortSpeyerPlayers('set')">Set<span class="sort-indicator" id="spSort-set"></span></th>
+                <th onclick="window.sortSpeyerPlayers('matchRecord')">Record<span class="sort-indicator" id="spSort-matchRecord"></span></th>
+                <th onclick="window.sortSpeyerPlayers('points')">Points<span class="sort-indicator" id="spSort-points"></span></th>
+                <th onclick="window.sortSpeyerPlayers('omw')">OMW %<span class="sort-indicator" id="spSort-omw"></span></th>
+                <th onclick="window.sortSpeyerPlayers('gw')">GW %<span class="sort-indicator" id="spSort-gw"></span></th>
+              </tr>
+            </thead>
+            <tbody id="speyerPlayersBody">
+              <tr><td colspan="8" style="text-align:center;padding:3rem;">Loading players...</td></tr>
             </tbody>
           </table>
         </div>

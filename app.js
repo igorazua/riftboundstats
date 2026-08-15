@@ -1212,8 +1212,13 @@ window.switchTab = function(tabId, updateUrl = true) {
 
 const speyerState = {
   data: [],
+  players: [],
+  activeSubtab: 'meta', // 'meta' | 'players'
   sortCol: 'players',
   sortDesc: true,
+  playerSortCol: 'rank',
+  playerSortDesc: false,
+  playerSearchQuery: '',
   lastUpdated: null,
   totalPlayers: 0,
   roundNumber: 2,
@@ -1221,19 +1226,97 @@ const speyerState = {
   status: 'IN_PROGRESS'
 };
 
-const ORIGINS_LEGENDS = new Set([
-  'Akali', 'Annie', 'Ashe', 'Azir', 'Diana', 'Draven', 'Ezreal', 'Fiora', 
-  'Irelia', 'Ivern', 'Jax', 'Jayce', 'Jhin', 'Jinx', 'Kennen', "Kha'Zix", 
-  'LeBlanc', 'Lillia', 'Lucian', 'Lux', 'Master Yi', 'Nasus', 'Ornn', 'Poppy', 
-  'Pyke', "Rek'Sai", 'Renekton', 'Rengar', 'Rumble', 'Sett', 'Shen', 'Sivir', 
-  'Vex', 'Vi', 'Zed'
-]);
+const LEGEND_SETS = {
+  // Set 1: Origins (OGN)
+  'Annie': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
+  'Ahri': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
+  'Akali': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
+  'Darius': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
+  'Garen': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
+  'Jinx': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
+  'Kai\'Sa': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
+  'Kennen': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
+  'Lee Sin': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
+  'Leona': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
+  'Lux': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
+  'Master Yi, Wuju Bladesman': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
+  'Miss Fortune': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
+  'Nasus': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
+  'Renekton': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
+  'Sett': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
+  'Teemo': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
+  'Viktor': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
+  'Vi': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
+  'Yasuo': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
+  'Jayce': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
 
-function isOriginsLegend(fullName) {
-  if (!fullName) return false;
-  const shortName = fullName.split(',')[0].trim();
-  return ORIGINS_LEGENDS.has(shortName);
+  // Set 2: Spiritforged (SPF)
+  'Azir': { set: 'Spiritforged', num: 'Set 2', code: 'SPF', color: 'spiritforged' },
+  'Draven': { set: 'Spiritforged', num: 'Set 2', code: 'SPF', color: 'spiritforged' },
+  'Ezreal': { set: 'Spiritforged', num: 'Set 2', code: 'SPF', color: 'spiritforged' },
+  'Fiora': { set: 'Spiritforged', num: 'Set 2', code: 'SPF', color: 'spiritforged' },
+  'Irelia': { set: 'Spiritforged', num: 'Set 2', code: 'SPF', color: 'spiritforged' },
+  'Jax': { set: 'Spiritforged', num: 'Set 2', code: 'SPF', color: 'spiritforged' },
+  'Lucian': { set: 'Spiritforged', num: 'Set 2', code: 'SPF', color: 'spiritforged' },
+  'Ornn': { set: 'Spiritforged', num: 'Set 2', code: 'SPF', color: 'spiritforged' },
+  'Rek\'Sai': { set: 'Spiritforged', num: 'Set 2', code: 'SPF', color: 'spiritforged' },
+  'Renata Glasc': { set: 'Spiritforged', num: 'Set 2', code: 'SPF', color: 'spiritforged' },
+  'Rumble': { set: 'Spiritforged', num: 'Set 2', code: 'SPF', color: 'spiritforged' },
+  'Sivir': { set: 'Spiritforged', num: 'Set 2', code: 'SPF', color: 'spiritforged' },
+
+  // Set 3: Unleashed (UNL)
+  'Diana': { set: 'Unleashed', num: 'Set 3', code: 'UNL', color: 'unleashed' },
+  'Ivern': { set: 'Unleashed', num: 'Set 3', code: 'UNL', color: 'unleashed' },
+  'Jhin': { set: 'Unleashed', num: 'Set 3', code: 'UNL', color: 'unleashed' },
+  'Kha\'Zix': { set: 'Unleashed', num: 'Set 3', code: 'UNL', color: 'unleashed' },
+  'LeBlanc': { set: 'Unleashed', num: 'Set 3', code: 'UNL', color: 'unleashed' },
+  'Lillia': { set: 'Unleashed', num: 'Set 3', code: 'UNL', color: 'unleashed' },
+  'Poppy': { set: 'Unleashed', num: 'Set 3', code: 'UNL', color: 'unleashed' },
+  'Pyke': { set: 'Unleashed', num: 'Set 3', code: 'UNL', color: 'unleashed' },
+  'Rengar': { set: 'Unleashed', num: 'Set 3', code: 'UNL', color: 'unleashed' },
+  'Vex': { set: 'Unleashed', num: 'Set 3', code: 'UNL', color: 'unleashed' },
+
+  // Set 4: Vendetta (VDT)
+  'Ambessa': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
+  'Mel': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
+  'Shen': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
+  'Zed': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
+  'Master Yi, Wuju Master': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' }
+};
+
+function getLegendSetInfo(fullName) {
+  if (!fullName) return { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' };
+  if (LEGEND_SETS[fullName]) return LEGEND_SETS[fullName];
+  const short = fullName.split(',')[0].trim();
+  if (LEGEND_SETS[short]) return LEGEND_SETS[short];
+  return { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' };
 }
+
+window.switchSpeyerSubtab = function(subtab) {
+  speyerState.activeSubtab = subtab;
+  
+  const btnMeta = document.getElementById('speyerSubtabMeta');
+  const btnPlayers = document.getElementById('speyerSubtabPlayers');
+  const viewMeta = document.getElementById('speyerMetaView');
+  const viewPlayers = document.getElementById('speyerPlayersView');
+  const searchWrapper = document.getElementById('speyerPlayerSearchWrapper');
+
+  if (subtab === 'meta') {
+    if (btnMeta) btnMeta.classList.add('active');
+    if (btnPlayers) btnPlayers.classList.remove('active');
+    if (viewMeta) viewMeta.style.display = 'block';
+    if (viewPlayers) viewPlayers.style.display = 'none';
+    if (searchWrapper) searchWrapper.style.display = 'none';
+    window.renderSpeyerTable();
+  } else {
+    if (btnMeta) btnMeta.classList.remove('active');
+    if (btnPlayers) btnPlayers.classList.add('active');
+    if (viewMeta) viewMeta.style.display = 'none';
+    if (viewPlayers) viewPlayers.style.display = 'block';
+    if (searchWrapper) searchWrapper.style.display = 'block';
+    window.renderSpeyerPlayersTable();
+  }
+};
 
 window.fetchSpeyerData = async function() {
   try {
@@ -1248,8 +1331,11 @@ window.fetchSpeyerData = async function() {
       speyerState.totalRounds = data.totalRounds || 10;
       speyerState.status = data.status || 'IN_PROGRESS';
       speyerState.data = data.data || [];
+      speyerState.players = data.players || [];
 
       document.getElementById('speyerPlayerCount').textContent = `${speyerState.totalPlayers} Players Registered`;
+      const badgeCount = document.getElementById('speyerPlayersCountBadge');
+      if (badgeCount) badgeCount.textContent = speyerState.totalPlayers;
       
       const roundTxt = `Round ${speyerState.roundNumber} of ${speyerState.totalRounds} • ${data.isComplete ? 'Complete' : 'In Progress'}`;
       document.getElementById('speyerStatusText').textContent = roundTxt;
@@ -1262,7 +1348,11 @@ window.fetchSpeyerData = async function() {
       document.getElementById('speyerLastUpdate').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
       speyerState.lastUpdated = now;
 
-      window.renderSpeyerTable();
+      if (speyerState.activeSubtab === 'meta') {
+        window.renderSpeyerTable();
+      } else {
+        window.renderSpeyerPlayersTable();
+      }
     }
 
     // 2. Background check for new live rounds from UVS Games
@@ -1305,17 +1395,26 @@ async function checkLiveTournamentUpdates() {
 
     if (valid.length > 0) {
       const aggregates = {};
+      const newPlayers = [];
+
       for (const s of valid) {
         const card = s.user_event_status.deck_defining_card;
         const legendName = card.name;
         const imageUrl = card.image_url;
         const rank = s.rank;
         const ues = s.user_event_status;
+        const setInfo = getLegendSetInfo(legendName);
+        const pId = s.player?.id || s.user_event_status?.user?.id || s.id;
+        const pName = s.user_event_status?.best_identifier || s.player?.best_identifier || 'Unknown Player';
 
         if (!aggregates[legendName]) {
           aggregates[legendName] = {
             legend: legendName,
             image: imageUrl,
+            set: setInfo.set,
+            setNum: setInfo.num,
+            setCode: setInfo.code,
+            isOrigins: setInfo.set === 'Origins',
             players: 0,
             totalMatchWins: 0,
             totalMatchLosses: 0,
@@ -1352,6 +1451,27 @@ async function checkLiveTournamentUpdates() {
         } else if (mw === 0 && ml > 0) {
           agg.recordNoWins += 1;
         }
+
+        newPlayers.push({
+          id: pId,
+          name: pName,
+          avatar: ues.full_profile_picture_url || null,
+          legend: legendName,
+          legendImage: imageUrl,
+          set: setInfo.set,
+          setNum: setInfo.num,
+          isOrigins: setInfo.set === 'Origins',
+          rank: s.rank,
+          matchRecord: s.match_record || `${mw}-${ml}-${md}`,
+          points: s.points !== undefined ? s.points : (s.match_points || 0),
+          matchesWon: mw,
+          matchesLost: ml,
+          matchesDrawn: md,
+          omw: s.opponent_match_win_percentage ? (s.opponent_match_win_percentage * 100) : 0,
+          gw: s.game_win_percentage ? (s.game_win_percentage * 100) : 0,
+          ogw: s.opponent_game_win_percentage ? (s.opponent_game_win_percentage * 100) : 0,
+          rounds: []
+        });
       }
 
       speyerState.totalPlayers = valid.length;
@@ -1361,13 +1481,18 @@ async function checkLiveTournamentUpdates() {
         agg.meta = (agg.players / valid.length) * 100;
         agg.winrate = agg.totalMatchesPlayed > 0 ? (agg.totalMatchWins / agg.totalMatchesPlayed) * 100 : 0;
         agg.avgRank = agg.players > 0 ? agg.rankSum / agg.players : 999999;
-        agg.isOrigins = isOriginsLegend(agg.legend);
-        agg.setName = agg.isOrigins ? 'Origins' : 'Set 2';
+        agg.setName = `${agg.set} (${agg.setNum})`;
         return agg;
       });
 
+      newPlayers.sort((a, b) => a.rank - b.rank);
+      speyerState.players = newPlayers;
+
       const isComplete = targetRound.status === 'COMPLETE';
       document.getElementById('speyerPlayerCount').textContent = `${speyerState.totalPlayers} Players Registered`;
+      const badgeCount = document.getElementById('speyerPlayersCountBadge');
+      if (badgeCount) badgeCount.textContent = speyerState.totalPlayers;
+
       document.getElementById('speyerStatusText').textContent = `Round ${speyerState.roundNumber} of ${speyerState.totalRounds} • ${isComplete ? 'Complete' : 'In Progress'}`;
       const dot = document.getElementById('speyerStatusDot');
       if (isComplete) dot.classList.add('complete');
@@ -1377,7 +1502,11 @@ async function checkLiveTournamentUpdates() {
       document.getElementById('speyerLastUpdate').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
       speyerState.lastUpdated = now;
 
-      window.renderSpeyerTable();
+      if (speyerState.activeSubtab === 'meta') {
+        window.renderSpeyerTable();
+      } else {
+        window.renderSpeyerPlayersTable();
+      }
     }
   }
 }
@@ -1389,8 +1518,7 @@ window.sortSpeyerTable = function(col) {
     speyerState.sortCol = col;
     speyerState.sortDesc = true;
     
-    if (col === 'legend') speyerState.sortDesc = false; // default A-Z
-    if (col === 'isOrigins') speyerState.sortDesc = false;
+    if (col === 'legend' || col === 'set') speyerState.sortDesc = false;
   }
   window.renderSpeyerTable();
 };
@@ -1424,9 +1552,6 @@ window.renderSpeyerTable = function() {
     if (speyerState.sortCol === 'rank') {
       va = a.players * 1000 + a.winrate;
       vb = b.players * 1000 + b.winrate;
-    } else if (speyerState.sortCol === 'isOrigins') {
-      va = a.isOrigins ? 0 : 1;
-      vb = b.isOrigins ? 0 : 1;
     }
     
     if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
@@ -1442,7 +1567,7 @@ window.renderSpeyerTable = function() {
     indicator.textContent = speyerState.sortDesc ? '▼' : '▲';
   }
   
-  // Calculate avgRank quartiles across all valid legends (lowest number = best average rank)
+  // Calculate avgRank quartiles across all valid legends
   const validRanks = speyerState.data
     .map(d => d.avgRank)
     .filter(r => r > 0 && r < 999999)
@@ -1470,7 +1595,8 @@ window.renderSpeyerTable = function() {
   
   sorted.forEach((row, i) => {
     const tr = document.createElement('tr');
-    tr.className = row.isOrigins ? 'origins-row' : 'set2-row';
+    const setInfo = getLegendSetInfo(row.legend);
+    tr.className = `row-${setInfo.color}`;
     
     // Rank / Medal logic
     let rankHtml = `<span class="cell-rank">${i + 1}</span>`;
@@ -1480,10 +1606,8 @@ window.renderSpeyerTable = function() {
       else if (i === 2) rankHtml = '<span class="rank-medal rank-medal--3">3</span>';
     }
     
-    // Set Badge
-    const setBadge = row.isOrigins
-      ? '<span class="badge badge--origins">Origins</span>'
-      : '<span class="badge badge--set2">Set 2</span>';
+    // Set Badge (Origins, Spiritforged, Unleashed, Vendetta)
+    const setBadge = `<span class="badge badge--${setInfo.color}">${setInfo.set}</span>`;
 
     // Meta % coloring
     let metaClass = 'meta-pill meta-pill--low';
@@ -1541,3 +1665,217 @@ window.renderSpeyerTable = function() {
     tbody.appendChild(tr);
   });
 };
+
+// ==========================================
+// SPEYER PLAYERS STANDINGS & PROFILE DRAWER
+// ==========================================
+
+window.sortSpeyerPlayers = function(col) {
+  if (speyerState.playerSortCol === col) {
+    speyerState.playerSortDesc = !speyerState.playerSortDesc;
+  } else {
+    speyerState.playerSortCol = col;
+    speyerState.playerSortDesc = (col === 'rank' || col === 'name') ? false : true;
+  }
+  window.renderSpeyerPlayersTable();
+};
+
+window.filterSpeyerPlayers = function() {
+  const input = document.getElementById('speyerPlayerSearchInput');
+  speyerState.playerSearchQuery = (input ? input.value : '').trim().toLowerCase();
+  window.renderSpeyerPlayersTable();
+};
+
+window.renderSpeyerPlayersTable = function() {
+  const tbody = document.getElementById('speyerPlayersBody');
+  if (!tbody || !speyerState.players) return;
+
+  let filtered = [...speyerState.players];
+  if (speyerState.playerSearchQuery) {
+    filtered = filtered.filter(p => 
+      p.name.toLowerCase().includes(speyerState.playerSearchQuery) ||
+      p.legend.toLowerCase().includes(speyerState.playerSearchQuery)
+    );
+  }
+
+  // Sort
+  filtered.sort((a, b) => {
+    let va = a[speyerState.playerSortCol];
+    let vb = b[speyerState.playerSortCol];
+    if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
+    if (speyerState.playerSortDesc) return vb > va ? 1 : vb < va ? -1 : 0;
+    return va > vb ? 1 : va < vb ? -1 : 0;
+  });
+
+  // Update indicators
+  document.querySelectorAll('#speyerPlayersTable .sort-indicator').forEach(el => el.textContent = '');
+  const indicator = document.getElementById(`spSort-${speyerState.playerSortCol}`);
+  if (indicator) {
+    indicator.textContent = speyerState.playerSortDesc ? '▼' : '▲';
+  }
+
+  tbody.innerHTML = '';
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:3rem;color:var(--text-muted)">No players found matching "${escapeHTML(speyerState.playerSearchQuery)}"</td></tr>`;
+    return;
+  }
+
+  filtered.forEach((p, idx) => {
+    const tr = document.createElement('tr');
+    const setInfo = getLegendSetInfo(p.legend);
+    tr.className = `speyer-player-row row-${setInfo.color}`;
+    tr.onclick = () => window.showSpeyerPlayerDetail(p.id);
+
+    let rankBadge = `<span class="cell-rank">${p.rank}</span>`;
+    if (p.rank === 1) rankBadge = '<span class="rank-medal rank-medal--1">1</span>';
+    else if (p.rank === 2) rankBadge = '<span class="rank-medal rank-medal--2">2</span>';
+    else if (p.rank === 3) rankBadge = '<span class="rank-medal rank-medal--3">3</span>';
+
+    const defaultAvatar = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="%238b949e"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+    const avatarSrc = p.avatar || defaultAvatar;
+
+    let recordClass = 'pill-neutral';
+    let recordIcon = '';
+    if (p.matchesLost === 0 && p.matchesWon > 0) {
+      recordClass = 'pill-undefeated';
+      recordIcon = '🏆 ';
+    } else if (p.matchesWon === 0 && p.matchesLost > 0) {
+      recordClass = 'pill-loss';
+      recordIcon = '💀 ';
+    }
+
+    const setBadge = `<span class="badge badge--${setInfo.color}">${setInfo.set}</span>`;
+
+    tr.innerHTML = `
+      <td>${rankBadge}</td>
+      <td>
+        <div class="speyer-player-cell">
+          <img src="${avatarSrc}" alt="" onerror="this.src='${defaultAvatar}'">
+          <span>${escapeHTML(p.name)}</span>
+        </div>
+      </td>
+      <td>
+        <div class="speyer-player-cell">
+          <img src="${p.legendImage || ''}" alt="" onerror="this.style.display='none'">
+          <span>${escapeHTML(p.legend)}</span>
+        </div>
+      </td>
+      <td>${setBadge}</td>
+      <td><span class="${recordClass}">${recordIcon}${escapeHTML(p.matchRecord)}</span></td>
+      <td style="font-weight:700;color:var(--accent-cyan-light)">${p.points} pts</td>
+      <td><span style="font-weight:600">${p.omw.toFixed(1)}%</span></td>
+      <td><span style="color:var(--text-muted)">${p.gw.toFixed(1)}%</span></td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+};
+
+window.showSpeyerPlayerDetail = function(playerId) {
+  const player = speyerState.players.find(p => p.id === playerId);
+  if (!player) return;
+
+  const panel = document.getElementById('profilePanel');
+  if (!panel) return;
+
+  const setInfo = getLegendSetInfo(player.legend);
+  const defaultAvatar = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="%238b949e"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+
+  let rankDisplay = `#${player.rank}`;
+  if (player.rank === 1) rankDisplay = '🥇 Rank #1';
+  else if (player.rank === 2) rankDisplay = '🥈 Rank #2';
+  else if (player.rank === 3) rankDisplay = '🥉 Rank #3';
+
+  // Build rounds progression HTML
+  let roundsHtml = '';
+  if (player.rounds && player.rounds.length > 0) {
+    roundsHtml = player.rounds.map(r => {
+      let badgeClass = 'round-badge--win';
+      let resultText = 'MATCH WON';
+      if (r.result === 'LOSS') {
+        badgeClass = 'round-badge--loss';
+        resultText = 'MATCH LOSS';
+      } else if (r.result === 'DRAW') {
+        badgeClass = 'round-badge--draw';
+        resultText = 'DRAW';
+      }
+
+      return `
+        <div class="round-progression-item">
+          <div>
+            <div style="font-weight:700;font-size:0.88rem;margin-bottom:2px">Round ${r.round}</div>
+            <div style="font-size:0.78rem;color:var(--text-muted)">Rank after: #${r.rank} • Record: ${escapeHTML(r.matchRecord)}</div>
+          </div>
+          <div style="text-align:right">
+            <span class="${badgeClass}">${resultText}</span>
+            <div style="font-size:0.78rem;color:var(--accent-cyan-light);font-weight:700;margin-top:3px">${r.points} Pts</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } else {
+    roundsHtml = '<div style="color:var(--text-muted);font-size:0.85rem;padding:10px 0;">No round history available</div>';
+  }
+
+  panel.innerHTML = `
+    <div class="profile__header" style="position:relative;">
+      <button class="profile__close-btn" onclick="window.closeProfile()" title="Close Profile">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
+        <img src="${player.avatar || defaultAvatar}" alt="" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--accent-cyan);" onerror="this.src='${defaultAvatar}'">
+        <div>
+          <h3 style="margin:0;font-size:1.3rem;font-weight:800">${escapeHTML(player.name)}</h3>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:4px;">
+            <span class="rank-top3" style="font-size:0.82rem;">${rankDisplay}</span>
+            <span class="badge badge--${setInfo.color}">${setInfo.set} (${setInfo.num})</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Champion Banner -->
+    <div style="margin:14px 0;padding:12px;background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:10px;display:flex;align-items:center;gap:14px;">
+      <img src="${player.legendImage || ''}" alt="" style="width:48px;height:48px;border-radius:8px;object-fit:cover;border:1px solid rgba(255,255,255,0.2);">
+      <div>
+        <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;">Champion / Legend</div>
+        <div style="font-weight:800;font-size:1rem;color:#fff">${escapeHTML(player.legend)}</div>
+      </div>
+    </div>
+
+    <!-- Tournament Overview Cards -->
+    <div class="profile__stats-grid" style="grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 18px;">
+      <div class="profile-stat-card">
+        <div class="profile-stat-card__label">Match Points</div>
+        <div class="profile-stat-card__value" style="color:var(--accent-cyan-light)">${player.points} pts</div>
+      </div>
+      <div class="profile-stat-card">
+        <div class="profile-stat-card__label">Match Record</div>
+        <div class="profile-stat-card__value">${escapeHTML(player.matchRecord)}</div>
+      </div>
+      <div class="profile-stat-card">
+        <div class="profile-stat-card__label">OMW % (Tiebreaker)</div>
+        <div class="profile-stat-card__value">${player.omw.toFixed(1)}%</div>
+      </div>
+      <div class="profile-stat-card">
+        <div class="profile-stat-card__label">Game Win %</div>
+        <div class="profile-stat-card__value">${player.gw.toFixed(1)}%</div>
+      </div>
+    </div>
+
+    <!-- Round by Round Progression -->
+    <div class="profile__recent-matches">
+      <h4 style="font-size:0.95rem;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+        <span>⚔️ Tournament Progression (Speyer Showdown)</span>
+      </h4>
+      <div class="round-progression-list">
+        ${roundsHtml}
+      </div>
+    </div>
+  `;
+
+  panel.classList.remove('profile--hidden');
+  document.body.classList.add('profile-open-desktop');
+  document.body.classList.add('profile-open-mobile');
+};
+
