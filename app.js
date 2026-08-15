@@ -1296,6 +1296,30 @@ window.renderSpeyerTable = function() {
     indicator.textContent = speyerState.sortDesc ? '▼' : '▲';
   }
   
+  // Calculate avgRank quartiles across all valid legends (lowest number = best average rank)
+  const validRanks = speyerState.data
+    .map(d => d.avgRank)
+    .filter(r => r > 0 && r < 999999)
+    .sort((a, b) => a - b);
+
+  const q1Threshold = validRanks[Math.floor(validRanks.length * 0.25)] || 0; // Top 25% (Best, lowest avg ranks)
+  const q2Threshold = validRanks[Math.floor(validRanks.length * 0.50)] || 0; // 25% - 50%
+  const q3Threshold = validRanks[Math.floor(validRanks.length * 0.75)] || 0; // 50% - 75%
+
+  function getAvgRankHtml(avgRank) {
+    if (avgRank === 999999 || !avgRank) return '<span class="pill-zero">-</span>';
+    
+    if (avgRank <= q1Threshold) {
+      return `<span class="avg-pill avg-pill--q1" title="Top 25% Best Average Rank (Green)">${avgRank.toFixed(1)}</span>`;
+    } else if (avgRank <= q2Threshold) {
+      return `<span class="avg-pill avg-pill--q2" title="25% - 50% Average Rank (Yellow)">${avgRank.toFixed(1)}</span>`;
+    } else if (avgRank <= q3Threshold) {
+      return `<span class="avg-pill avg-pill--q3" title="50% - 75% Average Rank (Orange)">${avgRank.toFixed(1)}</span>`;
+    } else {
+      return `<span class="avg-pill avg-pill--q4" title="Bottom 25% Average Rank (Red)">${avgRank.toFixed(1)}</span>`;
+    }
+  }
+
   tbody.innerHTML = '';
   
   sorted.forEach((row, i) => {
@@ -1364,7 +1388,7 @@ window.renderSpeyerTable = function() {
       <td>${r11Html}</td>
       <td>${r02Html}</td>
       <td>${bestRankHtml}</td>
-      <td class="cell-stat">${row.avgRank === 999999 ? '-' : row.avgRank.toFixed(1)}</td>
+      <td>${getAvgRankHtml(row.avgRank)}</td>
       <td>${top32Html}</td>
     `;
     
