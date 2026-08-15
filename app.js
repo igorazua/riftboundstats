@@ -1576,7 +1576,7 @@ window.renderSpeyerTable = function() {
   document.querySelectorAll('.sort-indicator').forEach(el => el.textContent = '');
   const indicator = document.getElementById(`speyerSort-${speyerState.sortCol}`);
   if (indicator) {
-    indicator.textContent = speyerState.sortDesc ? '▼' : '▲';
+    indicator.textContent = speyerState.sortDesc ? ' ↓' : ' ↑';
   }
   
   // Calculate avgRank quartiles across all valid legends
@@ -1698,6 +1698,8 @@ window.filterSpeyerPlayers = function() {
   window.renderSpeyerPlayersTable();
 };
 
+const DEFAULT_SPEYER_AVATAR = 'https://storage.googleapis.com/spicerack_media/game_images/3_riftbound/profile/7cc85539-e3b.png';
+
 window.renderSpeyerPlayersTable = function() {
   const tbody = document.getElementById('speyerPlayersBody');
   if (!tbody || !speyerState.players) return;
@@ -1719,11 +1721,11 @@ window.renderSpeyerPlayersTable = function() {
     return va > vb ? 1 : va < vb ? -1 : 0;
   });
 
-  // Update indicators
+  // Update indicators with clean subtle arrows
   document.querySelectorAll('#speyerPlayersTable .sort-indicator').forEach(el => el.textContent = '');
   const indicator = document.getElementById(`spSort-${speyerState.playerSortCol}`);
   if (indicator) {
-    indicator.textContent = speyerState.playerSortDesc ? '▼' : '▲';
+    indicator.textContent = speyerState.playerSortDesc ? ' ↓' : ' ↑';
   }
 
   tbody.innerHTML = '';
@@ -1743,8 +1745,7 @@ window.renderSpeyerPlayersTable = function() {
     else if (p.rank === 2) rankBadge = '<span class="rank-medal rank-medal--2">2</span>';
     else if (p.rank === 3) rankBadge = '<span class="rank-medal rank-medal--3">3</span>';
 
-    const defaultAvatar = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="%238b949e"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
-    const avatarSrc = p.avatar || defaultAvatar;
+    const avatarSrc = p.avatar || DEFAULT_SPEYER_AVATAR;
 
     let recordClass = 'pill-neutral';
     let recordIcon = '';
@@ -1762,7 +1763,7 @@ window.renderSpeyerPlayersTable = function() {
       <td>${rankBadge}</td>
       <td>
         <div class="speyer-player-cell">
-          <img src="${avatarSrc}" alt="" onerror="this.src='${defaultAvatar}'">
+          <img src="${avatarSrc}" alt="" onerror="this.onerror=null;this.src='https://storage.googleapis.com/spicerack_media/game_images/3_riftbound/profile/7cc85539-e3b.png';">
           <span>${escapeHTML(cleanPlayerName(p.name))}</span>
         </div>
       </td>
@@ -1791,36 +1792,51 @@ window.showSpeyerPlayerDetail = function(playerId) {
   if (!panel) return;
 
   const setInfo = getLegendSetInfo(player.legend);
-  const defaultAvatar = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="%238b949e"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+  const avatarSrc = player.avatar || DEFAULT_SPEYER_AVATAR;
 
   let rankDisplay = `#${player.rank}`;
   if (player.rank === 1) rankDisplay = '🥇 Rank #1';
   else if (player.rank === 2) rankDisplay = '🥈 Rank #2';
   else if (player.rank === 3) rankDisplay = '🥉 Rank #3';
 
-  // Build rounds progression HTML
+  // Build rounds progression HTML with vibrant colors and game scores
   let roundsHtml = '';
   if (player.rounds && player.rounds.length > 0) {
     roundsHtml = player.rounds.map(r => {
       let badgeClass = 'round-badge--win';
-      let resultText = 'MATCH WON';
+      let outcomeText = 'VICTORY';
+      let scoreText = r.score || '2-0';
+      let pointsGain = '+3 Pts';
+      let cardBorder = 'border-left: 4px solid var(--positive-emerald);';
+
       if (r.result === 'LOSS') {
         badgeClass = 'round-badge--loss';
-        resultText = 'MATCH LOSS';
+        outcomeText = 'DEFEAT';
+        scoreText = r.score || '0-2';
+        pointsGain = '+0 Pts';
+        cardBorder = 'border-left: 4px solid var(--negative-red);';
       } else if (r.result === 'DRAW') {
         badgeClass = 'round-badge--draw';
-        resultText = 'DRAW';
+        outcomeText = 'DRAW';
+        scoreText = r.score || '1-1';
+        pointsGain = '+1 Pt';
+        cardBorder = 'border-left: 4px solid var(--warning-amber);';
       }
 
       return `
-        <div class="round-progression-item">
-          <div>
-            <div style="font-weight:700;font-size:0.88rem;margin-bottom:2px">Round ${r.round}</div>
-            <div style="font-size:0.78rem;color:var(--text-muted)">Rank after: #${r.rank} • Record: ${escapeHTML(r.matchRecord)}</div>
+        <div class="round-progression-item" style="${cardBorder}">
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-weight:800;font-size:0.95rem;color:#fff;">Round ${r.round}</span>
+              <span class="${badgeClass}">${outcomeText} (${scoreText})</span>
+            </div>
+            <div style="font-size:0.8rem;color:var(--text-muted);">
+              Rank after: <strong style="color:var(--accent-cyan-light)">#${r.rank}</strong> • Cumulative Record: <span style="color:var(--text-secondary);font-weight:600;">${escapeHTML(r.matchRecord)}</span>
+            </div>
           </div>
-          <div style="text-align:right">
-            <span class="${badgeClass}">${resultText}</span>
-            <div style="font-size:0.78rem;color:var(--accent-cyan-light);font-weight:700;margin-top:3px">${r.points} Pts</div>
+          <div style="text-align:right;">
+            <div style="font-size:0.95rem;color:var(--accent-cyan-light);font-weight:800;">${pointsGain}</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">${r.points} total pts</div>
           </div>
         </div>
       `;
@@ -1835,7 +1851,7 @@ window.showSpeyerPlayerDetail = function(playerId) {
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
       <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
-        <img src="${player.avatar || defaultAvatar}" alt="" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--accent-cyan);" onerror="this.src='${defaultAvatar}'">
+        <img src="${avatarSrc}" alt="" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--accent-cyan);" onerror="this.onerror=null;this.src='https://storage.googleapis.com/spicerack_media/game_images/3_riftbound/profile/7cc85539-e3b.png';">
         <div>
           <h3 style="margin:0;font-size:1.3rem;font-weight:800">${escapeHTML(cleanPlayerName(player.name))}</h3>
           <div style="display:flex;gap:8px;align-items:center;margin-top:4px;">

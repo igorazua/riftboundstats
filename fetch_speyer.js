@@ -207,12 +207,22 @@ async function generateSpeyerJson() {
         const pts = rPlayerStanding.points !== undefined ? rPlayerStanding.points : (rPlayerStanding.match_points || 0);
         const ptsGained = pts - prevPoints;
         let result = 'WIN';
-        if (ptsGained === 0) result = 'LOSS';
-        else if (ptsGained === 1) result = 'DRAW';
+        let score = '2-0';
+        if (ptsGained === 0) {
+          result = 'LOSS';
+          score = '0-2';
+        } else if (ptsGained === 1) {
+          result = 'DRAW';
+          score = '1-1';
+        } else if (ptsGained === 3) {
+          result = 'WIN';
+          score = '2-0';
+        }
 
         roundProgression.push({
           round: rNum,
           result: result,
+          score: score,
           points: pts,
           rank: rPlayerStanding.rank,
           matchRecord: rPlayerStanding.match_record || `${rPlayerStanding.user_event_status?.matches_won || 0}-${rPlayerStanding.user_event_status?.matches_lost || 0}`
