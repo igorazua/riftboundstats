@@ -60,13 +60,12 @@ async function generateSpeyerJson() {
         totalMatchLosses: 0,
         totalMatchesPlayed: 0,
         undefeated: 0,
-        noWins: 0,
+        recordUndefeated: 0,
+        recordOneLoss: 0,
+        recordNoWins: 0,
         bestRank: 999999,
         rankSum: 0,
-        top32: 0,
-        record20: 0,
-        record11: 0,
-        record02: 0
+        top32: 0
       };
     }
 
@@ -86,12 +85,11 @@ async function generateSpeyerJson() {
 
     if (ml === 0 && mw > 0) {
       agg.undefeated += 1;
-      agg.record20 += 1;
-    } else if (mw > 0 && ml > 0) {
-      agg.record11 += 1;
+      agg.recordUndefeated += 1;
+    } else if (ml === 1) {
+      agg.recordOneLoss += 1;
     } else if (mw === 0 && ml > 0) {
-      agg.record02 += 1;
-      agg.noWins += 1;
+      agg.recordNoWins += 1;
     }
   }
 

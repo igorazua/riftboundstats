@@ -1301,13 +1301,12 @@ async function checkLiveTournamentUpdates() {
             totalMatchLosses: 0,
             totalMatchesPlayed: 0,
             undefeated: 0,
-            noWins: 0,
+            recordUndefeated: 0,
+            recordOneLoss: 0,
+            recordNoWins: 0,
             bestRank: 999999,
             rankSum: 0,
-            top32: 0,
-            record20: 0,
-            record11: 0,
-            record02: 0
+            top32: 0
           };
         }
 
@@ -1327,12 +1326,11 @@ async function checkLiveTournamentUpdates() {
 
         if (ml === 0 && mw > 0) {
           agg.undefeated += 1;
-          agg.record20 += 1;
-        } else if (mw > 0 && ml > 0) {
-          agg.record11 += 1;
+          agg.recordUndefeated += 1;
+        } else if (ml === 1) {
+          agg.recordOneLoss += 1;
         } else if (mw === 0 && ml > 0) {
-          agg.record02 += 1;
-          agg.noWins += 1;
+          agg.recordNoWins += 1;
         }
       }
 
@@ -1380,6 +1378,23 @@ window.sortSpeyerTable = function(col) {
 window.renderSpeyerTable = function() {
   const tbody = document.getElementById('speyerBody');
   if (!tbody || speyerState.data.length === 0) return;
+
+  // Dynamically update record column headers based on current round number
+  const roundNum = speyerState.roundNumber || 3;
+  const lblUndefeated = document.getElementById('lblThUndefeated');
+  const lblOneLoss = document.getElementById('lblThOneLoss');
+  const lblNoWins = document.getElementById('lblThNoWins');
+
+  if (lblUndefeated) lblUndefeated.textContent = `${roundNum}-0`;
+  if (lblOneLoss) lblOneLoss.textContent = `${Math.max(0, roundNum - 1)}-1`;
+  if (lblNoWins) lblNoWins.textContent = `0-${roundNum}`;
+
+  const thUnd = document.getElementById('thSpeyerUndefeated');
+  const thOne = document.getElementById('thSpeyerOneLoss');
+  const thNo = document.getElementById('thSpeyerNoWins');
+  if (thUnd) thUnd.title = `Undefeated (${roundNum}-0)`;
+  if (thOne) thOne.title = `1 Loss (${Math.max(0, roundNum - 1)}-1)`;
+  if (thNo) thNo.title = `0 Wins (0-${roundNum})`;
   
   // Sort data
   const sorted = [...speyerState.data].sort((a, b) => {
@@ -1466,14 +1481,14 @@ window.renderSpeyerTable = function() {
     if (row.winrate >= 60.0) wrClass = 'wr-badge wr-high';
     else if (row.winrate >= 50.0) wrClass = 'wr-badge wr-mid';
     
-    // Record Pills (2-0, 1-1, 0-2)
-    const r20 = (row.record20 || 0);
-    const r11 = (row.record11 || 0);
-    const r02 = (row.record02 || 0);
+    // Record Pills (Undefeated, 1 Loss, 0 Wins)
+    const rUnd = (row.recordUndefeated !== undefined ? row.recordUndefeated : (row.record20 || 0));
+    const rOne = (row.recordOneLoss !== undefined ? row.recordOneLoss : (row.record11 || 0));
+    const rNo = (row.recordNoWins !== undefined ? row.recordNoWins : (row.record02 || 0));
     
-    const r20Html = r20 > 0 ? `<span class="pill-undefeated">🏆 ${r20}</span>` : '<span class="pill-zero">0</span>';
-    const r11Html = r11 > 0 ? `<span class="pill-neutral">${r11}</span>` : '<span class="pill-zero">0</span>';
-    const r02Html = r02 > 0 ? `<span class="pill-loss">💀 ${r02}</span>` : '<span class="pill-zero">0</span>';
+    const rUndHtml = rUnd > 0 ? `<span class="pill-undefeated">🏆 ${rUnd}</span>` : '<span class="pill-zero">0</span>';
+    const rOneHtml = rOne > 0 ? `<span class="pill-neutral">${rOne}</span>` : '<span class="pill-zero">0</span>';
+    const rNoHtml = rNo > 0 ? `<span class="pill-loss">💀 ${rNo}</span>` : '<span class="pill-zero">0</span>';
     
     // Best Rank coloring
     let bestRankHtml = `<span class="rank-top32">#${row.bestRank === 999999 ? '-' : row.bestRank}</span>`;
@@ -1495,9 +1510,9 @@ window.renderSpeyerTable = function() {
       <td class="cell-stat" style="font-weight:700">${row.players}</td>
       <td><span class="${metaClass}">${metaIcon}${row.meta.toFixed(1)}%</span></td>
       <td><span class="${wrClass}">${row.winrate.toFixed(1)}%</span></td>
-      <td>${r20Html}</td>
-      <td>${r11Html}</td>
-      <td>${r02Html}</td>
+      <td>${rUndHtml}</td>
+      <td>${rOneHtml}</td>
+      <td>${rNoHtml}</td>
       <td>${bestRankHtml}</td>
       <td>${getAvgRankHtml(row.avgRank)}</td>
       <td>${top32Html}</td>

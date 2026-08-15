@@ -112,7 +112,7 @@
             <div class="refresh-indicator">
               <span id="speyerLastUpdate">--</span>
             </div>
-            <a href="https://play.uvsgames.com/events/835043" target="_blank" rel="noopener noreferrer" class="speyer__locator-btn" title="View Event on Carde / Play Locator">
+            <a href="https://locator.riftbound.uvsgames.com/events/835043" target="_blank" rel="noopener noreferrer" class="speyer__locator-btn" title="View Event on Carde / Riftbound Locator">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                 <circle cx="12" cy="10" r="3"></circle>
@@ -139,9 +139,9 @@
                 <th onclick="window.sortSpeyerTable('players')">Players<span class="sort-indicator" id="speyerSort-players">▼</span></th>
                 <th onclick="window.sortSpeyerTable('meta')">Meta %<span class="sort-indicator" id="speyerSort-meta"></span></th>
                 <th onclick="window.sortSpeyerTable('winrate')">Match Win%<span class="sort-indicator" id="speyerSort-winrate"></span></th>
-                <th onclick="window.sortSpeyerTable('record20')" title="Undefeated 2-0">2-0<span class="sort-indicator" id="speyerSort-record20"></span></th>
-                <th onclick="window.sortSpeyerTable('record11')" title="Record 1-1">1-1<span class="sort-indicator" id="speyerSort-record11"></span></th>
-                <th onclick="window.sortSpeyerTable('record02')" title="Record 0-2">0-2<span class="sort-indicator" id="speyerSort-record02"></span></th>
+                <th onclick="window.sortSpeyerTable('recordUndefeated')" id="thSpeyerUndefeated" title="Undefeated Record"><span id="lblThUndefeated">3-0</span><span class="sort-indicator" id="speyerSort-recordUndefeated"></span></th>
+                <th onclick="window.sortSpeyerTable('recordOneLoss')" id="thSpeyerOneLoss" title="1 Loss Record"><span id="lblThOneLoss">2-1</span><span class="sort-indicator" id="speyerSort-recordOneLoss"></span></th>
+                <th onclick="window.sortSpeyerTable('recordNoWins')" id="thSpeyerNoWins" title="0 Wins Record"><span id="lblThNoWins">0-3</span><span class="sort-indicator" id="speyerSort-recordNoWins"></span></th>
                 <th onclick="window.sortSpeyerTable('bestRank')">Best Rank<span class="sort-indicator" id="speyerSort-bestRank"></span></th>
                 <th onclick="window.sortSpeyerTable('avgRank')">Avg Rank<span class="sort-indicator" id="speyerSort-avgRank"></span></th>
                 <th onclick="window.sortSpeyerTable('top32')">Top 32<span class="sort-indicator" id="speyerSort-top32"></span></th>
