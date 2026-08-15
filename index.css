@@ -907,6 +907,31 @@ body.profile-open-mobile {
     min-width: 100%;
   }
 
+  /* Speyer responsive */
+  .speyer-showdown {
+    height: auto;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    box-shadow: none;
+  }
+
+  .speyer__table-wrapper {
+    overflow-x: auto;
+    overflow-y: visible;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .speyer__table {
+    width: max-content;
+    min-width: 100%;
+  }
+
+  .tabs-container {
+    padding: 0 14px;
+  }
+
   /* On tablets and mobile: Profile is a full-screen drawer overlay with swipe capability */
   .profile {
     position: fixed;
@@ -1007,4 +1032,235 @@ body.profile-open-mobile {
     width: 52px;
     height: 52px;
   }
+}
+
+/* ==========================================
+   TABS
+   ========================================== */
+.tabs-container {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.tab-btn {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  border-color: var(--accent-cyan-light);
+  color: var(--text-primary);
+}
+
+.tab-btn.active {
+  background: var(--accent-cyan);
+  color: #000;
+  border-color: var(--accent-cyan);
+}
+
+/* ==========================================
+   SPEYER SHOWDOWN
+   ========================================== */
+.speyer-showdown {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--topbar-height) - 100px);
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.speyer__header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--bg-secondary);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.speyer__info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.speyer__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.speyer__status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(33, 38, 45, 0.8);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+}
+
+.speyer__status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--positive-emerald);
+  animation: pulse 2s infinite;
+}
+
+.speyer__status-dot.complete {
+  background-color: var(--text-secondary);
+  animation: none;
+}
+
+.speyer__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.speyer__player-count {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.speyer__refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.speyer__refresh-btn:hover {
+  background: #28303d;
+  color: var(--text-primary);
+  border-color: var(--accent-cyan-light);
+}
+
+.speyer__table-wrapper {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+}
+
+.speyer__table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.speyer__table th {
+  position: sticky;
+  top: 0;
+  background-color: #1e2633;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 12px 14px;
+  border-bottom: 2px solid var(--border-subtle);
+  z-index: 10;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+
+.speyer__table th:hover {
+  color: var(--accent-cyan-light);
+}
+
+.speyer__table td {
+  padding: 11px 14px;
+  border-bottom: 1px solid rgba(48, 54, 61, 0.4);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.speyer__table tbody tr:nth-child(odd):not(.origins-row) {
+  background-color: var(--row-odd);
+}
+
+.speyer__table tbody tr:nth-child(even):not(.origins-row) {
+  background-color: rgba(0, 180, 255, 0.04);
+}
+
+.speyer__table tbody tr.origins-row {
+  background: rgba(60, 65, 75, 0.35);
+  border-left: 3px solid rgba(139, 148, 158, 0.3);
+}
+
+.speyer__table tbody tr:hover {
+  background-color: var(--row-hover) !important;
+}
+
+.speyer__table td.speyer-legend {
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.speyer__table td.speyer-legend img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.speyer-meta-high { font-weight: 700; color: #ff5722; }
+.speyer-meta-mid { font-weight: 600; color: var(--warning-amber); }
+.speyer-meta-low { }
+
+.speyer-wr-high { color: var(--positive-emerald); font-weight: 700; }
+.speyer-wr-mid { color: var(--accent-cyan-light); font-weight: 600; }
+.speyer-wr-low { color: var(--negative-red); font-weight: 600; }
+
+.speyer-pill-green {
+  background: rgba(63, 185, 80, 0.2);
+  color: var(--positive-emerald);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+.speyer-text-red {
+  color: var(--negative-red);
+  font-weight: 700;
+}
+
+.speyer-rank-top8 { color: #ffd700; font-weight: 700; text-shadow: 0 0 4px rgba(255, 215, 0, 0.3); }
+.speyer-rank-top16 { color: var(--accent-cyan-light); font-weight: 600; }
+
+.sort-indicator {
+  margin-left: 4px;
+  font-size: 0.7rem;
 }

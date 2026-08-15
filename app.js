@@ -1150,5 +1150,285 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnRefreshMobile) btnRefreshMobile.addEventListener('click', handleRefresh);
 
   fetchAndRenderAll();
-  setInterval(fetchAndRenderAll, REFRESH_INTERVAL);
+  setInterval(() => {
+    fetchAndRenderAll();
+    if (document.getElementById('speyerSection').style.display !== 'none') {
+      window.fetchSpeyerData();
+    }
+  }, REFRESH_INTERVAL);
+
+  // Auto refresh speyer data every 2 minutes
+  setInterval(() => {
+    if (document.getElementById('speyerSection').style.display !== 'none') {
+      window.fetchSpeyerData();
+    }
+  }, 2 * 60 * 1000);
 });
+
+// ==========================================
+// TABS & SPEYER SHOWDOWN
+// ==========================================
+
+window.switchTab = function(tabId) {
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(tabId === 'leaderboard' ? 'tabLeaderboard' : 'tabSpeyer').classList.add('active');
+  
+  if (tabId === 'leaderboard') {
+    document.getElementById('leaderboardSection').style.display = 'block';
+    document.getElementById('speyerSection').style.display = 'none';
+  } else {
+    document.getElementById('leaderboardSection').style.display = 'none';
+    document.getElementById('speyerSection').style.display = 'flex';
+    if (speyerState.data.length === 0) {
+      window.fetchSpeyerData();
+    }
+  }
+};
+
+const speyerState = {
+  data: [],
+  sortCol: 'players',
+  sortDesc: true,
+  lastUpdated: null,
+  totalPlayers: 0
+};
+
+const ORIGINS_LEGENDS = new Set([
+  'Akali', 'Annie', 'Ashe', 'Azir', 'Diana', 'Draven', 'Ezreal', 'Fiora', 
+  'Irelia', 'Ivern', 'Jax', 'Jayce', 'Jhin', 'Jinx', 'Kennen', "Kha'Zix", 
+  'LeBlanc', 'Lillia', 'Lucian', 'Lux', 'Master Yi', 'Nasus', 'Ornn', 'Poppy', 
+  'Pyke', "Rek'Sai", 'Renekton', 'Rengar', 'Rumble', 'Sett', 'Shen', 'Sivir', 
+  'Vex', 'Vi', 'Zed'
+]);
+
+function isOriginsLegend(fullName) {
+  // fullName is like "Kennen, Heart of the Tempest" or "Kha'Zix, Voidreaver"
+  const shortName = fullName.split(',')[0].trim();
+  return ORIGINS_LEGENDS.has(shortName);
+}
+
+window.fetchSpeyerData = async function() {
+  try {
+    document.getElementById('speyerStatusText').textContent = 'Fetching...';
+    
+    // 1. Fetch Tournament Overview
+    const overviewRes = await fetch('https://api.riftbound.uvsgames.com/api/magic-events/835043/tournament_overview/');
+    if (!overviewRes.ok) throw new Error('Failed to fetch tournament overview');
+    const overview = await overviewRes.json();
+    
+    // 2. Find correct phase and round
+    const swissPhase = overview.tournament_phases.find(p => p.round_type === 'SWISS') || overview.tournament_phases[0];
+    if (!swissPhase) throw new Error('Could not find Swiss phase');
+    
+    let latestRound = null;
+    let roundId = null;
+    let isComplete = false;
+    
+    // Sort rounds descending by round_number
+    const rounds = [...swissPhase.rounds].sort((a, b) => b.round_number - a.round_number);
+    
+    for (const r of rounds) {
+      if (r.status === 'COMPLETE') {
+        latestRound = r;
+        roundId = r.id;
+        isComplete = true;
+        break;
+      }
+    }
+    
+    // If no complete rounds, look for IN_PROGRESS
+    if (!latestRound) {
+      for (const r of rounds) {
+        if (r.status === 'IN_PROGRESS') {
+          latestRound = r;
+          roundId = r.id;
+          isComplete = false;
+          break;
+        }
+      }
+    }
+    
+    if (!latestRound) throw new Error('No active or completed rounds found');
+    
+    // Update status UI
+    document.getElementById('speyerStatusText').textContent = `Round ${latestRound.round_number} • ${isComplete ? 'Complete' : 'In Progress'}`;
+    const dot = document.getElementById('speyerStatusDot');
+    if (isComplete) dot.classList.add('complete');
+    else dot.classList.remove('complete');
+    
+    // 3. Fetch standings
+    const standingsRes = await fetch(`https://api.riftbound.uvsgames.com/api/v2/tournament-rounds/${roundId}/standings/`);
+    if (!standingsRes.ok) throw new Error('Failed to fetch standings');
+    const standingsData = await standingsRes.json();
+    const allStandings = standingsData.standings || standingsData;
+    
+    const validStandings = (Array.isArray(allStandings) ? allStandings : []).filter(s => 
+      s.user_event_status?.deck_defining_card?.name
+    );
+    
+    speyerState.totalPlayers = validStandings.length;
+    document.getElementById('speyerPlayerCount').textContent = `${speyerState.totalPlayers} Players`;
+    
+    // 4. Aggregate data
+    const aggregates = {};
+    
+    for (const s of validStandings) {
+      const card = s.user_event_status.deck_defining_card;
+      const legendName = card.name;
+      const imageUrl = card.image_url;
+      const rank = s.rank;
+      
+      if (!aggregates[legendName]) {
+        aggregates[legendName] = {
+          legend: legendName,
+          image: imageUrl,
+          players: 0,
+          totalMatchWins: 0,
+          totalMatchLosses: 0,
+          totalMatchesPlayed: 0,
+          undefeated: 0,
+          noWins: 0,
+          bestRank: 999999,
+          rankSum: 0,
+          top32: 0
+        };
+      }
+      
+      const agg = aggregates[legendName];
+      agg.players += 1;
+      agg.bestRank = Math.min(agg.bestRank, rank);
+      agg.rankSum += rank;
+      if (rank <= 32) agg.top32 += 1;
+      
+      // Use user_event_status for accurate win/loss data
+      const ues = s.user_event_status;
+      const mw = ues.matches_won || 0;
+      const ml = ues.matches_lost || 0;
+      const md = ues.matches_drawn || 0;
+      
+      agg.totalMatchWins += mw;
+      agg.totalMatchLosses += ml;
+      agg.totalMatchesPlayed += (mw + ml + md);
+      
+      if (ml === 0 && mw > 0) agg.undefeated += 1;
+      if (mw === 0 && ml > 0) agg.noWins += 1;
+    }
+    
+    // Calculate final stats
+    speyerState.data = Object.values(aggregates).map(agg => {
+      agg.meta = (agg.players / speyerState.totalPlayers) * 100;
+      agg.winrate = agg.totalMatchesPlayed > 0 ? (agg.totalMatchWins / agg.totalMatchesPlayed) * 100 : 0;
+      agg.avgRank = agg.players > 0 ? agg.rankSum / agg.players : 999999;
+      agg.isOrigins = isOriginsLegend(agg.legend);
+      return agg;
+    });
+    
+    // Update last refresh time
+    const now = new Date();
+    document.getElementById('speyerLastUpdate').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    speyerState.lastUpdated = now;
+    
+    window.renderSpeyerTable();
+    
+  } catch (err) {
+    console.error('Error fetching Speyer data:', err);
+    document.getElementById('speyerStatusText').textContent = 'Error loading data';
+    const tbody = document.getElementById('speyerBody');
+    if (tbody && speyerState.data.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:3rem;color:var(--negative-red)">${err.message}</td></tr>`;
+    }
+  }
+};
+
+window.sortSpeyerTable = function(col) {
+  if (speyerState.sortCol === col) {
+    speyerState.sortDesc = !speyerState.sortDesc;
+  } else {
+    speyerState.sortCol = col;
+    speyerState.sortDesc = true;
+    
+    if (col === 'legend') speyerState.sortDesc = false; // default A-Z
+  }
+  window.renderSpeyerTable();
+};
+
+window.renderSpeyerTable = function() {
+  const tbody = document.getElementById('speyerBody');
+  if (!tbody || speyerState.data.length === 0) return;
+  
+  // Sort data
+  const sorted = [...speyerState.data].sort((a, b) => {
+    let va = a[speyerState.sortCol];
+    let vb = b[speyerState.sortCol];
+    
+    // special handling for rank (which is just the row number from the default sort, so sort by players then wr)
+    if (speyerState.sortCol === 'rank') {
+      va = a.players * 1000 + a.winrate;
+      vb = b.players * 1000 + b.winrate;
+    }
+    
+    if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
+    
+    if (speyerState.sortDesc) return vb > va ? 1 : vb < va ? -1 : 0;
+    return va > vb ? 1 : va < vb ? -1 : 0;
+  });
+  
+  // Update header indicators
+  document.querySelectorAll('.sort-indicator').forEach(el => el.textContent = '');
+  const indicator = document.getElementById(`speyerSort-${speyerState.sortCol}`);
+  if (indicator) {
+    indicator.textContent = speyerState.sortDesc ? '▼' : '▲';
+  }
+  
+  tbody.innerHTML = '';
+  
+  sorted.forEach((row, i) => {
+    const tr = document.createElement('tr');
+    if (row.isOrigins) tr.classList.add('origins-row');
+    
+    // Rank logic (only show medal for top 3 if sorted by players desc)
+    let rankHtml = `<span>${i + 1}</span>`;
+    if (speyerState.sortCol === 'players' && speyerState.sortDesc && i < 3) {
+      if (i === 0) rankHtml = '<span class="rank-medal rank-medal--1">1</span>';
+      else if (i === 1) rankHtml = '<span class="rank-medal rank-medal--2">2</span>';
+      else if (i === 2) rankHtml = '<span class="rank-medal rank-medal--3">3</span>';
+    }
+    
+    // Meta coloring
+    let metaClass = 'speyer-meta-low';
+    if (row.meta >= 5) metaClass = 'speyer-meta-high';
+    else if (row.meta >= 3) metaClass = 'speyer-meta-mid';
+    
+    // WR coloring
+    let wrClass = 'speyer-wr-low';
+    if (row.winrate >= 60) wrClass = 'speyer-wr-high';
+    else if (row.winrate >= 50) wrClass = 'speyer-wr-mid';
+    
+    // Best Rank coloring
+    let bestRankClass = '';
+    if (row.bestRank <= 8) bestRankClass = 'speyer-rank-top8';
+    else if (row.bestRank <= 16) bestRankClass = 'speyer-rank-top16';
+    
+    // Specific pill formatting
+    const undefHtml = row.undefeated > 0 ? `<span class="speyer-pill-green">${row.undefeated}</span>` : '0';
+    const noWinsHtml = row.noWins === row.players && row.players > 0 ? `<span class="speyer-text-red">${row.noWins}</span>` : `${row.noWins}`;
+    
+    tr.innerHTML = `
+      <td>${rankHtml}</td>
+      <td class="speyer-legend">
+        <img src="${row.image}" alt="">
+        <span>${escapeHTML(row.legend)}</span>
+      </td>
+      <td style="font-weight:700">${row.players}</td>
+      <td class="${metaClass}">${row.meta.toFixed(1)}%</td>
+      <td class="${wrClass}">${row.winrate.toFixed(1)}%</td>
+      <td>${undefHtml}</td>
+      <td>${noWinsHtml}</td>
+      <td class="${bestRankClass}">#${row.bestRank === 999999 ? '-' : row.bestRank}</td>
+      <td>${row.avgRank === 999999 ? '-' : row.avgRank.toFixed(1)}</td>
+      <td>${row.top32}</td>
+    `;
+    
+    tbody.appendChild(tr);
+  });
+};
