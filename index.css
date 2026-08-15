@@ -1624,12 +1624,147 @@ body.profile-open-desktop .main-content__right {
   font-weight: 600;
 }
 
-.rank-top32 {
-  color: #8b949e;
+/* Strict Image Sizing - Never expand beyond 28px */
+.speyer__table img,
+.speyer-legend img,
+.speyer-player-cell img,
+.leaderboard__table img,
+.cell-player img {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  max-width: 28px !important;
+  max-height: 28px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  flex-shrink: 0 !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+}
+
+.profile img {
+  max-width: 100%;
 }
 
 .sort-indicator {
   margin-left: 5px;
   font-size: 0.72rem;
   color: var(--accent-cyan);
+}
+
+/* ==========================================
+   MOBILE RESPONSIVE OVERHAUL (FULL SCROLLING)
+   ========================================== */
+@media (max-width: 768px) {
+  .main-content {
+    padding: calc(var(--topbar-height) + 10px) 8px 24px 8px;
+    height: auto !important;
+    min-height: 100vh;
+  }
+
+  .main-content__left {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .speyer-showdown {
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    box-shadow: none;
+  }
+
+  .speyer__header {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .speyer__title-row {
+    gap: 8px;
+  }
+
+  .speyer__title {
+    font-size: 1.05rem;
+  }
+
+  .speyer__meta-badges {
+    gap: 5px;
+  }
+
+  .speyer__status-badge,
+  .speyer__format-badge,
+  .speyer__player-count {
+    font-size: 0.72rem;
+    padding: 2px 7px;
+  }
+
+  .speyer__actions {
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .speyer__locator-btn,
+  .speyer__refresh-btn {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
+
+  .speyer__subnav {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+
+  .subnav-tabs {
+    width: 100%;
+    display: flex;
+    gap: 6px;
+  }
+
+  .subnav-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 5px 8px;
+    font-size: 0.76rem;
+    white-space: nowrap;
+  }
+
+  .speyer__player-search {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .speyer__table-wrapper {
+    overflow-x: auto;
+    overflow-y: visible !important;
+    -webkit-overflow-scrolling: touch;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  .speyer__table th {
+    position: sticky;
+    top: var(--topbar-height);
+    z-index: 15;
+    padding: 7px 9px;
+    font-size: 0.75rem;
+    background-color: #161e2b;
+  }
+
+  .speyer__table td {
+    padding: 7px 9px;
+    font-size: 0.78rem;
+  }
+
+  .speyer-player-cell {
+    gap: 6px;
+    font-size: 0.8rem;
+  }
+
+  .speyer-legend {
+    gap: 6px;
+    font-size: 0.8rem;
+  }
 }

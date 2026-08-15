@@ -35,6 +35,18 @@ function escapeHTML(str) {
   }[tag]));
 }
 
+function cleanPlayerName(str) {
+  if (!str) return 'Unknown Player';
+  return str.toString()
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/[\u200B-\u200D\uFEFF]/g, '')
+    .trim();
+}
+
 function getWrClass(winrate) {
   if (winrate === null || isNaN(winrate)) return 'wr-na';
   if (winrate >= 65) return 'wr-high';
@@ -1751,7 +1763,7 @@ window.renderSpeyerPlayersTable = function() {
       <td>
         <div class="speyer-player-cell">
           <img src="${avatarSrc}" alt="" onerror="this.src='${defaultAvatar}'">
-          <span>${escapeHTML(p.name)}</span>
+          <span>${escapeHTML(cleanPlayerName(p.name))}</span>
         </div>
       </td>
       <td>
@@ -1825,7 +1837,7 @@ window.showSpeyerPlayerDetail = function(playerId) {
       <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
         <img src="${player.avatar || defaultAvatar}" alt="" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--accent-cyan);" onerror="this.src='${defaultAvatar}'">
         <div>
-          <h3 style="margin:0;font-size:1.3rem;font-weight:800">${escapeHTML(player.name)}</h3>
+          <h3 style="margin:0;font-size:1.3rem;font-weight:800">${escapeHTML(cleanPlayerName(player.name))}</h3>
           <div style="display:flex;gap:8px;align-items:center;margin-top:4px;">
             <span class="rank-top3" style="font-size:0.82rem;">${rankDisplay}</span>
             <span class="badge badge--${setInfo.color}">${setInfo.set} (${setInfo.num})</span>

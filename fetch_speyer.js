@@ -58,6 +58,18 @@ const LEGEND_SETS = {
   'Master Yi, Wuju Master': { set: 'Vendetta', num: 'Set 4', code: 'VDT' }
 };
 
+function cleanPlayerName(str) {
+  if (!str) return 'Unknown Player';
+  return str.toString()
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/[\u200B-\u200D\uFEFF]/g, '')
+    .trim();
+}
+
 function getLegendSet(fullName) {
   if (!fullName) return { set: 'Origins', num: 'Set 1', code: 'OGN' };
   if (LEGEND_SETS[fullName]) return LEGEND_SETS[fullName];
@@ -176,7 +188,8 @@ async function generateSpeyerJson() {
   // 4. Build Individual Player List with Round Progression
   const playersList = valid.map(s => {
     const pId = s.player?.id || s.user_event_status?.user?.id || s.id;
-    const pName = s.user_event_status?.best_identifier || s.player?.best_identifier || 'Unknown Player';
+    const rawName = s.user_event_status?.best_identifier || s.player?.best_identifier || 'Unknown Player';
+    const pName = cleanPlayerName(rawName);
     const card = s.user_event_status?.deck_defining_card;
     const legendName = card?.name || 'Unknown';
     const setInfo = getLegendSet(legendName);
