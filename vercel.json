@@ -1,14 +1,12 @@
 {
+  "buildCommand": "",
+  "installCommand": "",
+  "framework": null,
+  "outputDirectory": ".",
   "rewrites": [
     {
-      "source": "/api/v1/:path*",
-      "destination": "https://host.neatqueue.com/api/v1/:path*"
-    },
-    {
-      "source": "/api/v2/:path*",
-      "destination": "https://host.neatqueue.com/api/v2/:path*"
+      "source": "/api/:path*",
+      "destination": "https://host.neatqueue.com/api/:path*"
     }
   ]
 }
-
-

@@ -1211,25 +1211,9 @@ window.fetchSpeyerData = async function() {
   try {
     document.getElementById('speyerStatusText').textContent = 'Fetching...';
     
-    let data = null;
-    
-    // 1. Try static JSON first (instant 10ms, guaranteed 200 OK, zero CORS)
-    try {
-      const staticRes = await fetch(`/speyer_data.json?t=${Date.now()}`);
-      if (staticRes.ok) {
-        data = await staticRes.json();
-      }
-    } catch (e) {
-      console.warn('Static data fetch failed, trying API...', e);
-    }
-
-    // 2. Try serverless API if static was not available
-    if (!data) {
-      const res = await fetch('/api/speyer');
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      data = await res.json();
-      if (data.error) throw new Error(data.error);
-    }
+    const staticRes = await fetch(`/speyer_data.json?t=${Date.now()}`);
+    if (!staticRes.ok) throw new Error(`HTTP ${staticRes.status}`);
+    const data = await staticRes.json();
 
     speyerState.totalPlayers = data.totalPlayers || 0;
     speyerState.data = data.data || [];
