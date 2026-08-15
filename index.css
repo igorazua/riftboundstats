@@ -227,7 +227,7 @@ body.profile-open-desktop .main-content__right {
   display: flex;
   flex-direction: column;
   height: calc(100vh - var(--topbar-height) - 40px);
-  overflow: hidden;
+  overflow: visible;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
@@ -279,8 +279,11 @@ body.profile-open-desktop .main-content__right {
 
 .leaderboard__table-wrapper {
   flex: 1;
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: auto;
   position: relative;
+  -webkit-overflow-scrolling: touch;
+  min-height: 0;
 }
 
 /* Leaderboard Footer / Load More */
@@ -443,6 +446,33 @@ body.profile-open-desktop .main-content__right {
   overflow-y: auto;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
   position: relative;
+}
+
+/* Enhanced close button */
+.profile__close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 30;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.profile__close-btn:hover {
+  background: var(--negative-red);
+  border-color: var(--negative-red);
+  color: #fff;
+  transform: scale(1.1);
 }
 
 .profile--hidden {
@@ -896,16 +926,19 @@ body.profile-open-desktop .main-content__right {
 
   .leaderboard {
     height: auto;
+    min-height: 0;
     border-radius: 0;
     border-left: none;
     border-right: none;
     box-shadow: none;
+    overflow: visible;
   }
 
   .leaderboard__table-wrapper {
     overflow-x: auto;
     overflow-y: visible;
     width: 100%;
+    max-height: none;
     -webkit-overflow-scrolling: touch;
   }
 
@@ -917,16 +950,19 @@ body.profile-open-desktop .main-content__right {
   /* Speyer responsive */
   .speyer-showdown {
     height: auto;
+    min-height: 0;
     border-radius: 0;
     border-left: none;
     border-right: none;
     box-shadow: none;
+    overflow: visible;
   }
 
   .speyer__table-wrapper {
     overflow-x: auto;
     overflow-y: visible;
     width: 100%;
+    max-height: none;
     -webkit-overflow-scrolling: touch;
   }
 
@@ -939,7 +975,7 @@ body.profile-open-desktop .main-content__right {
     padding: 0 14px;
   }
 
-  /* On tablets and mobile: Profile is a full-screen drawer overlay with swipe capability */
+  /* On tablets and mobile: Profile is a full-screen drawer overlay */
   .profile {
     position: fixed;
     top: 0;
@@ -956,6 +992,13 @@ body.profile-open-desktop .main-content__right {
     touch-action: pan-y;
     will-change: transform;
     animation: slideInFromRight 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .profile__close-btn {
+    width: 44px;
+    height: 44px;
+    top: 14px;
+    right: 14px;
   }
 }
 
