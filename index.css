@@ -1191,6 +1191,29 @@ body.profile-open-desktop .main-content__right {
   gap: 14px;
 }
 
+.speyer__locator-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 180, 255, 0.12);
+  border: 1px solid rgba(0, 180, 255, 0.35);
+  color: var(--accent-cyan-light);
+  padding: 7px 13px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.speyer__locator-btn:hover {
+  background: rgba(0, 180, 255, 0.22);
+  border-color: var(--accent-cyan-light);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(0, 180, 255, 0.25);
+}
+
 .speyer__refresh-btn {
   display: inline-flex;
   align-items: center;
