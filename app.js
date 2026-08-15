@@ -1207,14 +1207,40 @@ function isOriginsLegend(fullName) {
   return ORIGINS_LEGENDS.has(shortName);
 }
 
+async function fetchTournamentAPI(endpoint) {
+  // Try relative proxy path first (works on Vercel)
+  try {
+    const res = await fetch(`/api/tournament${endpoint}`);
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn('Proxy fetch failed, trying direct/fallback...', e);
+  }
+
+  // Fallback via CORS proxy if needed
+  const target = `https://api.riftbound.uvsgames.com/api${endpoint}`;
+  const fallbackUrls = [
+    `https://corsproxy.io/?${encodeURIComponent(target)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(target)}`
+  ];
+
+  for (const fbUrl of fallbackUrls) {
+    try {
+      const res = await fetch(fbUrl);
+      if (res.ok) return await res.json();
+    } catch (e) {
+      console.warn('Fallback fetch failed for', fbUrl, e);
+    }
+  }
+
+  throw new Error('Failed to fetch tournament data from all endpoints');
+}
+
 window.fetchSpeyerData = async function() {
   try {
     document.getElementById('speyerStatusText').textContent = 'Fetching...';
     
     // 1. Fetch Tournament Overview
-    const overviewRes = await fetch('https://api.riftbound.uvsgames.com/api/magic-events/835043/tournament_overview/');
-    if (!overviewRes.ok) throw new Error('Failed to fetch tournament overview');
-    const overview = await overviewRes.json();
+    const overview = await fetchTournamentAPI('/magic-events/835043/tournament_overview/');
     
     // 2. Find correct phase and round
     const swissPhase = overview.tournament_phases.find(p => p.round_type === 'SWISS') || overview.tournament_phases[0];
@@ -1257,9 +1283,8 @@ window.fetchSpeyerData = async function() {
     else dot.classList.remove('complete');
     
     // 3. Fetch standings
-    const standingsRes = await fetch(`https://api.riftbound.uvsgames.com/api/v2/tournament-rounds/${roundId}/standings/`);
-    if (!standingsRes.ok) throw new Error('Failed to fetch standings');
-    const standingsData = await standingsRes.json();
+    const standingsData = await fetchTournamentAPI(`/v2/tournament-rounds/${roundId}/standings/`);
+
     const allStandings = standingsData.standings || standingsData;
     
     const validStandings = (Array.isArray(allStandings) ? allStandings : []).filter(s => 

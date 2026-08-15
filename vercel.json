@@ -5,8 +5,13 @@
   "outputDirectory": ".",
   "rewrites": [
     {
+      "source": "/api/tournament/:path*",
+      "destination": "https://api.riftbound.uvsgames.com/api/:path*"
+    },
+    {
       "source": "/api/:path*",
       "destination": "https://host.neatqueue.com/api/:path*"
     }
   ]
 }
+
