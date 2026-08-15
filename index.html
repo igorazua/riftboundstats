@@ -95,14 +95,20 @@
       <section class="speyer-showdown" id="speyerSection" style="display: none;">
         <div class="speyer__header">
           <div class="speyer__info">
-            <h2 class="speyer__title">⚔️ Riftbound Showdown Speyer</h2>
-            <div class="speyer__status-badge" id="speyerStatusBadge">
-              <span class="speyer__status-dot" id="speyerStatusDot"></span>
-              <span id="speyerStatusText">Loading...</span>
+            <div class="speyer__title-row">
+              <h2 class="speyer__title">⚔️ Riftbound Showdown Speyer</h2>
+              <span class="speyer__location-badge">🇩🇪 Speyer, Germany</span>
+            </div>
+            <div class="speyer__meta-badges">
+              <div class="speyer__status-badge" id="speyerStatusBadge">
+                <span class="speyer__status-dot" id="speyerStatusDot"></span>
+                <span id="speyerStatusText">Round 2 of 10 • In Progress</span>
+              </div>
+              <span class="speyer__format-badge" id="speyerFormatBadge">Swiss Format • 10 Rounds</span>
+              <span class="speyer__player-count" id="speyerPlayerCount">605 Players Registered</span>
             </div>
           </div>
           <div class="speyer__actions">
-            <span class="speyer__player-count" id="speyerPlayerCount">-- Players</span>
             <div class="refresh-indicator">
               <span id="speyerLastUpdate">--</span>
             </div>
@@ -112,6 +118,7 @@
                 <polyline points="1 20 1 14 7 14"></polyline>
                 <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
               </svg>
+              <span>Refresh</span>
             </button>
           </div>
         </div>
@@ -121,18 +128,20 @@
               <tr>
                 <th onclick="window.sortSpeyerTable('rank')">#<span class="sort-indicator" id="speyerSort-rank"></span></th>
                 <th onclick="window.sortSpeyerTable('legend')">Legend<span class="sort-indicator" id="speyerSort-legend"></span></th>
+                <th onclick="window.sortSpeyerTable('isOrigins')">Set<span class="sort-indicator" id="speyerSort-isOrigins"></span></th>
                 <th onclick="window.sortSpeyerTable('players')">Players<span class="sort-indicator" id="speyerSort-players">▼</span></th>
                 <th onclick="window.sortSpeyerTable('meta')">Meta %<span class="sort-indicator" id="speyerSort-meta"></span></th>
                 <th onclick="window.sortSpeyerTable('winrate')">Match Win%<span class="sort-indicator" id="speyerSort-winrate"></span></th>
-                <th onclick="window.sortSpeyerTable('undefeated')">Undefeated<span class="sort-indicator" id="speyerSort-undefeated"></span></th>
-                <th onclick="window.sortSpeyerTable('noWins')">0 Wins<span class="sort-indicator" id="speyerSort-noWins"></span></th>
+                <th onclick="window.sortSpeyerTable('record20')" title="Undefeated 2-0">2-0<span class="sort-indicator" id="speyerSort-record20"></span></th>
+                <th onclick="window.sortSpeyerTable('record11')" title="Record 1-1">1-1<span class="sort-indicator" id="speyerSort-record11"></span></th>
+                <th onclick="window.sortSpeyerTable('record02')" title="Record 0-2">0-2<span class="sort-indicator" id="speyerSort-record02"></span></th>
                 <th onclick="window.sortSpeyerTable('bestRank')">Best Rank<span class="sort-indicator" id="speyerSort-bestRank"></span></th>
                 <th onclick="window.sortSpeyerTable('avgRank')">Avg Rank<span class="sort-indicator" id="speyerSort-avgRank"></span></th>
                 <th onclick="window.sortSpeyerTable('top32')">Top 32<span class="sort-indicator" id="speyerSort-top32"></span></th>
               </tr>
             </thead>
             <tbody id="speyerBody">
-              <tr><td colspan="10" style="text-align:center;padding:3rem;">Loading tournament data...</td></tr>
+              <tr><td colspan="12" style="text-align:center;padding:3rem;">Loading tournament data...</td></tr>
             </tbody>
           </table>
         </div>

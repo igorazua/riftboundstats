@@ -336,6 +336,7 @@ window.closeProfile = function() {
   const profilePanel = document.getElementById('profilePanel');
   if (profilePanel) profilePanel.classList.add('profile--hidden');
   document.body.classList.remove('profile-open-mobile');
+  document.body.classList.remove('profile-open-desktop');
   document.querySelectorAll('#leaderboardBody tr').forEach(tr => tr.classList.remove('active'));
   state.selectedPlayer = null;
 };
@@ -357,8 +358,9 @@ async function loadPlayerProfile(playerId) {
   const activeRow = document.getElementById(`row-${playerId}`);
   if (activeRow) activeRow.classList.add('active');
 
-  // Open profile (including mobile overlay)
+  // Open profile (both desktop side-by-side and mobile overlay)
   document.body.classList.add('profile-open-mobile');
+  document.body.classList.add('profile-open-desktop');
   const profilePanel = document.getElementById('profilePanel');
   profilePanel.classList.remove('profile--hidden');
 
@@ -1177,6 +1179,9 @@ window.switchTab = function(tabId) {
     document.getElementById('leaderboardSection').style.display = 'block';
     document.getElementById('speyerSection').style.display = 'none';
   } else {
+    // When switching to Speyer, close any open player profile so Speyer gets 100% full width
+    document.body.classList.remove('profile-open-desktop');
+    document.body.classList.remove('profile-open-mobile');
     document.getElementById('leaderboardSection').style.display = 'none';
     document.getElementById('speyerSection').style.display = 'flex';
     if (speyerState.data.length === 0) {
@@ -1190,7 +1195,10 @@ const speyerState = {
   sortCol: 'players',
   sortDesc: true,
   lastUpdated: null,
-  totalPlayers: 0
+  totalPlayers: 0,
+  roundNumber: 2,
+  totalRounds: 10,
+  status: 'IN_PROGRESS'
 };
 
 const ORIGINS_LEGENDS = new Set([
@@ -1202,7 +1210,7 @@ const ORIGINS_LEGENDS = new Set([
 ]);
 
 function isOriginsLegend(fullName) {
-  // fullName is like "Kennen, Heart of the Tempest" or "Kha'Zix, Voidreaver"
+  if (!fullName) return false;
   const shortName = fullName.split(',')[0].trim();
   return ORIGINS_LEGENDS.has(shortName);
 }
@@ -1216,10 +1224,15 @@ window.fetchSpeyerData = async function() {
     const data = await staticRes.json();
 
     speyerState.totalPlayers = data.totalPlayers || 0;
+    speyerState.roundNumber = data.roundNumber || 2;
+    speyerState.totalRounds = data.totalRounds || 10;
+    speyerState.status = data.status || 'IN_PROGRESS';
     speyerState.data = data.data || [];
 
-    document.getElementById('speyerPlayerCount').textContent = `${speyerState.totalPlayers} Players`;
-    document.getElementById('speyerStatusText').textContent = `Round ${data.roundNumber || 1} • ${data.isComplete ? 'Complete' : 'In Progress'}`;
+    document.getElementById('speyerPlayerCount').textContent = `${speyerState.totalPlayers} Players Registered`;
+    
+    const roundTxt = `Round ${speyerState.roundNumber} of ${speyerState.totalRounds} • ${data.isComplete ? 'Complete' : 'In Progress'}`;
+    document.getElementById('speyerStatusText').textContent = roundTxt;
     
     const dot = document.getElementById('speyerStatusDot');
     if (data.isComplete) dot.classList.add('complete');
@@ -1235,7 +1248,7 @@ window.fetchSpeyerData = async function() {
     document.getElementById('speyerStatusText').textContent = 'Error loading data';
     const tbody = document.getElementById('speyerBody');
     if (tbody && speyerState.data.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:3rem;color:var(--negative-red)">${escapeHTML(err.message)}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;padding:3rem;color:var(--negative-red)">${escapeHTML(err.message)}</td></tr>`;
     }
   }
 };
@@ -1248,6 +1261,7 @@ window.sortSpeyerTable = function(col) {
     speyerState.sortDesc = true;
     
     if (col === 'legend') speyerState.sortDesc = false; // default A-Z
+    if (col === 'isOrigins') speyerState.sortDesc = false;
   }
   window.renderSpeyerTable();
 };
@@ -1261,10 +1275,12 @@ window.renderSpeyerTable = function() {
     let va = a[speyerState.sortCol];
     let vb = b[speyerState.sortCol];
     
-    // special handling for rank (which is just the row number from the default sort, so sort by players then wr)
     if (speyerState.sortCol === 'rank') {
       va = a.players * 1000 + a.winrate;
       vb = b.players * 1000 + b.winrate;
+    } else if (speyerState.sortCol === 'isOrigins') {
+      va = a.isOrigins ? 0 : 1;
+      vb = b.isOrigins ? 0 : 1;
     }
     
     if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
@@ -1284,49 +1300,72 @@ window.renderSpeyerTable = function() {
   
   sorted.forEach((row, i) => {
     const tr = document.createElement('tr');
-    if (row.isOrigins) tr.classList.add('origins-row');
+    tr.className = row.isOrigins ? 'origins-row' : 'set2-row';
     
-    // Rank logic (only show medal for top 3 if sorted by players desc)
-    let rankHtml = `<span>${i + 1}</span>`;
+    // Rank / Medal logic
+    let rankHtml = `<span class="cell-rank">${i + 1}</span>`;
     if (speyerState.sortCol === 'players' && speyerState.sortDesc && i < 3) {
       if (i === 0) rankHtml = '<span class="rank-medal rank-medal--1">1</span>';
       else if (i === 1) rankHtml = '<span class="rank-medal rank-medal--2">2</span>';
       else if (i === 2) rankHtml = '<span class="rank-medal rank-medal--3">3</span>';
     }
     
-    // Meta coloring
-    let metaClass = 'speyer-meta-low';
-    if (row.meta >= 5) metaClass = 'speyer-meta-high';
-    else if (row.meta >= 3) metaClass = 'speyer-meta-mid';
+    // Set Badge
+    const setBadge = row.isOrigins
+      ? '<span class="badge badge--origins">Origins</span>'
+      : '<span class="badge badge--set2">Set 2</span>';
+
+    // Meta % coloring
+    let metaClass = 'meta-pill meta-pill--low';
+    let metaIcon = '';
+    if (row.meta >= 5.0) {
+      metaClass = 'meta-pill meta-pill--high';
+      metaIcon = '🔥 ';
+    } else if (row.meta >= 3.0) {
+      metaClass = 'meta-pill meta-pill--mid';
+      metaIcon = '⚡ ';
+    }
     
-    // WR coloring
-    let wrClass = 'speyer-wr-low';
-    if (row.winrate >= 60) wrClass = 'speyer-wr-high';
-    else if (row.winrate >= 50) wrClass = 'speyer-wr-mid';
+    // Match Winrate coloring
+    let wrClass = 'wr-badge wr-low';
+    if (row.winrate >= 60.0) wrClass = 'wr-badge wr-high';
+    else if (row.winrate >= 50.0) wrClass = 'wr-badge wr-mid';
+    
+    // Record Pills (2-0, 1-1, 0-2)
+    const r20 = (row.record20 || 0);
+    const r11 = (row.record11 || 0);
+    const r02 = (row.record02 || 0);
+    
+    const r20Html = r20 > 0 ? `<span class="pill-undefeated">🏆 ${r20}</span>` : '<span class="pill-zero">0</span>';
+    const r11Html = r11 > 0 ? `<span class="pill-neutral">${r11}</span>` : '<span class="pill-zero">0</span>';
+    const r02Html = r02 > 0 ? `<span class="pill-loss">💀 ${r02}</span>` : '<span class="pill-zero">0</span>';
     
     // Best Rank coloring
-    let bestRankClass = '';
-    if (row.bestRank <= 8) bestRankClass = 'speyer-rank-top8';
-    else if (row.bestRank <= 16) bestRankClass = 'speyer-rank-top16';
+    let bestRankHtml = `<span class="rank-top32">#${row.bestRank === 999999 ? '-' : row.bestRank}</span>`;
+    if (row.bestRank === 1) bestRankHtml = '<span class="rank-top3">🥇 #1</span>';
+    else if (row.bestRank <= 3) bestRankHtml = `<span class="rank-top3">#${row.bestRank}</span>`;
+    else if (row.bestRank <= 8) bestRankHtml = `<span class="rank-top8">#${row.bestRank}</span>`;
+    else if (row.bestRank <= 16) bestRankHtml = `<span class="rank-top16">#${row.bestRank}</span>`;
     
-    // Specific pill formatting
-    const undefHtml = row.undefeated > 0 ? `<span class="speyer-pill-green">${row.undefeated}</span>` : '0';
-    const noWinsHtml = row.noWins === row.players && row.players > 0 ? `<span class="speyer-text-red">${row.noWins}</span>` : `${row.noWins}`;
+    // Top 32 count
+    const top32Html = row.top32 > 0 ? `<span class="pill-top32">⭐ ${row.top32}</span>` : '<span class="pill-zero">0</span>';
     
     tr.innerHTML = `
       <td>${rankHtml}</td>
       <td class="speyer-legend">
-        <img src="${row.image}" alt="">
+        <img src="${row.image}" alt="" onerror="this.style.display='none'">
         <span>${escapeHTML(row.legend)}</span>
       </td>
-      <td style="font-weight:700">${row.players}</td>
-      <td class="${metaClass}">${row.meta.toFixed(1)}%</td>
-      <td class="${wrClass}">${row.winrate.toFixed(1)}%</td>
-      <td>${undefHtml}</td>
-      <td>${noWinsHtml}</td>
-      <td class="${bestRankClass}">#${row.bestRank === 999999 ? '-' : row.bestRank}</td>
-      <td>${row.avgRank === 999999 ? '-' : row.avgRank.toFixed(1)}</td>
-      <td>${row.top32}</td>
+      <td>${setBadge}</td>
+      <td class="cell-stat" style="font-weight:700">${row.players}</td>
+      <td><span class="${metaClass}">${metaIcon}${row.meta.toFixed(1)}%</span></td>
+      <td><span class="${wrClass}">${row.winrate.toFixed(1)}%</span></td>
+      <td>${r20Html}</td>
+      <td>${r11Html}</td>
+      <td>${r02Html}</td>
+      <td>${bestRankHtml}</td>
+      <td class="cell-stat">${row.avgRank === 999999 ? '-' : row.avgRank.toFixed(1)}</td>
+      <td>${top32Html}</td>
     `;
     
     tbody.appendChild(tr);
