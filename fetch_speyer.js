@@ -4,10 +4,8 @@ const LEGEND_SETS = {
   // Set 1: Origins (OGN)
   'Annie': { set: 'Origins', num: 'Set 1', code: 'OGN' },
   'Ahri': { set: 'Origins', num: 'Set 1', code: 'OGN' },
-  'Akali': { set: 'Origins', num: 'Set 1', code: 'OGN' },
   'Darius': { set: 'Origins', num: 'Set 1', code: 'OGN' },
   'Garen': { set: 'Origins', num: 'Set 1', code: 'OGN' },
-  'Jinx': { set: 'Origins', num: 'Set 1', code: 'OGN' },
   'Kai\'Sa': { set: 'Origins', num: 'Set 1', code: 'OGN' },
   'Kennen': { set: 'Origins', num: 'Set 1', code: 'OGN' },
   'Lee Sin': { set: 'Origins', num: 'Set 1', code: 'OGN' },
@@ -17,12 +15,8 @@ const LEGEND_SETS = {
   'Miss Fortune': { set: 'Origins', num: 'Set 1', code: 'OGN' },
   'Nasus': { set: 'Origins', num: 'Set 1', code: 'OGN' },
   'Renekton': { set: 'Origins', num: 'Set 1', code: 'OGN' },
-  'Sett': { set: 'Origins', num: 'Set 1', code: 'OGN' },
   'Teemo': { set: 'Origins', num: 'Set 1', code: 'OGN' },
-  'Viktor': { set: 'Origins', num: 'Set 1', code: 'OGN' },
-  'Vi': { set: 'Origins', num: 'Set 1', code: 'OGN' },
   'Yasuo': { set: 'Origins', num: 'Set 1', code: 'OGN' },
-  'Jayce': { set: 'Origins', num: 'Set 1', code: 'OGN' },
 
   // Set 2: Spiritforged (SPF)
   'Azir': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
@@ -34,7 +28,6 @@ const LEGEND_SETS = {
   'Lucian': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
   'Ornn': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
   'Rek\'Sai': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
-  'Renata Glasc': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
   'Rumble': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
   'Sivir': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
 
@@ -51,11 +44,18 @@ const LEGEND_SETS = {
   'Vex': { set: 'Unleashed', num: 'Set 3', code: 'UNL' },
 
   // Set 4: Vendetta (VDT)
+  'Akali': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
   'Ambessa': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
+  'Jayce': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
+  'Jinx': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
+  'Master Yi, Wuju Master': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
   'Mel': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
+  'Renata Glasc': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
+  'Sett': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
   'Shen': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
-  'Zed': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
-  'Master Yi, Wuju Master': { set: 'Vendetta', num: 'Set 4', code: 'VDT' }
+  'Vi': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
+  'Viktor': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
+  'Zed': { set: 'Vendetta', num: 'Set 4', code: 'VDT' }
 };
 
 function cleanPlayerName(str) {
