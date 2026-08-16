@@ -1773,7 +1773,7 @@ window.renderSpeyerTable = function() {
     const top32Html = row.top32 > 0 ? `<span class="pill-top32">⭐ ${row.top32}</span>` : '<span class="pill-zero">0</span>';
     
     const legendImgUrl = row.image || getLegendImage(row.legend);
-    const legendImgTag = legendImgUrl ? `<img src="${legendImgUrl}" alt="" onerror="this.style.display='none'">` : '';
+    const legendImgTag = legendImgUrl ? `<img src="${legendImgUrl}" alt="" onerror="this.style.display='none'">` : '<span class="legend-avatar-placeholder">⚔️</span>';
 
     tr.innerHTML = `
       <td>${rankHtml}</td>
@@ -1866,7 +1866,7 @@ window.renderSpeyerPlayersTable = function() {
 
     const avatarSrc = p.avatar || DEFAULT_SPEYER_AVATAR;
     const playerLegendImg = p.legendImage || getLegendImage(p.legend);
-    const playerLegendImgTag = playerLegendImg ? `<img src="${playerLegendImg}" alt="" onerror="this.style.display='none'">` : '';
+    const playerLegendImgTag = playerLegendImg ? `<img src="${playerLegendImg}" alt="" onerror="this.style.display='none'">` : '<span class="legend-avatar-placeholder">⚔️</span>';
 
     let recordClass = 'pill-neutral';
     let recordIcon = '';

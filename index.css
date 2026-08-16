@@ -1503,6 +1503,28 @@ body.profile-open-desktop .main-content__right {
   font-weight: 600;
 }
 
+.speyer-legend img {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid var(--border-subtle);
+}
+
+.legend-avatar-placeholder {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
 .speyer-player-cell img {
   width: 28px;
   height: 28px;
