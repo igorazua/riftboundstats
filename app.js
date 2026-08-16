@@ -1337,10 +1337,10 @@ window.fetchSpeyerData = async function(isSilent = false) {
       if (statusEl) statusEl.textContent = 'Updating live...';
     }
     
-    // 1. Try fetching from dynamic /api/speyer-live endpoint (live serverless function with fresh rounds)
+    // 1. Try fetching from dynamic /speyer-data endpoint (live serverless function with fresh rounds)
     let liveData = null;
     try {
-      const apiRes = await fetch(`/api/speyer-live?t=${Date.now()}`);
+      const apiRes = await fetch(`/speyer-data?t=${Date.now()}`);
       if (apiRes.ok) {
         liveData = await apiRes.json();
       }

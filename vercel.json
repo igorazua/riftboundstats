@@ -5,6 +5,10 @@
       "destination": "/index.html"
     },
     {
+      "source": "/speyer-data",
+      "destination": "/api/tournament"
+    },
+    {
       "source": "/api/leaderboard/:path*",
       "destination": "https://host.neatqueue.com/api/leaderboard/:path*"
     },
