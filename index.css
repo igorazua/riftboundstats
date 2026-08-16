@@ -1089,8 +1089,23 @@ body.profile-open-desktop .main-content__right {
    ========================================== */
 .tabs-container {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   margin-bottom: 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+}
+
+.tabs-container::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tabs-container::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 4px;
 }
 
 .tab-btn {
@@ -1104,6 +1119,10 @@ body.profile-open-desktop .main-content__right {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .tab-btn:hover {
@@ -1115,6 +1134,7 @@ body.profile-open-desktop .main-content__right {
   background: var(--accent-cyan);
   color: #000;
   border-color: var(--accent-cyan);
+  box-shadow: 0 0 12px rgba(0, 180, 255, 0.35);
 }
 
 /* ==========================================

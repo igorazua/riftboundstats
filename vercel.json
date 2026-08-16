@@ -9,6 +9,22 @@
       "destination": "/index.html"
     },
     {
+      "source": "/geng",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/la",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/australia",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/ottawa",
+      "destination": "/index.html"
+    },
+    {
       "source": "/api/:path*",
       "destination": "https://host.neatqueue.com/api/:path*"
     }

@@ -1184,14 +1184,70 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================
-// TABS & SPEYER SHOWDOWN
+// TOURNAMENTS CONFIGURATION & ROUTING
 // ==========================================
+
+const TOURNAMENTS = {
+  speyer: {
+    id: '835043',
+    tabBtnId: 'tabSpeyer',
+    title: '⚔️ Riftbound Showdown Speyer',
+    location: '🇩🇪 Speyer, Germany',
+    format: 'Swiss Format • 10 Rounds + Top 8',
+    dataFile: '/speyer_data.json',
+    locatorUrl: 'https://locator.riftbound.uvsgames.com/events/835043',
+    route: '/speyer'
+  },
+  geng: {
+    id: 'geng-la',
+    tabBtnId: 'tabGeng',
+    title: '🎮 Gen.G LA Showdown Series',
+    location: '🇺🇸 Los Angeles, CA (ASU GAME School)',
+    format: 'Swiss + Top 8 Single Elimination • 128 Players',
+    dataFile: null,
+    locatorUrl: 'https://locator.riftbound.uvsgames.com/events',
+    route: '/geng',
+    statusText: 'Aug 15–16, 2026 • Top 8 Cut',
+    totalPlayers: 128
+  },
+  australia: {
+    id: 'australia',
+    tabBtnId: 'tabAustralia',
+    title: '🦘 Riftbound Showdown Australia',
+    location: '🇦🇺 Sydney & Melbourne, Australia',
+    format: 'Regional Showdown • 1,400+ Capacity',
+    dataFile: null,
+    locatorUrl: 'https://locator.riftbound.uvsgames.com/events',
+    route: '/australia',
+    statusText: 'Premier Circuit • Sydney Olympic Park',
+    totalPlayers: 1400
+  },
+  ottawa: {
+    id: '788036',
+    tabBtnId: 'tabOttawa',
+    title: '🍁 Riftbound Showdown Ottawa',
+    location: '🇨🇦 Ottawa, Canada (F2FTour)',
+    format: 'Swiss Format • 8 Rounds • 594 Players',
+    dataFile: '/ottawa_data.json',
+    locatorUrl: 'https://locator.riftbound.uvsgames.com/events/788036',
+    route: '/ottawa'
+  }
+};
+
+let currentTournamentKey = 'speyer';
 
 function checkInitialRoute() {
   const path = (window.location.pathname || '').toLowerCase();
   const hash = (window.location.hash || '').toLowerCase();
-  if (path === '/speyer' || path.startsWith('/speyer') || hash === '#speyer') {
+  
+  if (path === '/speyer' || hash === '#speyer') {
     window.switchTab('speyer', false);
+  } else if (path === '/geng' || path === '/la' || hash === '#geng') {
+    window.switchTab('geng', false);
+  } else if (path === '/australia' || hash === '#australia') {
+    window.switchTab('australia', false);
+  } else if (path === '/ottawa' || hash === '#ottawa') {
+    window.switchTab('ottawa', false);
   } else {
     window.switchTab('leaderboard', false);
   }
@@ -1199,28 +1255,105 @@ function checkInitialRoute() {
 
 window.switchTab = function(tabId, updateUrl = true) {
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-  document.getElementById(tabId === 'leaderboard' ? 'tabLeaderboard' : 'tabSpeyer').classList.add('active');
   
   if (tabId === 'leaderboard') {
+    const btn = document.getElementById('tabLeaderboard');
+    if (btn) btn.classList.add('active');
     document.getElementById('leaderboardSection').style.display = 'block';
     document.getElementById('speyerSection').style.display = 'none';
     if (updateUrl && window.location.pathname !== '/') {
       history.pushState({ tab: 'leaderboard' }, '', '/');
     }
+    return;
+  }
+
+  // Handle Tournament tabs
+  currentTournamentKey = tabId;
+  const tourney = TOURNAMENTS[tabId] || TOURNAMENTS.speyer;
+  const tabBtn = document.getElementById(tourney.tabBtnId);
+  if (tabBtn) tabBtn.classList.add('active');
+
+  // Close player profile drawer for full table width
+  document.body.classList.remove('profile-open-desktop');
+  document.body.classList.remove('profile-open-mobile');
+  document.getElementById('leaderboardSection').style.display = 'none';
+  document.getElementById('speyerSection').style.display = 'flex';
+
+  // Update Tournament Headers dynamically
+  const titleEl = document.querySelector('.speyer__title');
+  if (titleEl) titleEl.textContent = tourney.title;
+  
+  const locEl = document.querySelector('.speyer__location-badge');
+  if (locEl) locEl.textContent = tourney.location;
+
+  const fmtEl = document.getElementById('speyerFormatBadge');
+  if (fmtEl) fmtEl.textContent = tourney.format;
+
+  const locatorLink = document.querySelector('.speyer__locator-btn');
+  if (locatorLink) locatorLink.href = tourney.locatorUrl;
+
+  if (updateUrl && window.location.pathname !== tourney.route) {
+    history.pushState({ tab: tabId }, '', tourney.route);
+  }
+
+  // Load Data
+  if (tourney.dataFile) {
+    window.fetchTournamentData(tourney.dataFile);
   } else {
-    // When switching to Speyer, close any open player profile so Speyer gets 100% full width
-    document.body.classList.remove('profile-open-desktop');
-    document.body.classList.remove('profile-open-mobile');
-    document.getElementById('leaderboardSection').style.display = 'none';
-    document.getElementById('speyerSection').style.display = 'flex';
-    if (updateUrl && window.location.pathname !== '/speyer') {
-      history.pushState({ tab: 'speyer' }, '', '/speyer');
-    }
-    if (speyerState.data.length === 0) {
-      window.fetchSpeyerData();
-    }
+    showTournamentPlaceholder(tourney);
   }
 };
+
+window.fetchTournamentData = async function(dataFile) {
+  try {
+    const statusEl = document.getElementById('speyerStatusText');
+    if (statusEl) statusEl.textContent = 'Loading tournament data...';
+    
+    const res = await fetch(`${dataFile}?t=${Date.now()}`);
+    if (res.ok) {
+      const data = await res.json();
+      applySpeyerTournamentData(data);
+    }
+  } catch (e) {
+    console.error('Error fetching tournament data:', e);
+  }
+};
+
+function showTournamentPlaceholder(tourney) {
+  speyerState.totalPlayers = tourney.totalPlayers || 0;
+  speyerState.roundNumber = 8;
+  speyerState.totalRounds = 8;
+  speyerState.status = 'COMPLETE';
+  speyerState.data = [];
+  speyerState.players = [];
+
+  const countEl = document.getElementById('speyerPlayerCount');
+  if (countEl) countEl.textContent = `${tourney.totalPlayers} Players Registered`;
+
+  const badgeCount = document.getElementById('speyerPlayersCountBadge');
+  if (badgeCount) badgeCount.textContent = tourney.totalPlayers;
+
+  const statusEl = document.getElementById('speyerStatusText');
+  if (statusEl) statusEl.textContent = tourney.statusText || 'Complete';
+
+  const tbody = document.getElementById('speyerBody');
+  if (tbody) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="12" style="text-align:center;padding:4rem 2rem;">
+          <div style="font-size:2.2rem;margin-bottom:12px;">🏆</div>
+          <h3 style="font-size:1.2rem;color:var(--text-primary);margin-bottom:8px;">${tourney.title}</h3>
+          <p style="color:var(--text-secondary);max-width:550px;margin:0 auto 16px auto;font-size:0.9rem;line-height:1.5;">
+            Tournament completed in ${tourney.location}. Official bracket and decklist breakdowns are being indexed.
+          </p>
+          <a href="${tourney.locatorUrl}" target="_blank" rel="noopener noreferrer" class="speyer__locator-btn" style="display:inline-flex;margin:0 auto;">
+            <span>View on Carde Locator</span>
+          </a>
+        </td>
+      </tr>
+    `;
+  }
+}
 
 const speyerState = {
   data: [],
