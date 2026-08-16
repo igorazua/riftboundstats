@@ -28,7 +28,7 @@
     },
     {
       "legend": "Master Yi, Wuju Bladesman",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/b975c54c-20cc-45e9-a4ef-2d9f7ec10d42.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=67b5011de98867e033c58c89eb3d11ae360886cb64dff82bef3b74168e425c8ab0a2c13a7b6384b6bc669a9b37fc0b4a17f0d28463125ddb12009402575e4910e8cdc2bdfea756148701047a240fa2d6de9c64379607bf44818aae18de6fb3160b45e434e10d852dc8cdd390d3ca6afa58004f10879851d09443fcc5be725cca5d8f88e57b1370834f1532f0b67744bf5e317d51541e496ea0356458a6b1ad415021171611a298301ee6f1013568dc2e940fd52c1431fdc013b96ac97ffaf62dd70edfcbe0b30a5e0d07e9154b509fb021000ace6de2da82df71b5ab389be74d7bd23f01c9c64fceaf39342f034cd79f153b104800f83495aed1a37e4ecb7738",
       "set": "Origins",
       "setNum": "Set 1",
       "setCode": "OGN",
@@ -46,7 +46,7 @@
     },
     {
       "legend": "Rengar, Pridestalker",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/b103d55c-8e2c-4811-bdea-be7dcbb506b0.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=762e92ff98910c06528207159765162a34826a7d4e9e3125c8e9b123f6525c5043d9bf92417d5083061645891aec65f7282ac1b4281a128ddadf8fb6704e7e47a761987f3019086ed1d663402afb2ee27b7f6e7d473b9ccd23196115fc8c84602e3afc57011648a5e469b4c94898d9dbbcbac4c4fa413442b3f12783f54df11ebe8236254e1c87362d2b32ceb526dac183e621e9ae6c5fbea592139d55b08139cf855f68db36f19271f9f37d1b95bfcfb6ab9df3b99ff19b47a93c8c3dc277aaa1aa2c6b960d6d1c97b879c3fb1c0ffe99a0c29abc5e1499e1914088998ba308c658eecb50dc04aa5465fdaa123790b756b3efc43739f447b329ff7176ab7404",
       "set": "Unleashed",
       "setNum": "Set 3",
       "setCode": "UNL",
@@ -64,7 +64,7 @@
     },
     {
       "legend": "Irelia, Blade Dancer",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/4f2c62f6-6859-4ee9-9e17-cbc52a19f692.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=52cf28f072216b4fea51b03ff40a52cee9f6154c49faed9bd872b43a686df9b9a338df72866ef414cbcc6768498c250992ee89a6649968e74788f7aa7a8484c64abbc9657956023e7adfb2763fb5e334c5ae8cd1376f0ad3de364fe1f6ba342e7b2840bb20c579deaceeb051b401a430bfc117e811e74d69a941dba7c62c1b6027afc2801733e273482a6fef1a1c48d9064bf18808cdba1684b8b027f8006ae1af1e898b78fc0b718a6535c0f59e2d474c6150cd3d78500a1d9461a8f05326ab55c04979347a543f50bd1a7aa78cdbe0cf341bfcd60b0863e9376576963f7481e1bbce9357e038d8f6b7ca558ff67b7d0dda5f18220ca32473adcd670b1883d6",
       "set": "Spiritforged",
       "setNum": "Set 2",
       "setCode": "SPF",
@@ -82,7 +82,7 @@
     },
     {
       "legend": "Draven, Glorious Executioner",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/c0d12ee4-0dd1-4297-b99b-971fe295b5d1.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=13b3e1819938e13e128ceaf8435eb71a6a5b3ea339bafe06a7f00c39939fe5a1e8fc7dfedae64190e65b26c76b8871b23e0e8fbd80296b18b3fb55f28c985cce63500bf1fc4f483787eeb86b9c2124bfadf80ebbecae8c7f3d1d25c4dea58d093e808b3f2fa73e75187569dc9bdc9e5a56ba18a61821030ef051d94b122dea101d3d22203ac0726af877bbdc1d904df8fa1d973a82add129536b98bf1a1deb46d37394478e820b4568b0510b5aef9e1c8fb35278cf297984c5db560c6ea50b50124a404283c4f26a2ac020c4318265fc823caf00e5cc467f6712093c39df1218f98833dc5f54f983b38a1f638058a4983f917e3cbfcc51c08323cd275f00a4de",
       "set": "Spiritforged",
       "setNum": "Set 2",
       "setCode": "SPF",
@@ -100,7 +100,7 @@
     },
     {
       "legend": "Rek'Sai, Void Burrower",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/105f34bc-e1f1-478c-8f03-21ad849a807b.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=9f8097ce6f2900d669cfd703147091d4d979124bd5840056b0443e902198e79178f788e3d0726216c44ef988f06a42a4a940dbeaaa8354e429b6def3a28f03447888bc925cb91947ad77c7299d86de73500221e064715bdd3a731dbc64ff95c378c07f0292247002e4a44daea6f251d9ecbb59487e1b46bc40ce332c0087930a7c74b0d06b8731f45bc1e1ba4ad606a16d443d4fc2d5f446fd5f00e7b843f8e8d0d36a758f0dd2c15555bbb0aeb146b3c8e8811320b56fd668f98bbe585348f5351335901c3635287a9119423a34c6f490d2c0e97dedf319c2a8816f54df8fa8ec7964a51d665e7ececb7a5f71450b6823d8229027166ba3d7ea40edb898401d",
       "set": "Spiritforged",
       "setNum": "Set 2",
       "setCode": "SPF",
@@ -118,7 +118,7 @@
     },
     {
       "legend": "Sivir, Battle Mistress",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/a378da80-7bda-4bd3-9a77-93dfd3ab4e48.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=80ef9ec00bfd6edf84a32232f3b595a0ec2c3ce229a1454b9a1a2d0f37e3b952500f5395b241b1ff8502cea0eab8c775ce88d71de4bfb5ba70c0a919bf2b708f0889ee0b81b81401a39de443a7c99cb2316ae1e656edb132e7acbfc1adf381b80240a8b67a347c02e1d73e72fb23e96cd4458b5671b8dab99c22f79a2a8a36f7263457a294b1a47b9f750a9c3d0d7dc8b4d72f3a215fbc37e032b6bddd09f0b69e0236a864be34c4501c124369de16c9e86f59d3d8b57dee8692cd93b8f2b719a5e5fcc05a8d6c5e6cbb04d21086c327ea303cb6bac959fde34a062d39fc2a74f877b9ed27edaa49071ea553ca8b6df86c006f8e19ed7c673b06f63cf4cdc981",
       "set": "Spiritforged",
       "setNum": "Set 2",
       "setCode": "SPF",
@@ -136,7 +136,7 @@
     },
     {
       "legend": "Kennen, Heart of the Tempest",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/74c4fe45-2ce3-4330-8ac4-12087420ef45.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=8095cadfd2053afbb7f2d65200ec52ed04a610cab73ea6cf0eafac61a228063438e21b9da5eb18961342165ca5b1e4a29ae0fe30dd336409c5cae6c31ab1a7676e6b1f659cc0e90e029f584c201e027a6a81dd9c792d8bc195e44bd0eba4634c6ebefba94b112d51d410a02999f0d6d51c76d4f45866d15e1330e7740a507ed97a6e25a4f22096ad12659a3dfb9ed18844c0b64949338219ea2cd10b578eecd6199c383409d17d721694e002ef75fdb9281473079b83946c9d3ac914fdcbf9017e6a5eea738c08425ab0899de14bd0e6386661b4a34138173fbd4d898c5db4eca2271204842de6c659ba0620223a16bd3b2c77ab3381c0cf9d343b54562d27c7",
       "set": "Vendetta",
       "setNum": "Set 4",
       "setCode": "VDT",
@@ -154,7 +154,7 @@
     },
     {
       "legend": "Jayce, Defender of Tomorrow",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/54d5e019-97b3-4260-991e-540ead0aa236.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=4da9db2253cc1edd46ac405b7cdb1616a7f78a47eae03bb433442abc207eef85f1822d865d06242fc059db0eb976bcbf320ea13c1887570515aa81a9336f2a5c30fdc48f9d2584d0261a181e3c7460d34fa21baa4722d0875a1c749a2eb500065221c97b73c73d4cc6b35e70664e84a491d871af55d54880e789a3f56d5f1aa79b201dd923bb8a19a76b76f7a85105c1e4376f0eaf740aa282b8361f2cdd012efab1e6f17aaa4cd105526f86bf8cdecaa9c2eda9ca4a9500b567de254329bb834e1277ccc5bcda4aea72fb60e44facb616fb3d40198ef5a8edd30db3eba6b92da14984df2abcff069804b781888fe9003f5e3a9a9c0a453ff0af92e646726596",
       "set": "Vendetta",
       "setNum": "Set 4",
       "setCode": "VDT",
@@ -172,7 +172,7 @@
     },
     {
       "legend": "Azir, Emperor of the Sands",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/28299956-0f42-4221-93c6-428e14aef235.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=377d0ac22b85c348cd1adf075f6f54188148bcbadd2675943432b94c2c52e5bd9646a7ce6bc584caa7016130c49eb6e0f8f67e33d20b14f12f80e5134b64d4b26992a8cdaa67451c11bc665b6228c04e32bfabe89454b4864ff311648c4b7e64223ae78a46de93c76f5076c0d320d7ff8d3a237d3a48a5a533dd2ca2556cf73de58c130a4fe31bd1b9657cdb3dad0f573c68af95fa8b9fd687a815a9843f9aaeba832610c7e6edea01fd3d17c6f1c1768a926993f66cef067f18560d82ea0e40c411bae7cf5429313b22b963e9a7707173dbd565444e55934bd9e306f96d9571b885d7810c63a98c088ed04d81a03c96c03f94eb8acc5beb68f4d3e12b85d394",
       "set": "Spiritforged",
       "setNum": "Set 2",
       "setCode": "SPF",
@@ -190,7 +190,7 @@
     },
     {
       "legend": "Annie, Dark Child",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/254141aa-d667-49b9-bd1c-559f6b4ee246.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=2f89893f1e26c2f855d70aa36f212c49d2b3558a3d06bfde697020548db98fde0da15e90885efb8b162cf8d01fa21e3b8039ac3a87d4f8a011c18b89521c7cb8ad7216a58716835d8c827b458d08db9ce61d188267b54968ed82edf669c91f1ee826326f66883628bb49d24959fc688e0ef40ebd04646580c12b80064bd2f9155118a4786e759917d5db1415147ad749b6cb1a6f0555295e978b801e472c4a09ff40f66f9a9745c29e306de3cd2d338028b27fa8dbc011b13ab0c8c8c798db82e04726942cdc6ab3920995e6025f3104acd5ed5492e73c21fa98643aa70bea5c20cd671bb89e241553960d83fea6ebfff52f039921ec611cb466b402e7f93543",
       "set": "Origins",
       "setNum": "Set 1",
       "setCode": "OGN",
@@ -208,7 +208,7 @@
     },
     {
       "legend": "Ezreal, Prodigal Explorer",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/e4dfdf06-7a30-4846-b3e1-aaa8f65a45d9.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=2fc5c472ad757c300f600a796c222d5e85b889339dbb96bc101c1e7ee639c55bb6bace6c4cb56e59f612e2ff32bfda32ca8977a485666d50425b03591e9fc323231d9f3773a979546c82154e82d9588102c1b295bab915e9f7e15645ccc354f75463f5aac5fb4cc7597e33abbf082bd0064e3d16c181fd0c44f06a49c3d6aae0d1e9cfab6aa74c91ab3671e69321420f8e8164c5c5f676d24ef37486136f08cde23eb04f11227916d2e693f97cc951c45e29c9fbd88841f8e753167be4c695bbfdf115be898c6008c03c62e258ef3dc92abab070ec08bb8d8796601d2d3ec674a5a9f47ee4c533655e97890b9ce158b56f9e35fde0a00cbce068a7f314462d47",
       "set": "Spiritforged",
       "setNum": "Set 2",
       "setCode": "SPF",
@@ -226,7 +226,7 @@
     },
     {
       "legend": "Kai'Sa, Daughter of the Void",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/77b2953a-5214-4421-862d-f33d8bc4590b.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183944Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=56e8fa27bcebbbe8065bd6cdb566e291eae87d5a055048ac231e458bcc30bc3fc3d26756a9268d5100d2dc0a6ed8752e26fbc535cb7e414e658e07d9e69bb8adaa0f15c20760843e5992cc64c09deb13d236e0f168b0e3e2bc3d5f04a853ecdfff86e20e03e36cd25988d071816d923cbb41fea024fb75b30294dfe812ee86167c5d4f1c3351e464ca9276c4c5894557e0012c5188029d6d566b2c8f7e8dae9f228993f0581e68b01d13c311892bbfc8363f1ea5023fad414d2a3bf11348f3665c98474c0309689d7aea23fb8b2b445296f678ce1e0a2f3df3a2c8f7f0295a5a43b611885459a377e02787f2465e2582bd19ff4d0f40c8c69ab46370c8c111a6",
       "set": "Origins",
       "setNum": "Set 1",
       "setCode": "OGN",
@@ -244,7 +244,7 @@
     },
     {
       "legend": "Nasus, Curator of the Sands",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/f87fda32-8086-4813-84dc-2c1fad0646f3.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=7a02ecb8f11a20eb6521ed2ff4693d515df7ec705dac2d1a4363438bd80f1efa755bf9eacb26cf588c9da7655203f9f26f9e36e0891211c18adc6b3135556cde241d74334c331761135fff77f4ac048fd8a8010335791c6a04a93b71878a12655b7ee62012fac71ee314d1ec01e2a5ac5e8cbce8828291c5fcffd21e9af232a081d5d3b9d02035660c4cf1a70b4850b88d6271edb305664382c70bbff752e09f937d8d4b80e0e2827005108e0244dd9f898d19b7b7ed3a6d74c7d840c4625bcf735e029176cbb950b82845656454b168f17eb4e7065ec22f5feb426a476b10e350ac84f6c8232e2c9345e0f1f8174625bfb97bdcfeef481dfc7656dd9b592532",
       "set": "Vendetta",
       "setNum": "Set 4",
       "setCode": "VDT",
@@ -262,7 +262,7 @@
     },
     {
       "legend": "LeBlanc, Deceiver",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/b972c8a5-df69-42a3-8608-3ca00bf25d68.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=abbe471f437373d1f593c98f9ec78cef99513796817083a42fed3dba05a7607fb6a7d835cae6cceb2b20ffe92ab3ea33b4af35b660574e651168ef75c850d3c646059a015b5ddb6fd169a2dbe49eb167a28129c02538caa76a3120899e3e20af02811c88f99db29e14399a19b76a6d9f9723b011feab4f21ac67cc9293c95c04ec671cee24fa0aa5b6d6b2f3ac39273fe5ae55fa3b96508888a4accb8e3bad36f42b1f74a3e973a39a9ec4d287aaff243e27f1a12c302f198ab303088a2b1c71615c23b5a41f3f6d71a043df3046a1dbe0bd85eabacf7065941d60abcfe5f83439ee8459e21099f527bb405d3a01caccaf2cdf7d6c91f5189feba502465d1bcb",
       "set": "Unleashed",
       "setNum": "Set 3",
       "setCode": "UNL",
@@ -280,7 +280,7 @@
     },
     {
       "legend": "Ornn, Fire Below the Mountain",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/c9d7a165-fa6e-4f51-b954-474a0d674ae6.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=12437f8850c5c2bc41183642ca1962a50a93bc44893d86c5a39745e8f40135dd0743d76ff69075d212e83670d4ac3291c48d2d75765593e6d901d3bf40b57664b836513c75d840e68dd211f2e37fdb37096ad906cd913655a6e585d1d9d63316b9078075f9a193a6932dcffaab023bfc0037553d6db0485d26da0fb5b4f44a376b4ec9c4707df1b23b60d1e4587432be4e6aad9407ea90a049b24ab0dc59b1c23cfdaa573ae1eff2a428dd901d959af56fa2ac38da996df6a19d989478741cb8d135975cade203c05742a6fa9439241faf06a60c512fc1b376de269c3c7b114fbbf5b36cdd912a0f7cb3e27b1fdf3cbac0d0e908067a8bae3595d7e727b2d89d",
       "set": "Spiritforged",
       "setNum": "Set 2",
       "setCode": "SPF",
@@ -298,7 +298,7 @@
     },
     {
       "legend": "Poppy, Keeper of the Hammer",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/fb945236-1cf9-439b-bd4b-0d6b7e54fe2f.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=9ce383a9d0156cf105284789d0ca64e53cd0130a8fd49c0938b266e6625ed66065574a013832a73421d81f21e75d7df933c7fa43bc76afea605283e74a5acface78633f859346893f9a3a2b1c08a5ec5a8999b190aca6b788c7530ab8698f9f9312aed09d323f36d5397a0734c3100eaf08e3e1eab08a03abb3be72d23ebd7c0afa731cbb19b962b7471e4edf4ac83a10319dcf45e2e9cefa55a26d751b56fe71f779006110c53f985b23926821dc595499a613c1c1857641f7151ed8eca448597e3293880f9063d003c04b133ebb2b02ab33f05a6e8ab7ec0a8895a7ee01e5ccdf20fb11f50cc13042a604c8ff4b184dec01eb96b142ccfab9d05ab03f1cde1",
       "set": "Unleashed",
       "setNum": "Set 3",
       "setCode": "UNL",
@@ -316,7 +316,7 @@
     },
     {
       "legend": "Diana, Scorn of the Moon",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/3fdea3a0-2265-480d-9c26-bb7ce08f6cb5.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=03c44cd81a8c259815f37aa080043789fd81d3627d0b0aa487f265df1ba22c0ea6c206f093082438e18d6286727e2da5c6b13262af416d1981d3a21fc9791511e6a780cb01f0622f84e2db7b97d103c08309103020e3700239c4416934239643f022ae5f211e4b906cde878016a84100cf3065f15e13edda66bb27cf5c32153c49a2d22b81bfac093c6730e13d46ed05fb9178f2fd68857247f6a506a4219904bee7aaf2ff9963456b01afd44972bea9e227bb5157563a5f2b2145d82e4643e61803bec323f435a287c8c71d3807d2255dccc39e963b089e7c9cb750d43d3f221cc882f14ef30cbc0e85305d6b30dd7f52af02e22af9016a02fc3577084495f8",
       "set": "Unleashed",
       "setNum": "Set 3",
       "setCode": "UNL",
@@ -334,7 +334,7 @@
     },
     {
       "legend": "Vex, Gloomist",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/36e91a0c-088c-4222-89c0-5b7c64dcfc43.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=5a245dce55f28381a837a1b375d2d0824c2a786d956224f6dff65132bf0481d28dac4c8220b9c6a9a0082bc4903012016ab27c71982ef844678539dc66063d7432a31af43bdd753328ab7f69ba456a73cef505206b10fa8427daad9b27e53506f511eef05c0415b82bf0a107d756ea580fca402e7f8e72d89cd45535812de76a75b4a0d9e8026064fb3051bbba4998dd40d84dfbc80436cfd52a6cd81d84377c890fbcc720ecffc2fd52752f92f868950c29a40d7fa57e60e17c4892c867eb22523fbdbef88fa8447e8aee7e7407a982454bebb9af831469914951c40ca40f165fe4c2a4d6175d6ba269b077de6082b6f6382cb57a236b3b2c1bb10bbc297b0f",
       "set": "Unleashed",
       "setNum": "Set 3",
       "setCode": "UNL",
@@ -352,7 +352,7 @@
     },
     {
       "legend": "Fiora, Grand Duelist",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/47b35f92-55e3-4651-95fb-7248855d78e7.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=b8fd23d0aed4d6a610cfd57b326e260aa399ada189367e611177dfeb804885688beddd30f87d05bfd0a1a506d68085ec3980777972840a3555384bc0e963aca1948c2e3b3f91c55db8e391b87dd7cc8c3032acdfec0434a5170fcfd37c2920207849f6a9179843d334257eff9e9ab2a924f4dc72dbbceda150109b4ec16a34996a0e07d26ac5807aa599f5110681570f4fb3e46462894d6a082274bb2dce706c8629905d90cd4daf5d097b92f1453e6856b3a9153fa263cc6e374594f66f8ab4536ebced444de3fa3bdd9f8471c8b35efdf4456efe2e7652bb5b5267bc493f7d56b5cdbd849c12f74cf8791eb6d43d82d145b9c355e5645277b486c09ca3e117",
       "set": "Spiritforged",
       "setNum": "Set 2",
       "setCode": "SPF",
@@ -370,7 +370,7 @@
     },
     {
       "legend": "Kha'Zix, Voidreaver",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/d7b310e5-6ff3-4568-ac31-b4402ea865aa.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=0f11144def7904c49e29df69b5462df0694871c3ddd718c62835278fe5941bc4104a20cf6bc56dcc0b39553485989039655c62c60076e50e7fdc913463c534c41f3809ae0c314fc369cd910bfda7823a3c702e4a266a584b3392b85b6589667964c55bfb8cd061b1f3919b3ac328fe5cb1c90433fafb79496343facf8b78314c740d5de0c2a3457becc55df56f9d45e7474fc359b2aa6bb4265837a1aa2bbfd38712b4d13e3c9839a78345ee5f04bda37bb477b89b90fbd2ac10ea058f872bf087d2e1d8352479758aa083f07a4d4b564a3554b0667069a6bae96a87e6db091b594b17f741ab78dba9a489d04c5f2da739499da6c1d2ea8db08b7cc6117353e1",
       "set": "Unleashed",
       "setNum": "Set 3",
       "setCode": "UNL",
@@ -388,7 +388,7 @@
     },
     {
       "legend": "Jax, Grandmaster at Arms",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/d1d2edc4-cfc2-4c9f-bb07-49ca35ab3082.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=a90ce4547284857dcab67cf1233e038f6d1e4b11baafe605aa3ad70998ebe7c9e2b06ac1b2cb919c37c6fb1e8d9438927462e8608356eb52990a2952d43df06513c6fd4e6b2612288f712c0bdeb00526428243e2e0633ae6423da0fd58dc79a3e2a405fad651adcdf4296f4ac96ba45e8a4b9d8a08e96808ce8caf99f5b6aecb13c03c2b81be310afedf1b4f3687897cfe282e392fb3283f3d12ea7fe08a8502b19c6ec0c8a494d0ac7952ec3a27b4455f0a78396b045e223c47c1d957e50183182f9a0744078628fca5ead713dc92dc55336c9912c2a67ae8bb946bef9d75e8f0b620be9b450f3981618d5aa3f4ec3214832e3dae118a756a17ecfec6559032",
       "set": "Spiritforged",
       "setNum": "Set 2",
       "setCode": "SPF",
@@ -406,7 +406,7 @@
     },
     {
       "legend": "Vi, Piltover Enforcer",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/9586cdd4-f2a8-4672-97f8-2906c4f3f086.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=af0e6d0bce3c9a10334d8ebbf3889aa7dbbbadffafcc3aaf6a5725931c109ebdf07ccfd15a259c557085a764c647f00b976af4ee4ceb7555901caacf8fb59b266c736152f39054a305d8df00244e77f0eb6dfac292538a8bd02fc443634e9aaa99dec29984262781d5f6c740fb32d0b9c29d983816562265f1069bc3c3a1929409a6c3a90fd209fa1788ad4c0993fbfd21eb820b544a60c33877e1980f3753e96fc41780bb58ca8a74b91f7d6e327d3eb92a5a937ede1df695936e5f3ed3817ebde3f215177ddf21ebf50410674f49f5e550c0a155206796b66967889dd1fdcc5bf0ea3b4d004bb5359f605420a3045f1349e75419b05c04260479f778682c88",
       "set": "Vendetta",
       "setNum": "Set 4",
       "setCode": "VDT",
@@ -424,7 +424,7 @@
     },
     {
       "legend": "Mel, Soul's Reflection",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/4a1e6851-f12e-4bb0-acad-8831fd15746a.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=2a811b9e97bc86fe850a2a4f3aa377735eda6f9f1208ac2a01f654962a035aa8c931da6845a365c7d5b8b57a1c4910e404241fee302fa94db91b2ae19951e4dceb3a75b3a0cba9cdbe6f921631651740be7bc64fbae7517f7d8768bcb1dfd86b3cd2cb1e4ef2fbe15f6f85d557a7df9d67881add8d0a9f6a882981886bd6859e59b85430423b5e508b6cd24e9655132a3bcd8e5bc39845aed66b7681d4a2ea7c6a542c33ef92ccd2fe450a388d99c8c5c1e079525d2787520c789ad561e1996294b3ee65d54e76affed154a26b6301cb492f3593e93473d6261285211269496a25b687f4996603dd0eb5f8cf6a221dc79d09f9418b350211885f48ea6c5e0f5c",
       "set": "Vendetta",
       "setNum": "Set 4",
       "setCode": "VDT",
@@ -442,7 +442,7 @@
     },
     {
       "legend": "Master Yi, Wuju Master",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/279828a6-c44c-476e-bd1e-057a9969dabb.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=c7127e31e0ed14c2a062895826b5f1a8d8f90e9034892931617f6931a39eefb285a757a190f51282b9456be3926cbc03aff522473a3a22da8aedb783789af9034af86943ef6308244579d61edba03192e378b9f56a5a856fa63947ee3987505805ef4f38c5e0325c00ec211bb0d6ca37ac98da8eb9319e73305d145b8ee8a3aed3089f17a89bd8f5a0df41702e6d268a02ff3ff6a11c91a6cd0a8c9734804e78b891509d9629780d712a5bf1068ab9f485e9324443122cfcecd181d18673de6185fb210674cfa4d165a54cdba323940dcc713a68422f21f63348d301dc503413f50599b3ee9197503b7948e15e8e2486b5bfd8fcf79da79dc96fc732069485e5",
       "set": "Vendetta",
       "setNum": "Set 4",
       "setCode": "VDT",
@@ -460,7 +460,7 @@
     },
     {
       "legend": "Lillia, Bashful Bloom",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/e62bc147-819f-4ec9-9df4-a0bf7960ffca.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=4baf36c97574b031e0fbbdc44fa220aa9397528b027407b1eef71236376ec49b09f22f0dcccc58edab05a3586c0270ebc04c387931a3947a194a0737d42efd6d92f664560c35a7e1c6fbb517fd9befb463ab05cc4334bc98392e894eb3323dc6136776d5b60155adddab94f95eb172d4b326b5851f4c225016072f9ce23d4324bad3b3331346d9bc44d3785942a8f68a1abe2f6e88f55e8a5359c4498cd1088cb4864cd97929916c3dd66e2ada21f4c1e98fd21607061863dff7c781eff1a38fe330ee80fca830108619edda352aee5f412884b735c1f0fa257fc91be8325b180e44196eb16b9b4d04ca09361798258c97341a1bd63fbdfce5dab37e08f53807",
       "set": "Unleashed",
       "setNum": "Set 3",
       "setCode": "UNL",
@@ -478,7 +478,7 @@
     },
     {
       "legend": "Ambessa, Matriarch of War",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/15be51b9-5031-46d9-8173-748e0a53101c.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=afff6b1eeab0460d00227f775595029eead6e0cb172c20267795e76e74865ce21fda65ec1e5f382a80160a8283335d962063750748a8b2d50f1c33bd0514651d04e300fd7fd57131ea36e0abad0ae26a7a6da52b4121761bb8aa442a03e5fb927f651f448c6a2082aaf60d0e15f2fbed5a7d56123a47e0b02d699c2d9b4261bd28e9e370ea07ad41e00c9e937e4469173409f6020b6dc854819abace194f09cb5f8e8a541ecff1ff794bde5805c6029cb9529d1dbe9219349582bc640696d1a6355010d77206df59145d540a467303de1b6ab99e257177f689383cbe408d2f37b4db18f7f975863a777990f95b4fec56445269611cc5526e472e6e39ab8d1af1",
       "set": "Vendetta",
       "setNum": "Set 4",
       "setCode": "VDT",
@@ -496,7 +496,7 @@
     },
     {
       "legend": "Lucian, Purifier",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/bb53ad01-d984-4b65-9ed3-018999f8d24c.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=8a754b2758ff1d2f88d6cf553aa1bc9c35735fb525ff57c3ee0477e03a00aaf9992632edd3f948957416550b2c938da9139da9c7580fdbb99a2643bf53247a53429c43e4fdf3497c8d34ebdae3894974fc7ffd57aee1d32cede6a4dd97a2280d593239b1e9c5d9f1482791318dc0c93a06676ce26d95aaaf129929a66f17bbf4d46756ecccf1a1659853454e96207dd3b925ea96a8d3265647e78469e1bc64ace1e45afa030081177b10ecead143de25a0615d8eacb6d09e6f174c5fb0dfb32cbe7e06e1f935266367d9f8b31bcc972615e75dcf4b09a40329e6b0838ea0f0a041ae90e91ec7eaecfadec8765ac301f8b643ed4f172d0d53b1beb2a704efc78c",
       "set": "Spiritforged",
       "setNum": "Set 2",
       "setCode": "SPF",
@@ -514,7 +514,7 @@
     },
     {
       "legend": "Akali, Rogue Assassin",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/0f1320d8-f83a-48ee-9b63-6374f398791c.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=1908d29b44c880525786994342514f64140a0cd6a00895b0eff9d274a32abca9546f27678d29904dbc243b0fdd4707c7fbeca97fde842992598110e248dc4887209f3c56e3edf6d59b7950f4285bcc366503ddeaed09d749c859440f4bedb72a4ff8b0a2ea129e942879ec7ed69e804fcc01ddc5b9f960d5527bbd009ca1f2be593ccb87eeb7336f06f74e1f8b192de3600a1763d17437ca91e315760375b3715dd0951dacdff64608f14c448b2bfd50888dc6b2e4a8702ce35c1f16f3d242c41687da42c89f65370252a743478aec17b429c93e178c6e0580920e26a5b4db191550813edb016be5f1329e930c229807d76f3f242f3166578f0734dfe1e8b2ad",
       "set": "Vendetta",
       "setNum": "Set 4",
       "setCode": "VDT",
@@ -532,7 +532,7 @@
     },
     {
       "legend": "Renekton, Butcher of the Sands",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/76c1bb8a-4b87-4a21-a0ef-1d3cd71a9d24.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=55d9dfb99e54eed441e702388de33e9c389588fb9dc63ccdccf8126eaa7b11debbdcebdb9e21a153fc3f916ef0f8be4584e0f433c907ec63ab2b1aff00f93411027dfd6f95f611e91ec62272885d27099c00ffd490eca9bb1c3e7ff52dfe19ca4e9a8aa70cdec6408fcb444b74dd087aff9688b41b70f5e9092ab1a5d1286626fa87acacd2138085dc257edb0090bc6b85332e4e4938d56109dd7af5be13e4a63dff02ffd0b3abcaed2b343b4640edcb4f267e54d999394c346bc4ef62024835e8ad302fd9ef9354c7506fbfd68fe048260d90ea858ae75406ccd4b3aad827fb4a78c09a132bf0b37f65ff980667dbe87a23abe2dc1c724552c92c63f359a330",
       "set": "Vendetta",
       "setNum": "Set 4",
       "setCode": "VDT",
@@ -550,7 +550,7 @@
     },
     {
       "legend": "Renata Glasc, Chem-Baroness",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/80c98442-424d-4688-b65a-d6071bf1c78b.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=1b5c14f8475d1bab64066224b349b595988a32bd562da3027aa8d5012e3d2bc2eb824243bf05151daad0d64600313a328d04bbf7b33830daf42bfb49722d37ed1bd238b67f1f6f5675881b858131a7f4cd9bae591099a87370a1fcdedf6bc05374d0931117d8a9bea12c3144353e5f23a505f77357a89f2ed89f603b855ddf419c70829c7ee5db16a2b803eda5ba188ed296cca3782c0785882cc9d070bb775ecfb9ea544b624b5edbb696b460f06e7bc537fc9198f90baf703c5105a8f941c862b7896ace31f877ebf81609fb46946548fc4902594f83902eed86063099eb3ed65aab0a13680ced2f09cd195be46a1164505de241b6398c17dbfc32171c203c",
       "set": "Vendetta",
       "setNum": "Set 4",
       "setCode": "VDT",
@@ -568,7 +568,7 @@
     },
     {
       "legend": "Pyke, Bloodharbor Ripper",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/c6b58c86-c4be-4351-83ba-0d7d86ca2422.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=152d63c4e0808266c58105d78a7b67533c3ec7b4e06be9d1832775514232469bd688d9e9e1c9eadc403bd49881017d350abdd645a730990164a15b9e26332bd4628c6eba8228ee0dd82cf1389640e225dc383d6a0a5dd6ac538343bcb55dce6b26f2f3d3188173119caf3a7fd0b99c8274283d5808ca7a9c1b85c2561c3fb556d9c02439638260414018af201c2de8adb9713405c7b8d54045ae1a8af35b2976740c9af1d9c133f1387284b0050d4adfd9e4167f9d31d2901d7f3ffd31d4de2132e36651504515e539455c5d03fc51c4a2f9ef833a0bd127c41a1b502c6666d752022164b777148d5aee56783faf60c12df175732175416c00e5f1c3e01afc53",
       "set": "Unleashed",
       "setNum": "Set 3",
       "setCode": "UNL",
@@ -586,7 +586,7 @@
     },
     {
       "legend": "Zed, Master of Shadows",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/bde7c652-ee06-4e02-81ab-0f2457d33fbe.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=671e81d30590f7a1a677046952b57b7af99273386e6e2c505efa8366cb7830e377b78d392b06c2d4643ecf007ca4800ed11d51c21cebc81a108b13d713088858f46eaf052f11d1d2e4c3fb751f15d94c99e9402c93a61b74ceb1ab35c68bcc35645e79e2f78f1629349ddcc7d4e68ffebc8dba39ddc61ee223bb57fb23e006c3b9e4e965214df06a67583cded25a154619e20861a905fc64a592c51eab77fe18447b951e1f6827c61e6ad258d9ebf03e843f416ea01fdbd27245f8c910dde40a1c811c88c7ca8f2855d3a65cb2bc902112c16016219f66f0d854adbc6c803f3dfe9ba26838f203c90abf84bbaf48266010e84d4f0352c06aa3f44fd5e41d3a0b",
       "set": "Vendetta",
       "setNum": "Set 4",
       "setCode": "VDT",
@@ -604,7 +604,7 @@
     },
     {
       "legend": "Rumble, Mechanized Menace",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/f23a3d0d-c8fe-46fe-8df3-c9077327ef85.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=168a67837ef79f5d98d89f5e86a7c564afe7257fb96c72ecdcb954ede9444f8483300fad96c73bcb148e074d67d9a190f20b634c1a2d8ffd089736be1c0b4ce84e513c7d36bffa81aa41d344cad51a370a172a76d6ffdbbe6622d6a7d49b4bbf1c697c77e86e21f3dcd5f0061b478a4176c2b614a29e5304f46ef2b3cc7fea51357ff6630fef1102b70d814376d8636f7c92efdba907a66a2d0b7e40219e8be0320abb8e7551e022ef619a9aa67749e4b83f1bdbeda9852aaa4fcb6df8ed783ad06ed86b0505039b57f6232bdc4273e9bae5e750d3edc924c88152ac6710cd7ecd7b5f15c0a8a3328fd015d2e7beda8a89311856e90e115d165f96a26c63eca5",
       "set": "Spiritforged",
       "setNum": "Set 2",
       "setCode": "SPF",
@@ -622,7 +622,7 @@
     },
     {
       "legend": "Viktor, Herald of the Arcane",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/a9b7f199-a31b-4f94-9b17-7cf640d5853a.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=569abc417c93e3f3820dc9e0d6fd0308817b158cf781cdab5bd58315e31be24d999db26bbb34895fd554a10d5db8d423a921b337e2a657b06dae16fea49faaea70d4ec649202ffed37d27d1bcc9d792c7ee40f785b0bc4cfd6680927cc6ebd6158cd6e2b810bb348fcda2cf3f403f03c594ed04d86aafb49acd50183ce7c21813f6be769fd7a291f47a5cd7ded2b95d0ec94528c87b55b915f137642d8644af785376cf81bc273330bb8c9ab19c2ebde850dc1464868ecedfbd8db01d00bb343cfdd8f3272cec3d7512b95d5177bddbf9307da74394ad6ec03ae8c97c41bc167ef955801a41f6c6e8d1da889efde001dc542dee1c58845829c465020f8ca1404",
       "set": "Vendetta",
       "setNum": "Set 4",
       "setCode": "VDT",
@@ -640,7 +640,7 @@
     },
     {
       "legend": "Ivern, Green Father",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/8c45aa6f-0475-403b-9b4a-846779f3454b.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=408b09af117abf4084ed08a829f2ee12bc0a0ca96ad6514bb5389aac96ec85cc1f0340270df9d3a29b8df178c979d5fcc8a716a2a93ae3bdf3ac88e1fa9697bcc4151f5c4689867a235e158cb1f609dce53efaa6ba6578b83f50adfa25413703bffcffdd8b891808ee02cd7eda25d7f15c0f9fa23f8709bba760df9b724feba39c3d23b47c44c02bac97b33e5199c362a00c99f9ca54ca18ae00bd44e541c71fef196384e439db103df68d41a174baa007690c5e512f603db09c37eae18ecd6600b0ef02dad1a312feff3da766ba1adc19886854818c47d4175c38f6e92e0c75d2d5a70cc1d18874698e5739ac210fcecbfbf091c7ed9ba1e2f76fa247ed2b85",
       "set": "Unleashed",
       "setNum": "Set 3",
       "setCode": "UNL",
@@ -658,7 +658,7 @@
     },
     {
       "legend": "Shen, Eye of Twilight",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/bf98ae00-aa8e-4c11-a209-22ed8b451243.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=4af3abd960ec4b91e939196e2bf74623f07d18781fe91f308f904a73b10be1c0d0e8dffcc0cd21e872c85e8c37889d765d6cd902415685a7577dba2f5fc7be154a62302db4aa9e540e899835b7dc9d4acf7709f349cedf8441565f097d36212259ea53a8b3901daca0ca740f0315fb383cce184a48ebb0a07ad1f01cbac88a566dcbb7ffaa912e9d8746b7ed17af020c6664301df871beb011003e3caaa655f0858cba3da2a4412e5bbfa477c84b448aa3618f43e06d76990c1c287f9b3cfdf35398525606d29b86fb83e0469f7deb4ba67db3384a80a60134b2bfb904d5c3a3c29d93954bd6250eda72beaec2ea98bfbb1fdd9dab20501f444a8de70abe8ccd",
       "set": "Vendetta",
       "setNum": "Set 4",
       "setCode": "VDT",
@@ -676,7 +676,7 @@
     },
     {
       "legend": "Jhin, Virtuoso",
-      "image": null,
+      "image": "https://storage.googleapis.com/spicerack_media/cards/riftbound/a54f40bc-6f61-4308-8cc6-47f78ccb8a4f.webp?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=storages-service-account%40counterbalance-381319.iam.gserviceaccount.com%2F20260816%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260816T183943Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&X-Goog-Signature=2a8b27e02d70bfd1f532b34fe3c0965b1470bd177309e2cf4e55ae8d45aa5cf25dcd1b0f49ec7eee2cd33f6200f04a34c95a4c89d5bfd2c4ac86e7baa9c24aaaef7f8b4dc6d044f31ac6f8750e5ce504ae952cada7ac1d8e27123471964207e408077f3d86c1919c53b93a467655d17734928815c640f98d1e9068e4029c8bb2aca801a4f338343e5c207b1c77f987f976f2b5fab8f7051cd47c49254eb5ca254f4d3605d0b78c28c697245825b0aa948486f0392da34d190596da9b9e43fe6e4a04129eca4e262fd92d5ded108131cc12ccd15e74e9a60ac486af82e1f546e382df932cfe52021ca3bbdbc3c1746caa8371387be794b06a557cdb9693af7f68",
       "set": "Unleashed",
       "setNum": "Set 3",
       "setCode": "UNL",

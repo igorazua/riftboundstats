@@ -947,6 +947,11 @@ body.profile-open-desktop .main-content__right {
     min-width: 100%;
   }
 
+  .leaderboard__table th {
+    position: static !important;
+    top: auto !important;
+  }
+
   /* Speyer responsive */
   .speyer-showdown {
     height: auto;
@@ -969,6 +974,11 @@ body.profile-open-desktop .main-content__right {
   .speyer__table {
     width: max-content;
     min-width: 100%;
+  }
+
+  .speyer__table th {
+    position: static !important;
+    top: auto !important;
   }
 
   .tabs-container {

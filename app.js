@@ -1410,6 +1410,29 @@ function getLegendSetInfo(fullName) {
   return { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' };
 }
 
+const legendImageCache = {};
+
+function getLegendImage(legendName) {
+  if (!legendName) return '';
+  if (legendImageCache[legendName]) return legendImageCache[legendName];
+  const short = legendName.split(',')[0].trim();
+  if (legendImageCache[short]) return legendImageCache[short];
+
+  // Try to find from cached tournament datasets (Speyer has all 40)
+  for (const key in tournamentDataCache) {
+    const tourney = tournamentDataCache[key];
+    if (tourney && tourney.data) {
+      const item = tourney.data.find(d => d.legend === legendName || d.legend.startsWith(short));
+      if (item && item.image) {
+        legendImageCache[legendName] = item.image;
+        legendImageCache[short] = item.image;
+        return item.image;
+      }
+    }
+  }
+  return '';
+}
+
 window.switchSpeyerSubtab = function(subtab) {
   speyerState.activeSubtab = subtab;
   
@@ -1749,10 +1772,13 @@ window.renderSpeyerTable = function() {
     // Top 32 count
     const top32Html = row.top32 > 0 ? `<span class="pill-top32">⭐ ${row.top32}</span>` : '<span class="pill-zero">0</span>';
     
+    const legendImgUrl = row.image || getLegendImage(row.legend);
+    const legendImgTag = legendImgUrl ? `<img src="${legendImgUrl}" alt="" onerror="this.style.display='none'">` : '';
+
     tr.innerHTML = `
       <td>${rankHtml}</td>
       <td class="speyer-legend">
-        <img src="${row.image}" alt="" onerror="this.style.display='none'">
+        ${legendImgTag}
         <span>${escapeHTML(row.legend)}</span>
       </td>
       <td>${setBadge}</td>
@@ -1839,6 +1865,8 @@ window.renderSpeyerPlayersTable = function() {
     else if (p.rank === 3) rankBadge = '<span class="rank-medal rank-medal--3">3</span>';
 
     const avatarSrc = p.avatar || DEFAULT_SPEYER_AVATAR;
+    const playerLegendImg = p.legendImage || getLegendImage(p.legend);
+    const playerLegendImgTag = playerLegendImg ? `<img src="${playerLegendImg}" alt="" onerror="this.style.display='none'">` : '';
 
     let recordClass = 'pill-neutral';
     let recordIcon = '';
@@ -1862,7 +1890,7 @@ window.renderSpeyerPlayersTable = function() {
       </td>
       <td>
         <div class="speyer-player-cell">
-          <img src="${p.legendImage || ''}" alt="" onerror="this.style.display='none'">
+          ${playerLegendImgTag}
           <span>${escapeHTML(p.legend)}</span>
         </div>
       </td>
