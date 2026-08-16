@@ -79,7 +79,7 @@ function getLegendSet(fullName) {
   return { set: 'Origins', num: 'Set 1', code: 'OGN' };
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Enable CORS and caching (Cache for 30s, stale up to 60s)
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');

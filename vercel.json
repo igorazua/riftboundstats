@@ -5,17 +5,24 @@
       "destination": "/index.html"
     },
     {
-      "source": "/uvs-api/:path*",
-      "destination": "https://api.riftbound.uvsgames.com/api/:path*"
+      "source": "/api/leaderboard/:path*",
+      "destination": "https://host.neatqueue.com/api/leaderboard/:path*"
     },
     {
-      "source": "/api/speyer",
-      "destination": "/api/speyer"
+      "source": "/api/player_stats/:path*",
+      "destination": "https://host.neatqueue.com/api/player_stats/:path*"
     },
     {
-      "source": "/api/:path*",
-      "destination": "https://host.neatqueue.com/api/:path*"
+      "source": "/api/matches/:path*",
+      "destination": "https://host.neatqueue.com/api/matches/:path*"
+    },
+    {
+      "source": "/api/game_match_info/:path*",
+      "destination": "https://host.neatqueue.com/api/game_match_info/:path*"
+    },
+    {
+      "source": "/api/search_players/:path*",
+      "destination": "https://host.neatqueue.com/api/search_players/:path*"
     }
   ]
 }
-
