@@ -1337,32 +1337,11 @@ window.fetchSpeyerData = async function(isSilent = false) {
       if (statusEl) statusEl.textContent = 'Updating live...';
     }
     
-    // 1. Try fetching from dynamic /speyer-data endpoint (live serverless function with fresh rounds)
-    let liveData = null;
-    try {
-      const apiRes = await fetch(`/speyer-data?t=${Date.now()}`);
-      if (apiRes.ok) {
-        liveData = await apiRes.json();
-      }
-    } catch (e) {
-      console.warn('Live API error, trying fallback:', e.message);
+    const staticRes = await fetch(`/speyer_data.json?t=${Date.now()}`);
+    if (staticRes.ok) {
+      const data = await staticRes.json();
+      applySpeyerTournamentData(data);
     }
-
-    // 2. If /api/speyer not ready yet, fallback to static /speyer_data.json
-    if (!liveData || !liveData.data) {
-      const staticRes = await fetch(`/speyer_data.json?t=${Date.now()}`);
-      if (staticRes.ok) {
-        liveData = await staticRes.json();
-      }
-    }
-
-    if (liveData && liveData.data) {
-      applySpeyerTournamentData(liveData);
-    }
-
-    // 3. Directly verify with UVS API proxy if a new round just started
-    checkLiveTournamentUpdates().catch(e => console.warn('Direct UVS check:', e.message));
-
   } catch (err) {
     console.error('Error fetching Speyer data:', err);
     const statusEl = document.getElementById('speyerStatusText');
