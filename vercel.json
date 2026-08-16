@@ -5,12 +5,20 @@
       "destination": "/index.html"
     },
     {
-      "source": "/speyer-live",
-      "destination": "/api/speyer-live"
+      "source": "/api/leaderboard/:path*",
+      "destination": "https://host.neatqueue.com/api/leaderboard/:path*"
     },
     {
-      "source": "/api/:path*",
-      "destination": "https://host.neatqueue.com/api/:path*"
+      "source": "/api/player_stats/:path*",
+      "destination": "https://host.neatqueue.com/api/player_stats/:path*"
+    },
+    {
+      "source": "/api/matches/:path*",
+      "destination": "https://host.neatqueue.com/api/matches/:path*"
+    },
+    {
+      "source": "/api/game_match_info/:path*",
+      "destination": "https://host.neatqueue.com/api/game_match_info/:path*"
     }
   ]
 }
