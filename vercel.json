@@ -1,12 +1,16 @@
 {
-  "buildCommand": "",
-  "installCommand": "",
-  "framework": null,
-  "outputDirectory": ".",
   "rewrites": [
     {
       "source": "/speyer",
       "destination": "/index.html"
+    },
+    {
+      "source": "/uvs-api/:path*",
+      "destination": "https://api.riftbound.uvsgames.com/api/:path*"
+    },
+    {
+      "source": "/api/speyer",
+      "destination": "/api/speyer"
     },
     {
       "source": "/api/:path*",

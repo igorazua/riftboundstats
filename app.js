@@ -1330,64 +1330,95 @@ window.switchSpeyerSubtab = function(subtab) {
   }
 };
 
-window.fetchSpeyerData = async function() {
+window.fetchSpeyerData = async function(isSilent = false) {
   try {
-    document.getElementById('speyerStatusText').textContent = 'Fetching...';
+    if (!isSilent) {
+      const statusEl = document.getElementById('speyerStatusText');
+      if (statusEl) statusEl.textContent = 'Updating live...';
+    }
     
-    // 1. Instant load from static JSON (10ms, zero lag)
-    const staticRes = await fetch(`/speyer_data.json?t=${Date.now()}`);
-    if (staticRes.ok) {
-      const data = await staticRes.json();
-      speyerState.totalPlayers = data.totalPlayers || 0;
-      speyerState.roundNumber = data.roundNumber || 2;
-      speyerState.totalRounds = data.totalRounds || 10;
-      speyerState.status = data.status || 'IN_PROGRESS';
-      speyerState.data = data.data || [];
-      speyerState.players = data.players || [];
+    // 1. Try fetching from dynamic /api/speyer endpoint (live serverless function with fresh rounds)
+    let liveData = null;
+    try {
+      const apiRes = await fetch(`/api/speyer?t=${Date.now()}`);
+      if (apiRes.ok) {
+        liveData = await apiRes.json();
+      }
+    } catch (e) {
+      console.warn('API /api/speyer error, trying fallback:', e.message);
+    }
 
-      document.getElementById('speyerPlayerCount').textContent = `${speyerState.totalPlayers} Players Registered`;
-      const badgeCount = document.getElementById('speyerPlayersCountBadge');
-      if (badgeCount) badgeCount.textContent = speyerState.totalPlayers;
-      
-      const roundTxt = `Round ${speyerState.roundNumber} of ${speyerState.totalRounds} • ${data.isComplete ? 'Complete' : 'In Progress'}`;
-      document.getElementById('speyerStatusText').textContent = roundTxt;
-      
-      const dot = document.getElementById('speyerStatusDot');
-      if (data.isComplete) dot.classList.add('complete');
-      else dot.classList.remove('complete');
-
-      const now = new Date();
-      document.getElementById('speyerLastUpdate').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-      speyerState.lastUpdated = now;
-
-      if (speyerState.activeSubtab === 'meta') {
-        window.renderSpeyerTable();
-      } else {
-        window.renderSpeyerPlayersTable();
+    // 2. If /api/speyer not ready yet, fallback to static /speyer_data.json
+    if (!liveData || !liveData.data) {
+      const staticRes = await fetch(`/speyer_data.json?t=${Date.now()}`);
+      if (staticRes.ok) {
+        liveData = await staticRes.json();
       }
     }
 
-    // 2. Background check for new live rounds from UVS Games
-    checkLiveTournamentUpdates().catch(e => console.warn('Background live check:', e.message));
+    if (liveData && liveData.data) {
+      applySpeyerTournamentData(liveData);
+    }
+
+    // 3. Directly verify with UVS API proxy if a new round just started
+    checkLiveTournamentUpdates().catch(e => console.warn('Direct UVS check:', e.message));
 
   } catch (err) {
     console.error('Error fetching Speyer data:', err);
-    document.getElementById('speyerStatusText').textContent = 'Error loading data';
-    const tbody = document.getElementById('speyerBody');
-    if (tbody && speyerState.data.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;padding:3rem;color:var(--negative-red)">${escapeHTML(err.message)}</td></tr>`;
+    const statusEl = document.getElementById('speyerStatusText');
+    if (statusEl && speyerState.data.length === 0) {
+      statusEl.textContent = 'Error loading data';
     }
   }
 };
 
+function applySpeyerTournamentData(data) {
+  speyerState.totalPlayers = data.totalPlayers || 605;
+  speyerState.roundNumber = data.roundNumber || 1;
+  speyerState.totalRounds = data.totalRounds || 10;
+  speyerState.status = data.status || 'IN_PROGRESS';
+  speyerState.data = data.data || [];
+  speyerState.players = data.players || [];
+
+  const countEl = document.getElementById('speyerPlayerCount');
+  if (countEl) countEl.textContent = `${speyerState.totalPlayers} Players Registered`;
+  
+  const badgeCount = document.getElementById('speyerPlayersCountBadge');
+  if (badgeCount) badgeCount.textContent = speyerState.totalPlayers;
+  
+  const isComp = (speyerState.status === 'COMPLETE');
+  const roundTxt = `Round ${speyerState.roundNumber} of ${speyerState.totalRounds} • ${isComp ? 'Complete' : 'In Progress'}`;
+  const statusEl = document.getElementById('speyerStatusText');
+  if (statusEl) statusEl.textContent = roundTxt;
+  
+  const dot = document.getElementById('speyerStatusDot');
+  if (dot) {
+    if (isComp) dot.classList.add('complete');
+    else dot.classList.remove('complete');
+  }
+
+  const now = new Date();
+  const timeEl = document.getElementById('speyerLastUpdate');
+  if (timeEl) {
+    timeEl.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  }
+  speyerState.lastUpdated = now;
+
+  if (speyerState.activeSubtab === 'meta') {
+    window.renderSpeyerTable();
+  } else {
+    window.renderSpeyerPlayersTable();
+  }
+}
+
 async function checkLiveTournamentUpdates() {
   const eventId = '835043';
-  const overviewUrl = `https://api.riftbound.uvsgames.com/api/magic-events/${eventId}/tournament_overview/`;
+  // Use Vercel proxy rewrite to avoid CORS
+  const overviewUrl = `/uvs-api/magic-events/${eventId}/tournament_overview/`;
   
-  const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(overviewUrl)}`);
+  const res = await fetch(overviewUrl);
   if (!res.ok) return;
-  const raw = await res.json();
-  const overview = JSON.parse(raw.contents);
+  const overview = await res.json();
   
   const swissPhase = (overview.tournament_phases || []).find(p => p.round_type === 'SWISS') || overview.tournament_phases[0];
   const rounds = [...(swissPhase.rounds || [])].sort((a, b) => b.round_number - a.round_number);
@@ -1397,17 +1428,17 @@ async function checkLiveTournamentUpdates() {
 
   // If a newer round or status changed
   if (targetRound.round_number !== speyerState.roundNumber || targetRound.status !== speyerState.status) {
-    const standingsUrl = `https://api.riftbound.uvsgames.com/api/v2/tournament-rounds/${targetRound.id}/standings/`;
-    const stRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(standingsUrl)}`);
+    const standingsUrl = `/uvs-api/v2/tournament-rounds/${targetRound.id}/standings/`;
+    const stRes = await fetch(standingsUrl);
     if (!stRes.ok) return;
-    const stRaw = await stRes.json();
-    const standingsData = JSON.parse(stRaw.contents);
+    const standingsData = await stRes.json();
     const rawList = standingsData.standings || [];
     const valid = rawList.filter(s => s.user_event_status?.deck_defining_card?.name);
 
     if (valid.length > 0) {
       const aggregates = {};
       const newPlayers = [];
+      const totalPlayers = valid.length;
 
       for (const s of valid) {
         const card = s.user_event_status.deck_defining_card;
@@ -1417,7 +1448,8 @@ async function checkLiveTournamentUpdates() {
         const ues = s.user_event_status;
         const setInfo = getLegendSetInfo(legendName);
         const pId = s.player?.id || s.user_event_status?.user?.id || s.id;
-        const pName = s.user_event_status?.best_identifier || s.player?.best_identifier || 'Unknown Player';
+        const rawName = s.user_event_status?.best_identifier || s.player?.best_identifier || 'Unknown Player';
+        const pName = cleanPlayerName(rawName);
 
         if (!aggregates[legendName]) {
           aggregates[legendName] = {
@@ -1479,49 +1511,40 @@ async function checkLiveTournamentUpdates() {
           matchesWon: mw,
           matchesLost: ml,
           matchesDrawn: md,
-          omw: s.opponent_match_win_percentage ? (s.opponent_match_win_percentage * 100) : 0,
-          gw: s.game_win_percentage ? (s.game_win_percentage * 100) : 0,
-          ogw: s.opponent_game_win_percentage ? (s.opponent_game_win_percentage * 100) : 0,
+          omw: (s.opponent_match_win_percentage || 0) * 100,
+          gw: (s.game_win_percentage || 0) * 100,
           rounds: []
         });
       }
 
-      speyerState.totalPlayers = valid.length;
-      speyerState.roundNumber = targetRound.round_number;
-      speyerState.status = targetRound.status;
-      speyerState.data = Object.values(aggregates).map(agg => {
-        agg.meta = (agg.players / valid.length) * 100;
+      const metaData = Object.values(aggregates).map(agg => {
+        agg.meta = (agg.players / totalPlayers) * 100;
         agg.winrate = agg.totalMatchesPlayed > 0 ? (agg.totalMatchWins / agg.totalMatchesPlayed) * 100 : 0;
         agg.avgRank = agg.players > 0 ? agg.rankSum / agg.players : 999999;
         agg.setName = `${agg.set} (${agg.setNum})`;
         return agg;
       });
 
-      newPlayers.sort((a, b) => a.rank - b.rank);
-      speyerState.players = newPlayers;
-
-      const isComplete = targetRound.status === 'COMPLETE';
-      document.getElementById('speyerPlayerCount').textContent = `${speyerState.totalPlayers} Players Registered`;
-      const badgeCount = document.getElementById('speyerPlayersCountBadge');
-      if (badgeCount) badgeCount.textContent = speyerState.totalPlayers;
-
-      document.getElementById('speyerStatusText').textContent = `Round ${speyerState.roundNumber} of ${speyerState.totalRounds} • ${isComplete ? 'Complete' : 'In Progress'}`;
-      const dot = document.getElementById('speyerStatusDot');
-      if (isComplete) dot.classList.add('complete');
-      else dot.classList.remove('complete');
-
-      const now = new Date();
-      document.getElementById('speyerLastUpdate').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-      speyerState.lastUpdated = now;
-
-      if (speyerState.activeSubtab === 'meta') {
-        window.renderSpeyerTable();
-      } else {
-        window.renderSpeyerPlayersTable();
-      }
+      applySpeyerTournamentData({
+        tournamentId: eventId,
+        roundNumber: targetRound.round_number,
+        totalRounds: 10,
+        status: targetRound.status,
+        totalPlayers: totalPlayers,
+        data: metaData,
+        players: newPlayers
+      });
     }
   }
 }
+
+// Auto-poll Speyer tournament every 45 seconds
+setInterval(() => {
+  const speyerSection = document.getElementById('speyerShowdownSection');
+  if (speyerSection && speyerSection.style.display !== 'none') {
+    window.fetchSpeyerData(true);
+  }
+}, 45000);
 
 window.sortSpeyerTable = function(col) {
   if (speyerState.sortCol === col) {
