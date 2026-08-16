@@ -1337,15 +1337,15 @@ window.fetchSpeyerData = async function(isSilent = false) {
       if (statusEl) statusEl.textContent = 'Updating live...';
     }
     
-    // 1. Try fetching from dynamic /api/speyer endpoint (live serverless function with fresh rounds)
+    // 1. Try fetching from dynamic /speyer-live endpoint (live serverless function with fresh rounds)
     let liveData = null;
     try {
-      const apiRes = await fetch(`/api/speyer?t=${Date.now()}`);
+      const apiRes = await fetch(`/speyer-live?t=${Date.now()}`);
       if (apiRes.ok) {
         liveData = await apiRes.json();
       }
     } catch (e) {
-      console.warn('API /api/speyer error, trying fallback:', e.message);
+      console.warn('Live API error, trying fallback:', e.message);
     }
 
     // 2. If /api/speyer not ready yet, fallback to static /speyer_data.json
