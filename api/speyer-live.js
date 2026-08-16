@@ -1,5 +1,10 @@
-// Vercel Serverless Function for Live Speyer Tournament Data
+// High-Performance Vercel Serverless Function for Live Speyer Tournament Data
 const EVENT_ID = '835043';
+
+// Module-level in-memory cache for past completed rounds (super fast)
+let pastRoundsCache = {};
+let lastPayloadCache = null;
+let lastFetchTime = 0;
 
 const LEGEND_SETS = {
   // Set 1: Origins (OGN)
@@ -82,10 +87,16 @@ function getLegendSet(fullName) {
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Cache-Control', 's-maxage=30, stale-while-revalidate=60');
+  res.setHeader('Cache-Control', 's-maxage=20, stale-while-revalidate=40');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
+  }
+
+  const now = Date.now();
+  // Return cached payload if less than 15s old
+  if (lastPayloadCache && (now - lastFetchTime < 15000)) {
+    return res.status(200).json(lastPayloadCache);
   }
 
   try {
@@ -99,28 +110,19 @@ module.exports = async function handler(req, res) {
 
     if (!targetRound) throw new Error('No Swiss rounds found');
 
-    const roundStandingsMap = {};
-    const fetchPromises = [];
+    // Fetch target round standings
+    const targetRes = await fetch(`https://api.riftbound.uvsgames.com/api/v2/tournament-rounds/${targetRound.id}/standings/`);
+    if (!targetRes.ok) throw new Error(`Target round HTTP ${targetRes.status}`);
+    const targetData = await targetRes.json();
+    const latestStandings = targetData.standings || [];
 
-    for (let r = 1; r <= targetRound.round_number; r++) {
-      const rObj = (swissPhase.rounds || []).find(x => x.round_number === r);
-      if (rObj) {
-        fetchPromises.push(
-          fetch(`https://api.riftbound.uvsgames.com/api/v2/tournament-rounds/${rObj.id}/standings/`)
-            .then(res => res.ok ? res.json() : null)
-            .then(data => {
-              if (data && data.standings) roundStandingsMap[r] = data.standings;
-            })
-            .catch(() => {})
-        );
-      }
-    }
-    await Promise.all(fetchPromises);
+    // Cache latest round
+    pastRoundsCache[targetRound.round_number] = latestStandings;
 
-    const latestStandings = roundStandingsMap[targetRound.round_number] || [];
     const valid = latestStandings.filter(s => s.user_event_status?.deck_defining_card?.name);
     const totalPlayers = valid.length || 605;
 
+    // 1. Aggregate Meta by Legend
     const aggregates = {};
     for (const s of valid) {
       const card = s.user_event_status.deck_defining_card;
@@ -184,6 +186,7 @@ module.exports = async function handler(req, res) {
       return agg;
     });
 
+    // 2. Build Player Standings
     const playersList = valid.map(s => {
       const pId = s.player?.id || s.user_event_status?.user?.id || s.id;
       const rawName = s.user_event_status?.best_identifier || s.player?.best_identifier || 'Unknown Player';
@@ -197,7 +200,7 @@ module.exports = async function handler(req, res) {
       let prevPoints = 0;
 
       for (let rNum = 1; rNum <= targetRound.round_number; rNum++) {
-        const rStandings = roundStandingsMap[rNum] || [];
+        const rStandings = pastRoundsCache[rNum] || [];
         const rPlayerStanding = rStandings.find(ps => (ps.player?.id || ps.id) === pId);
         
         if (rPlayerStanding) {
@@ -261,9 +264,15 @@ module.exports = async function handler(req, res) {
       players: playersList
     };
 
+    lastPayloadCache = payload;
+    lastFetchTime = now;
+
     return res.status(200).json(payload);
   } catch (error) {
     console.error('Speyer API Error:', error);
+    if (lastPayloadCache) {
+      return res.status(200).json(lastPayloadCache);
+    }
     return res.status(500).json({ error: error.message });
   }
 };
