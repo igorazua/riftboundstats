@@ -1,6 +1,9 @@
 // High-Performance Vercel Serverless Function for Live Speyer Tournament Data
 const EVENT_ID = '835043';
 
+// Universal fetch
+const safeFetch = typeof fetch === 'function' ? fetch : (...args) => import('node-fetch').then(({default: f}) => f(...args));
+
 let pastRoundsCache = {};
 let lastPayloadCache = null;
 let lastFetchTime = 0;
@@ -98,7 +101,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const overviewRes = await fetch(`https://api.riftbound.uvsgames.com/api/magic-events/${EVENT_ID}/tournament_overview/`);
+    const overviewRes = await safeFetch(`https://api.riftbound.uvsgames.com/api/magic-events/${EVENT_ID}/tournament_overview/`);
     if (!overviewRes.ok) throw new Error(`Overview HTTP ${overviewRes.status}`);
     const overview = await overviewRes.json();
 
@@ -108,7 +111,7 @@ module.exports = async function handler(req, res) {
 
     if (!targetRound) throw new Error('No Swiss rounds found');
 
-    const targetRes = await fetch(`https://api.riftbound.uvsgames.com/api/v2/tournament-rounds/${targetRound.id}/standings/`);
+    const targetRes = await safeFetch(`https://api.riftbound.uvsgames.com/api/v2/tournament-rounds/${targetRound.id}/standings/`);
     if (!targetRes.ok) throw new Error(`Target round HTTP ${targetRes.status}`);
     const targetData = await targetRes.json();
     const latestStandings = targetData.standings || [];

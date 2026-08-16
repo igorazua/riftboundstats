@@ -2,7 +2,10 @@
   "name": "riftboundstats",
   "version": "1.0.0",
   "private": true,
-  "scripts": {
-    "dev": "node server.js"
+  "engines": {
+    "node": "18.x"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.7"
   }
 }
