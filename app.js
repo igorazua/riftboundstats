@@ -1153,8 +1153,12 @@ document.addEventListener('DOMContentLoaded', () => {
   setupProfileTouchGestures();
 
   const handleRefresh = () => {
-    state.playerStats = {};
-    fetchAndRenderAll();
+    if (document.getElementById('speyerSection') && document.getElementById('speyerSection').style.display !== 'none') {
+      window.fetchSpeyerData();
+    } else {
+      state.playerStats = {};
+      fetchAndRenderAll();
+    }
   };
 
   const btnRefresh = document.getElementById('btnRefresh');
