@@ -1,8 +1,9 @@
 {
-  "buildCommand": "",
-  "installCommand": "",
-  "framework": null,
-  "outputDirectory": ".",
+  "functions": {
+    "api/*.js": {
+      "runtime": "nodejs20.x"
+    }
+  },
   "rewrites": [
     {
       "source": "/barcelona",
@@ -35,10 +36,6 @@
     {
       "source": "/ottawa",
       "destination": "/index.html"
-    },
-    {
-      "source": "/api/live",
-      "destination": "/api/live.js"
     },
     {
       "source": "/api/neatqueue/:path*",
