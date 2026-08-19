@@ -37,12 +37,20 @@
       "destination": "/index.html"
     },
     {
-      "source": "/api/uvs/:path*",
-      "destination": "https://api.riftbound.uvsgames.com/api/:path*"
+      "source": "/api/live",
+      "destination": "/api/live.js"
     },
     {
-      "source": "/api/:path*",
+      "source": "/api/neatqueue/:path*",
       "destination": "https://host.neatqueue.com/api/:path*"
+    },
+    {
+      "source": "/api/v2/:path*",
+      "destination": "https://host.neatqueue.com/api/v2/:path*"
+    },
+    {
+      "source": "/api/v1/:path*",
+      "destination": "https://host.neatqueue.com/api/v1/:path*"
     }
   ]
 }

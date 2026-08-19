@@ -1389,7 +1389,7 @@ window.fetchLiveTournament = async function(tourney, isSilent = false) {
   try {
     if (!isSilent) {
       const statusEl = document.getElementById('speyerStatusText');
-      if (statusEl) statusEl.textContent = '📡 Checking live tournament feed...';
+      if (statusEl) statusEl.textContent = '📡 Sincronizando en directo...';
     }
 
     if (!tourney.eventId) {
@@ -1397,65 +1397,17 @@ window.fetchLiveTournament = async function(tourney, isSilent = false) {
       return;
     }
 
-    let overview = null;
-    try {
-      const res = await fetch(`/api/uvs/magic-events/${tourney.eventId}/tournament_overview/?t=${Date.now()}`);
-      if (res.ok) overview = await res.json();
-    } catch(e) {}
-
-    if (!overview) {
-      try {
-        const resDirect = await fetch(`https://api.riftbound.uvsgames.com/api/magic-events/${tourney.eventId}/tournament_overview/?t=${Date.now()}`);
-        if (resDirect.ok) overview = await resDirect.json();
-      } catch(e) {}
-    }
-
-    if (!overview) {
-      showUpcomingHub(tourney);
-      return;
-    }
-
-    // Find highest active/completed round across all phases
-    let targetRound = null;
-    let totalRounds = 8;
-    for (const phase of (overview.tournament_phases || [])) {
-      if (phase.number_of_rounds) totalRounds = Math.max(totalRounds, phase.number_of_rounds);
-      for (const r of (phase.rounds || [])) {
-        if (r.status === 'COMPLETE' || r.status === 'IN_PROGRESS') {
-          targetRound = r;
-        }
+    const res = await fetch(`/api/live?eventId=${tourney.eventId}&t=${Date.now()}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.upcoming || !data.data || data.data.length === 0) {
+        showUpcomingHub(tourney);
+      } else {
+        applySpeyerTournamentData(data);
       }
+    } else {
+      showUpcomingHub(tourney);
     }
-
-    if (!targetRound) {
-      showUpcomingHub(tourney, overview);
-      return;
-    }
-
-    // Fetch Standings for targetRound
-    let standingsData = null;
-    try {
-      const sRes = await fetch(`/api/uvs/v2/tournament-rounds/${targetRound.id}/standings/?t=${Date.now()}`);
-      if (sRes.ok) standingsData = await sRes.json();
-    } catch(e) {}
-
-    if (!standingsData) {
-      try {
-        const sResDirect = await fetch(`https://api.riftbound.uvsgames.com/api/v2/tournament-rounds/${targetRound.id}/standings/?t=${Date.now()}`);
-        if (sResDirect.ok) standingsData = await sResDirect.json();
-      } catch(e) {}
-    }
-
-    const rawStandings = standingsData?.standings || [];
-    if (rawStandings.length === 0) {
-      showUpcomingHub(tourney, overview);
-      return;
-    }
-
-    // Process Live Standings into our unified format
-    const parsedData = parseLiveUvsStandings(rawStandings, targetRound, totalRounds, overview);
-    applySpeyerTournamentData(parsedData);
-
   } catch (err) {
     console.error('Error fetching live tournament:', err);
     showUpcomingHub(tourney);
