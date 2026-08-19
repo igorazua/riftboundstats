@@ -1,25 +1,8 @@
 {
-  "cleanUrls": true,
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-store, no-cache, must-revalidate"
-        }
-      ]
-    }
-  ],
+  "buildCommand": "",
+  "installCommand": "",
+  "framework": null,
+  "outputDirectory": ".",
   "rewrites": [
     {
       "source": "/barcelona",
@@ -52,6 +35,10 @@
     {
       "source": "/ottawa",
       "destination": "/index.html"
+    },
+    {
+      "source": "/api/live",
+      "destination": "/api/live.js"
     },
     {
       "source": "/api/neatqueue/:path*",
