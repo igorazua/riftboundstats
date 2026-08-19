@@ -1197,13 +1197,13 @@ const TOURNAMENTS = {
     tabBtnId: 'tabBarcelona',
     title: '🏆 Riftbound Regional Qualifier - Barcelona',
     location: '🇪🇸 Barcelona, Spain (Fira de Barcelona)',
-    format: 'Swiss (8 Rds) + Day 2 (5 Rds) + Top 8',
+    format: 'Swiss Day 1 (8 Rds) + Day 2 (8 Rds) + Top 8 Cut',
     isLiveEvent: true,
     eventId: 857452,
     locatorUrl: 'https://locator.riftbound.uvsgames.com/events/857452',
     route: '/barcelona',
     totalPlayers: 2208,
-    scheduleInfo: 'Saturday Aug 22, 10:00 AM • Phase 1: 8 Swiss Rounds'
+    scheduleInfo: 'Day 1: Sábado 10:00 AM (8 Rondas) • Day 2: Domingo (8 Rondas + Top 8 Cut)'
   },
   'pre-barcelona': {
     id: 'pre-barcelona',

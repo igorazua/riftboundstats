@@ -94,17 +94,22 @@ module.exports = async function handler(req, res) {
 
     const overview = await overviewRes.json();
 
-    // Scan for latest round
+    // Scan for latest round and sum total Swiss rounds across phases (Day 1 + Day 2)
     let targetRound = null;
-    let totalRounds = 8;
+    let totalRounds = 16;
+    let swissRoundsSum = 0;
+
     for (const phase of (overview.tournament_phases || [])) {
-      if (phase.number_of_rounds) totalRounds = Math.max(totalRounds, phase.number_of_rounds);
+      if (phase.round_type === 'SWISS' && phase.number_of_rounds) {
+        swissRoundsSum += phase.number_of_rounds;
+      }
       for (const r of (phase.rounds || [])) {
         if (r.status === 'COMPLETE' || r.status === 'IN_PROGRESS') {
           targetRound = r;
         }
       }
     }
+    if (swissRoundsSum > 0) totalRounds = swissRoundsSum;
 
     if (!targetRound) {
       return res.status(200).json({
