@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="index.css?v=20260819_4">
 </head>
 <body>
   <div id="errorMessage" style="background:var(--negative-red);color:#fff;padding:0.75rem;text-align:center;display:none;font-weight:500;position:fixed;top:0;left:0;right:0;z-index:300;">
@@ -61,7 +61,7 @@
           </div>
         </div>
       </div>
-      <section class="leaderboard" id="leaderboardSection">
+      <section class="leaderboard" id="leaderboardSection" style="display: none;">
         <div class="leaderboard__header">
           <h2 class="leaderboard__title">📊 Global Leaderboard</h2>
           <button class="leaderboard__refresh-btn" id="btnRefresh" title="Refresh">
@@ -105,27 +105,27 @@
         </div>
       </section>
       
-      <section class="speyer-showdown" id="speyerSection" style="display: none;">
+      <section class="speyer-showdown" id="speyerSection" style="display: flex;">
         <div class="speyer__header">
           <div class="speyer__info">
             <div class="speyer__title-row">
-              <h2 class="speyer__title">⚔️ Riftbound Showdown Speyer</h2>
-              <span class="speyer__location-badge">🇩🇪 Speyer, Germany</span>
+              <h2 class="speyer__title">🏆 Riftbound Regional Qualifier - Barcelona</h2>
+              <span class="speyer__location-badge">🇪🇸 Barcelona, Spain (Fira de Barcelona)</span>
             </div>
             <div class="speyer__meta-badges">
               <div class="speyer__status-badge" id="speyerStatusBadge">
                 <span class="speyer__status-dot" id="speyerStatusDot"></span>
-                <span id="speyerStatusText">Round 2 of 10 • In Progress</span>
+                <span id="speyerStatusText">🟢 Live Sync Active • Waiting for Round 1</span>
               </div>
-              <span class="speyer__format-badge" id="speyerFormatBadge">Swiss Format • 10 Rounds</span>
-              <span class="speyer__player-count" id="speyerPlayerCount">605 Players Registered</span>
+              <span class="speyer__format-badge" id="speyerFormatBadge">Swiss Day 1 (8 Rds) + Day 2 (8 Rds) + Top 8</span>
+              <span class="speyer__player-count" id="speyerPlayerCount">2,208 Players Registered</span>
             </div>
           </div>
           <div class="speyer__actions">
             <div class="refresh-indicator">
               <span id="speyerLastUpdate">--</span>
             </div>
-            <a href="https://locator.riftbound.uvsgames.com/events/835043" target="_blank" rel="noopener noreferrer" class="speyer__locator-btn" title="View Event on Carde / Riftbound Locator">
+            <a href="https://locator.riftbound.uvsgames.com/events/857452" target="_blank" rel="noopener noreferrer" class="speyer__locator-btn" title="View Event on Carde / Riftbound Locator">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                 <circle cx="12" cy="10" r="3"></circle>
@@ -217,6 +217,6 @@
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=20260819_4"></script>
 </body>
 </html>
