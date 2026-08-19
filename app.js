@@ -1188,6 +1188,32 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 
 const TOURNAMENTS = {
+  barcelona: {
+    id: '857452',
+    tabBtnId: 'tabBarcelona',
+    title: '🏆 Riftbound Regional Qualifier - Barcelona',
+    location: '🇪🇸 Barcelona, Spain (Fira de Barcelona)',
+    format: 'Swiss (8 Rds) + Day 2 (5 Rds) + Top 8',
+    isLiveEvent: true,
+    eventId: 857452,
+    locatorUrl: 'https://locator.riftbound.uvsgames.com/events/857452',
+    route: '/barcelona',
+    totalPlayers: 2208,
+    scheduleInfo: 'Saturday Aug 22, 10:00 AM • Phase 1: 8 Swiss Rounds'
+  },
+  'pre-barcelona': {
+    id: 'pre-barcelona',
+    tabBtnId: 'tabPreBarcelona',
+    title: '⚔️ Riftbound Pre-Regional Challenge - Barcelona',
+    location: '🇪🇸 Barcelona, Spain (Fira de Barcelona)',
+    format: 'Constructed • 5 Swiss Rounds (Bo3)',
+    isLiveEvent: true,
+    eventId: null,
+    locatorUrl: 'https://locator.riftbound.uvsgames.com/events/857452',
+    route: '/pre-barcelona',
+    totalPlayers: 512,
+    scheduleInfo: 'Friday Aug 21 • 5 Swiss Rounds (Bo3)'
+  },
   speyer: {
     id: '835043',
     tabBtnId: 'tabSpeyer',
@@ -1196,29 +1222,9 @@ const TOURNAMENTS = {
     format: 'Swiss Format • 10 Rounds + Top 8',
     dataFile: '/speyer_data.json',
     locatorUrl: 'https://locator.riftbound.uvsgames.com/events/835043',
-    route: '/speyer'
-  },
-  geng: {
-    id: 'geng-la',
-    tabBtnId: 'tabGeng',
-    title: '🎮 Gen.G LA Showdown Series',
-    location: '🇺🇸 Los Angeles, CA (ASU GAME School)',
-    format: 'Swiss + Top 8 Single Elimination • 128 Players',
-    dataFile: '/geng_data.json',
-    locatorUrl: 'https://locator.riftbound.uvsgames.com/events',
-    route: '/geng',
-    totalPlayers: 128
-  },
-  australia: {
-    id: 'australia',
-    tabBtnId: 'tabAustralia',
-    title: '🦘 Riftbound Showdown Australia',
-    location: '🇦🇺 Sydney & Melbourne, Australia',
-    format: 'Regional Showdown • 850 Players',
-    dataFile: '/australia_data.json',
-    locatorUrl: 'https://locator.riftbound.uvsgames.com/events',
-    route: '/australia',
-    totalPlayers: 850
+    route: '/speyer',
+    totalPlayers: 605,
+    isArchive: true
   },
   ottawa: {
     id: '788036',
@@ -1229,18 +1235,60 @@ const TOURNAMENTS = {
     dataFile: '/ottawa_data.json',
     locatorUrl: 'https://locator.riftbound.uvsgames.com/events/788036',
     route: '/ottawa',
-    totalPlayers: 594
+    totalPlayers: 594,
+    isArchive: true
+  },
+  geng: {
+    id: 'geng-la',
+    tabBtnId: 'tabGeng',
+    title: '🎮 Gen.G LA Showdown Series',
+    location: '🇺🇸 Los Angeles, CA (ASU GAME School)',
+    format: 'Swiss + Top 8 Single Elimination • 128 Players',
+    dataFile: '/geng_data.json',
+    locatorUrl: 'https://locator.riftbound.uvsgames.com/events',
+    route: '/geng',
+    totalPlayers: 128,
+    isArchive: true
+  },
+  australia: {
+    id: 'australia',
+    tabBtnId: 'tabAustralia',
+    title: '🦘 Riftbound Showdown Australia',
+    location: '🇦🇺 Sydney & Melbourne, Australia',
+    format: 'Regional Showdown • 850 Players',
+    dataFile: '/australia_data.json',
+    locatorUrl: 'https://locator.riftbound.uvsgames.com/events',
+    route: '/australia',
+    totalPlayers: 850,
+    isArchive: true
   }
 };
 
-let currentTournamentKey = 'speyer';
+let currentTournamentKey = 'barcelona';
 const tournamentDataCache = {};
+
+window.toggleArchiveDropdown = function(event) {
+  if (event) event.stopPropagation();
+  const dropdown = document.getElementById('archiveDropdown');
+  if (dropdown) dropdown.classList.toggle('open');
+};
+
+document.addEventListener('click', function(e) {
+  const dropdown = document.getElementById('archiveDropdown');
+  if (dropdown && !dropdown.contains(e.target)) {
+    dropdown.classList.remove('open');
+  }
+});
 
 function checkInitialRoute() {
   const path = (window.location.pathname || '').toLowerCase();
   const hash = (window.location.hash || '').toLowerCase();
   
-  if (path === '/speyer' || hash === '#speyer') {
+  if (path === '/barcelona' || path === '/bcn' || hash === '#barcelona') {
+    window.switchTab('barcelona', false);
+  } else if (path === '/pre-barcelona' || path === '/pre' || hash === '#pre') {
+    window.switchTab('pre-barcelona', false);
+  } else if (path === '/speyer' || hash === '#speyer') {
     window.switchTab('speyer', false);
   } else if (path === '/geng' || path === '/la' || hash === '#geng') {
     window.switchTab('geng', false);
@@ -1248,13 +1296,19 @@ function checkInitialRoute() {
     window.switchTab('australia', false);
   } else if (path === '/ottawa' || hash === '#ottawa') {
     window.switchTab('ottawa', false);
+  } else if (path === '/' || path === '') {
+    window.switchTab('barcelona', false);
   } else {
     window.switchTab('leaderboard', false);
   }
 }
 
 window.switchTab = function(tabId, updateUrl = true) {
-  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  // Close archive dropdown if open
+  const dropdown = document.getElementById('archiveDropdown');
+  if (dropdown) dropdown.classList.remove('open');
+
+  document.querySelectorAll('.tab-btn, .dropdown-item').forEach(btn => btn.classList.remove('active'));
   
   if (tabId === 'leaderboard') {
     const btn = document.getElementById('tabLeaderboard');
@@ -1269,9 +1323,15 @@ window.switchTab = function(tabId, updateUrl = true) {
 
   // Handle Tournament tabs
   currentTournamentKey = tabId;
-  const tourney = TOURNAMENTS[tabId] || TOURNAMENTS.speyer;
+  const tourney = TOURNAMENTS[tabId] || TOURNAMENTS.barcelona;
   const tabBtn = document.getElementById(tourney.tabBtnId);
   if (tabBtn) tabBtn.classList.add('active');
+
+  // If selecting an archived tournament, highlight the archive dropdown button
+  const archiveBtn = document.getElementById('tabArchiveBtn');
+  if (tourney.isArchive && archiveBtn) {
+    archiveBtn.classList.add('active');
+  }
 
   // Close player profile drawer for full table width
   document.body.classList.remove('profile-open-desktop');
@@ -1296,8 +1356,10 @@ window.switchTab = function(tabId, updateUrl = true) {
     history.pushState({ tab: tabId }, '', tourney.route);
   }
 
-  // Load Data instantly from cache or fetch
-  if (tourney.dataFile) {
+  // Load Data: Live vs Static Cache
+  if (tourney.isLiveEvent) {
+    window.fetchLiveTournament(tourney);
+  } else if (tourney.dataFile) {
     window.fetchTournamentData(tourney.dataFile);
   }
 };
@@ -1323,10 +1385,281 @@ window.fetchTournamentData = async function(dataFile) {
   }
 };
 
-window.fetchSpeyerData = function(isSilent = false) {
-  const currentTourney = TOURNAMENTS[currentTournamentKey] || TOURNAMENTS.speyer;
-  window.fetchTournamentData(currentTourney.dataFile);
+window.fetchLiveTournament = async function(tourney, isSilent = false) {
+  try {
+    if (!isSilent) {
+      const statusEl = document.getElementById('speyerStatusText');
+      if (statusEl) statusEl.textContent = '📡 Checking live tournament feed...';
+    }
+
+    if (!tourney.eventId) {
+      showUpcomingHub(tourney);
+      return;
+    }
+
+    let overview = null;
+    try {
+      const res = await fetch(`/api/uvs/magic-events/${tourney.eventId}/tournament_overview/?t=${Date.now()}`);
+      if (res.ok) overview = await res.json();
+    } catch(e) {}
+
+    if (!overview) {
+      try {
+        const resDirect = await fetch(`https://api.riftbound.uvsgames.com/api/magic-events/${tourney.eventId}/tournament_overview/?t=${Date.now()}`);
+        if (resDirect.ok) overview = await resDirect.json();
+      } catch(e) {}
+    }
+
+    if (!overview) {
+      showUpcomingHub(tourney);
+      return;
+    }
+
+    // Find highest active/completed round across all phases
+    let targetRound = null;
+    let totalRounds = 8;
+    for (const phase of (overview.tournament_phases || [])) {
+      if (phase.number_of_rounds) totalRounds = Math.max(totalRounds, phase.number_of_rounds);
+      for (const r of (phase.rounds || [])) {
+        if (r.status === 'COMPLETE' || r.status === 'IN_PROGRESS') {
+          targetRound = r;
+        }
+      }
+    }
+
+    if (!targetRound) {
+      showUpcomingHub(tourney, overview);
+      return;
+    }
+
+    // Fetch Standings for targetRound
+    let standingsData = null;
+    try {
+      const sRes = await fetch(`/api/uvs/v2/tournament-rounds/${targetRound.id}/standings/?t=${Date.now()}`);
+      if (sRes.ok) standingsData = await sRes.json();
+    } catch(e) {}
+
+    if (!standingsData) {
+      try {
+        const sResDirect = await fetch(`https://api.riftbound.uvsgames.com/api/v2/tournament-rounds/${targetRound.id}/standings/?t=${Date.now()}`);
+        if (sResDirect.ok) standingsData = await sResDirect.json();
+      } catch(e) {}
+    }
+
+    const rawStandings = standingsData?.standings || [];
+    if (rawStandings.length === 0) {
+      showUpcomingHub(tourney, overview);
+      return;
+    }
+
+    // Process Live Standings into our unified format
+    const parsedData = parseLiveUvsStandings(rawStandings, targetRound, totalRounds, overview);
+    applySpeyerTournamentData(parsedData);
+
+  } catch (err) {
+    console.error('Error fetching live tournament:', err);
+    showUpcomingHub(tourney);
+  }
 };
+
+function parseLiveUvsStandings(rawStandings, targetRound, totalRounds, overview) {
+  const legendMap = {};
+  const playersList = [];
+
+  rawStandings.forEach((st, idx) => {
+    const ues = st.user_event_status || {};
+    const legendCard = ues.deck_defining_card || {};
+    const legendName = legendCard.name || 'Unknown Legend';
+    const legendImg = legendCard.image_url || getLegendImage(legendName);
+    const playerName = ues.best_identifier || st.player?.best_identifier || `Player #${st.rank || idx + 1}`;
+    const avatar = ues.full_profile_picture_url || DEFAULT_SPEYER_AVATAR;
+    const rank = st.rank || (idx + 1);
+    const points = st.match_points !== undefined ? st.match_points : (st.points || 0);
+    const record = st.match_record || st.record || `${ues.matches_won || 0}-${ues.matches_lost || 0}-${ues.matches_drawn || 0}`;
+
+    const parts = record.split('-').map(Number);
+    const mW = parts[0] || 0;
+    const mL = parts[1] || 0;
+    const mD = parts[2] || 0;
+    const totalMatches = mW + mL + mD;
+
+    const omw = (st.opponent_match_win_percentage || 0) * 100;
+    const gw = (st.game_win_percentage || 0) * 100;
+
+    const setInfo = getLegendSetInfo(legendName);
+
+    playersList.push({
+      id: st.id || st.player?.id || idx,
+      rank: rank,
+      name: cleanPlayerName(playerName),
+      avatar: avatar,
+      legend: legendName,
+      legendImage: legendImg,
+      set: setInfo.set,
+      setNum: setInfo.num,
+      matchRecord: record,
+      matchesWon: mW,
+      matchesLost: mL,
+      matchesDrawn: mD,
+      points: points,
+      omw: omw,
+      gw: gw
+    });
+
+    if (!legendMap[legendName]) {
+      legendMap[legendName] = {
+        legend: legendName,
+        image: legendImg,
+        set: setInfo.set,
+        setNum: setInfo.num,
+        setCode: setInfo.code,
+        setName: `${setInfo.set} (${setInfo.num})`,
+        isOrigins: setInfo.set === 'Origins',
+        count: 0,
+        totalWins: 0,
+        totalLosses: 0,
+        totalDraws: 0,
+        ranks: [],
+        bestRank: 999999,
+        top32: 0,
+        recordUndefeated: 0,
+        recordOneLoss: 0,
+        recordNoWins: 0
+      };
+    }
+
+    const lm = legendMap[legendName];
+    lm.count += 1;
+    lm.totalWins += mW;
+    lm.totalLosses += mL;
+    lm.totalDraws += mD;
+    lm.ranks.push(rank);
+    if (rank < lm.bestRank) lm.bestRank = rank;
+    if (rank <= 32) lm.top32 += 1;
+
+    if (mL === 0 && mW > 0) lm.recordUndefeated += 1;
+    else if (mL === 1) lm.recordOneLoss += 1;
+    else if (mW === 0 && mL > 0) lm.recordNoWins += 1;
+  });
+
+  const totalPilots = playersList.length;
+  const metaList = Object.values(legendMap).map(lm => {
+    const totalM = lm.totalWins + lm.totalLosses + lm.totalDraws;
+    const wr = totalM > 0 ? (lm.totalWins / totalM) * 100 : 50.0;
+    const avgR = lm.ranks.reduce((a, b) => a + b, 0) / (lm.ranks.length || 1);
+    return {
+      legend: lm.legend,
+      image: lm.image,
+      set: lm.set,
+      setNum: lm.setNum,
+      setCode: lm.setCode,
+      setName: lm.setName,
+      isOrigins: lm.isOrigins,
+      players: lm.count,
+      meta: (lm.count / (totalPilots || 1)) * 100,
+      winrate: wr,
+      bestRank: lm.bestRank,
+      avgRank: avgR,
+      top32: lm.top32,
+      recordUndefeated: lm.recordUndefeated,
+      recordOneLoss: lm.recordOneLoss,
+      recordNoWins: lm.recordNoWins
+    };
+  });
+
+  return {
+    tournamentId: overview?.id || targetRound?.id,
+    tournamentName: overview?.name || 'Riftbound Regional Qualifier - Barcelona',
+    location: '🇪🇸 Barcelona, Spain (Fira de Barcelona)',
+    roundNumber: targetRound.round_number || 1,
+    totalRounds: totalRounds,
+    status: targetRound.status || 'IN_PROGRESS',
+    totalPlayers: totalPilots,
+    updatedAt: new Date().toISOString(),
+    data: metaList,
+    players: playersList
+  };
+}
+
+function showUpcomingHub(tourney, overview) {
+  speyerState.totalPlayers = tourney.totalPlayers || 2208;
+  speyerState.roundNumber = 1;
+  speyerState.totalRounds = 8;
+  speyerState.status = 'UPCOMING';
+  speyerState.data = [];
+  speyerState.players = [];
+
+  const countEl = document.getElementById('speyerPlayerCount');
+  if (countEl) countEl.textContent = `${tourney.totalPlayers} Players Registered`;
+
+  const badgeCount = document.getElementById('speyerPlayersCountBadge');
+  if (badgeCount) badgeCount.textContent = tourney.totalPlayers;
+
+  const statusEl = document.getElementById('speyerStatusText');
+  if (statusEl) statusEl.textContent = '🟢 Live Sync Active • Waiting for Round 1';
+
+  const dot = document.getElementById('speyerStatusDot');
+  if (dot) dot.classList.remove('complete');
+
+  const metaBtn = document.getElementById('speyerSubtabMeta');
+  if (metaBtn) metaBtn.querySelector('span').textContent = 'Meta & Legends';
+
+  const tbody = document.getElementById('speyerBody');
+  if (tbody) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="12" style="text-align:center;padding:4rem 2rem;">
+          <div style="font-size:2.8rem;margin-bottom:14px;">🏆</div>
+          <h2 style="font-size:1.4rem;color:var(--text-primary);margin-bottom:10px;font-weight:700;">${tourney.title}</h2>
+          <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(0,180,255,0.1);color:var(--accent-cyan-light);padding:6px 14px;border-radius:20px;font-size:0.85rem;font-weight:600;margin-bottom:16px;border:1px solid rgba(0,180,255,0.3);">
+            <span class="speyer__status-dot"></span>
+            <span>Live Auto-Sync Active • Polling Every 30s</span>
+          </div>
+          <p style="color:var(--text-secondary);max-width:580px;margin:0 auto 20px auto;font-size:0.92rem;line-height:1.6;">
+            <strong>Venue:</strong> ${tourney.location}<br>
+            <strong>Structure:</strong> ${tourney.format}<br>
+            <strong>Schedule:</strong> ${tourney.scheduleInfo || 'Pre-Regional Friday • Main Regional Saturday 10:00 AM'}<br>
+            <em>As soon as official Round 1 standings are published, this table will update automatically in real-time.</em>
+          </p>
+          <a href="${tourney.locatorUrl}" target="_blank" rel="noopener noreferrer" class="speyer__locator-btn" style="display:inline-flex;margin:0 auto;padding:9px 18px;font-size:0.9rem;">
+            <span>View Event on Carde Locator</span>
+          </a>
+        </td>
+      </tr>
+    `;
+  }
+
+  const pBody = document.getElementById('speyerPlayersBody');
+  if (pBody) {
+    pBody.innerHTML = `
+      <tr>
+        <td colspan="8" style="text-align:center;padding:3rem;color:var(--text-secondary);">
+          Player pairings & standings will populate live once Round 1 begins.
+        </td>
+      </tr>
+    `;
+  }
+}
+
+window.fetchSpeyerData = function(isSilent = false) {
+  const currentTourney = TOURNAMENTS[currentTournamentKey] || TOURNAMENTS.barcelona;
+  if (currentTourney.isLiveEvent) {
+    window.fetchLiveTournament(currentTourney, isSilent);
+  } else if (currentTourney.dataFile) {
+    window.fetchTournamentData(currentTourney.dataFile);
+  }
+};
+
+// Auto-poll live tournament every 30 seconds
+setInterval(() => {
+  const currentTourney = TOURNAMENTS[currentTournamentKey];
+  if (currentTourney && currentTourney.isLiveEvent) {
+    const speyerSection = document.getElementById('speyerSection');
+    if (speyerSection && speyerSection.style.display !== 'none') {
+      window.fetchLiveTournament(currentTourney, true);
+    }
+  }
+}, 30000);
 
 const speyerState = {
   data: [],
@@ -1339,9 +1672,9 @@ const speyerState = {
   playerSearchQuery: '',
   lastUpdated: null,
   totalPlayers: 0,
-  roundNumber: 2,
-  totalRounds: 10,
-  status: 'IN_PROGRESS'
+  roundNumber: 1,
+  totalRounds: 8,
+  status: 'UPCOMING'
 };
 
 const LEGEND_SETS = {

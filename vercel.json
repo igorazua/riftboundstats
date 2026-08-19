@@ -5,6 +5,18 @@
   "outputDirectory": ".",
   "rewrites": [
     {
+      "source": "/barcelona",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/bcn",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/pre-barcelona",
+      "destination": "/index.html"
+    },
+    {
       "source": "/speyer",
       "destination": "/index.html"
     },
@@ -23,6 +35,10 @@
     {
       "source": "/ottawa",
       "destination": "/index.html"
+    },
+    {
+      "source": "/api/uvs/:path*",
+      "destination": "https://api.riftbound.uvsgames.com/api/:path*"
     },
     {
       "source": "/api/:path*",

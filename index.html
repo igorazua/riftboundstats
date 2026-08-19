@@ -45,11 +45,21 @@
   <div class="main-content">
     <div class="main-content__left" id="mainContentLeft">
       <div class="tabs-container">
-        <button class="tab-btn active" id="tabLeaderboard" onclick="window.switchTab('leaderboard')">📊 NeatQueue Leaderboard</button>
-        <button class="tab-btn" id="tabSpeyer" onclick="window.switchTab('speyer')">⚔️ Speyer Showdown 🇩🇪</button>
-        <button class="tab-btn" id="tabGeng" onclick="window.switchTab('geng')">🎮 Gen.G LA Showdown 🇺🇸</button>
-        <button class="tab-btn" id="tabAustralia" onclick="window.switchTab('australia')">🦘 Australia Showdown 🇦🇺</button>
-        <button class="tab-btn" id="tabOttawa" onclick="window.switchTab('ottawa')">🍁 Ottawa Showdown 🇨🇦</button>
+        <button class="tab-btn active" id="tabBarcelona" onclick="window.switchTab('barcelona')">🏆 Regional Barcelona 🇪🇸</button>
+        <button class="tab-btn" id="tabPreBarcelona" onclick="window.switchTab('pre-barcelona')">⚔️ Pre-Regional 🇪🇸</button>
+        <button class="tab-btn" id="tabLeaderboard" onclick="window.switchTab('leaderboard')">📊 NeatQueue Leaderboard</button>
+        <div class="tab-dropdown" id="archiveDropdown">
+          <button class="tab-btn tab-btn--dropdown" id="tabArchiveBtn" onclick="window.toggleArchiveDropdown(event)">
+            <span>📜 Históricos</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="tab-dropdown__menu" id="archiveDropdownMenu">
+            <button class="dropdown-item" id="tabSpeyer" onclick="window.switchTab('speyer')">⚔️ Speyer Showdown 🇩🇪 (10 Rds + Top 8)</button>
+            <button class="dropdown-item" id="tabOttawa" onclick="window.switchTab('ottawa')">🍁 Ottawa Showdown 🇨🇦 (594 Players)</button>
+            <button class="dropdown-item" id="tabGeng" onclick="window.switchTab('geng')">🎮 Gen.G LA Showdown 🇺🇸 ($750 1st)</button>
+            <button class="dropdown-item" id="tabAustralia" onclick="window.switchTab('australia')">🦘 Australia Showdown 🇦🇺 (Sydney/Melb)</button>
+          </div>
+        </div>
       </div>
       <section class="leaderboard" id="leaderboardSection">
         <div class="leaderboard__header">
