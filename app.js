@@ -1945,21 +1945,33 @@ window.renderSpeyerTable = function() {
   if (!tbody || speyerState.data.length === 0) return;
 
   // Dynamically update record column headers based on current round number
-  const roundNum = speyerState.roundNumber || 3;
+  const roundNum = speyerState.roundNumber || 1;
   const lblUndefeated = document.getElementById('lblThUndefeated');
   const lblOneLoss = document.getElementById('lblThOneLoss');
   const lblNoWins = document.getElementById('lblThNoWins');
 
-  if (lblUndefeated) lblUndefeated.textContent = `${roundNum}-0`;
-  if (lblOneLoss) lblOneLoss.textContent = `${Math.max(0, roundNum - 1)}-1`;
-  if (lblNoWins) lblNoWins.textContent = `0-${roundNum}`;
-
   const thUnd = document.getElementById('thSpeyerUndefeated');
   const thOne = document.getElementById('thSpeyerOneLoss');
   const thNo = document.getElementById('thSpeyerNoWins');
-  if (thUnd) thUnd.title = `Undefeated (${roundNum}-0)`;
-  if (thOne) thOne.title = `1 Loss (${Math.max(0, roundNum - 1)}-1)`;
-  if (thNo) thNo.title = `0 Wins (0-${roundNum})`;
+
+  if (roundNum <= 1) {
+    if (lblUndefeated) lblUndefeated.textContent = '1-0';
+    if (lblOneLoss) lblOneLoss.textContent = 'Empates';
+    if (lblNoWins) lblNoWins.textContent = '0-1';
+
+    if (thUnd) thUnd.title = 'Invictos (1-0)';
+    if (thOne) thOne.title = 'Empates (0-0-1)';
+    if (thNo) thNo.title = '0 Victorias (0-1)';
+  } else {
+    const unLossWins = roundNum - 1;
+    if (lblUndefeated) lblUndefeated.textContent = `${roundNum}-0`;
+    if (lblOneLoss) lblOneLoss.textContent = `${unLossWins}-1`;
+    if (lblNoWins) lblNoWins.textContent = `0-${roundNum}`;
+
+    if (thUnd) thUnd.title = `Invictos (${roundNum}-0)`;
+    if (thOne) thOne.title = `1 Derrota (${unLossWins}-1)`;
+    if (thNo) thNo.title = `0 Victorias (0-${roundNum})`;
+  }
   
   // Sort data
   const sorted = [...speyerState.data].sort((a, b) => {
