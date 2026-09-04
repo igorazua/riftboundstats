@@ -1,7 +1,6 @@
 ﻿const fs = require('fs');
 
 const LEGEND_SETS = {
-  // Set 1: Origins (OGN)
   'Annie': { set: 'Origins', num: 'Set 1', code: 'OGN' },
   'Ahri': { set: 'Origins', num: 'Set 1', code: 'OGN' },
   'Darius': { set: 'Origins', num: 'Set 1', code: 'OGN' },
@@ -17,8 +16,6 @@ const LEGEND_SETS = {
   'Renekton': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
   'Teemo': { set: 'Origins', num: 'Set 1', code: 'OGN' },
   'Yasuo': { set: 'Origins', num: 'Set 1', code: 'OGN' },
-
-  // Set 2: Spiritforged (SPF)
   'Azir': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
   'Draven': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
   'Ezreal': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
@@ -30,8 +27,6 @@ const LEGEND_SETS = {
   'Rek\'Sai': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
   'Rumble': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
   'Sivir': { set: 'Spiritforged', num: 'Set 2', code: 'SPF' },
-
-  // Set 3: Unleashed (UNL)
   'Diana': { set: 'Unleashed', num: 'Set 3', code: 'UNL' },
   'Ivern': { set: 'Unleashed', num: 'Set 3', code: 'UNL' },
   'Jhin': { set: 'Unleashed', num: 'Set 3', code: 'UNL' },
@@ -42,8 +37,6 @@ const LEGEND_SETS = {
   'Pyke': { set: 'Unleashed', num: 'Set 3', code: 'UNL' },
   'Rengar': { set: 'Unleashed', num: 'Set 3', code: 'UNL' },
   'Vex': { set: 'Unleashed', num: 'Set 3', code: 'UNL' },
-
-  // Set 4: Vendetta (VDT)
   'Akali': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
   'Ambessa': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
   'Jayce': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
@@ -179,36 +172,48 @@ async function run() {
     const roundProgression = [];
     let prevPoints = 0;
 
-    for (let rNum = 1; rNum <= latestRound.round_number; rNum++) {
+    for (const r of activeRounds) {
+      const rNum = r.round_number;
       const rStandings = roundStandingsMap[rNum] || [];
       const rPlayerStanding = rStandings.find(ps => (ps.player?.id || ps.id) === pId);
       
       if (rPlayerStanding) {
         const pts = rPlayerStanding.points !== undefined ? rPlayerStanding.points : (rPlayerStanding.match_points || 0);
         const ptsGained = pts - prevPoints;
-        let result = 'WIN';
-        let score = '2-0';
-        if (ptsGained === 0) {
-          result = 'LOSS';
-          score = '0-2';
-        } else if (ptsGained === 1) {
-          result = 'DRAW';
-          score = '1-1';
-        } else if (ptsGained === 3) {
-          result = 'WIN';
-          score = '2-0';
+
+        if (r.status === 'IN_PROGRESS') {
+          roundProgression.push({
+            round: rNum,
+            result: 'IN_PROGRESS',
+            score: 'En juego',
+            points: pts,
+            rank: rPlayerStanding.rank,
+            matchRecord: rPlayerStanding.match_record || `${rPlayerStanding.user_event_status?.matches_won || 0}-${rPlayerStanding.user_event_status?.matches_lost || 0}`
+          });
+        } else {
+          let result = 'WIN';
+          let score = '2-0';
+          if (ptsGained === 0) {
+            result = 'LOSS';
+            score = '0-2';
+          } else if (ptsGained === 1) {
+            result = 'DRAW';
+            score = '1-1';
+          } else if (ptsGained === 3) {
+            result = 'WIN';
+            score = '2-0';
+          }
+
+          roundProgression.push({
+            round: rNum,
+            result: result,
+            score: score,
+            points: pts,
+            rank: rPlayerStanding.rank,
+            matchRecord: rPlayerStanding.match_record || `${rPlayerStanding.user_event_status?.matches_won || 0}-${rPlayerStanding.user_event_status?.matches_lost || 0}`
+          });
+          prevPoints = pts;
         }
-
-        roundProgression.push({
-          round: rNum,
-          result: result,
-          score: score,
-          points: pts,
-          rank: rPlayerStanding.rank,
-          matchRecord: rPlayerStanding.match_record || (rPlayerStanding.user_event_status?.matches_won || 0) + '-' + (rPlayerStanding.user_event_status?.matches_lost || 0)
-        });
-
-        prevPoints = pts;
       }
     }
 
@@ -222,7 +227,7 @@ async function run() {
       setNum: setInfo.num,
       isOrigins: setInfo.set === 'Origins',
       rank: s.rank,
-      matchRecord: s.match_record || (ues.matches_won || 0) + '-' + (ues.matches_lost || 0) + '-' + (ues.matches_drawn || 0),
+      matchRecord: s.match_record || `${ues.matches_won || 0}-${ues.matches_lost || 0}-${ues.matches_drawn || 0}`,
       points: s.points !== undefined ? s.points : (s.match_points || 0),
       matchesWon: ues.matches_won || 0,
       matchesLost: ues.matches_lost || 0,
@@ -249,7 +254,7 @@ async function run() {
   };
 
   fs.writeFileSync('singapore_pre_data.json', JSON.stringify(payload, null, 2), 'utf8');
-  console.log('Saved singapore_pre_data.json successfully with', metaData.length, 'legends and', playersList.length, 'players!');
+  console.log('Saved updated singapore_pre_data.json successfully with', metaData.length, 'legends and', playersList.length, 'players!');
 }
 
 run().catch(console.error);

@@ -2264,6 +2264,12 @@ window.showSpeyerPlayerDetail = function(playerId) {
         scoreText = r.score || '1-1';
         pointsGain = '+1 Pt';
         cardBorder = 'border-left: 4px solid var(--warning-amber);';
+      } else if (r.result === 'IN_PROGRESS') {
+        badgeClass = 'round-badge--draw';
+        outcomeText = 'EN CURSO';
+        scoreText = 'En juego ⏳';
+        pointsGain = '⏳ Live';
+        cardBorder = 'border-left: 4px solid var(--accent-cyan);';
       }
 
       return `
