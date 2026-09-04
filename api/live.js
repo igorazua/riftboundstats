@@ -111,13 +111,23 @@ module.exports = async function handler(req, res) {
     }
     if (swissRoundsSum > 0) totalRounds = swissRoundsSum;
 
+    let eventLocation = 'Official Tournament Venue';
+    const tourneyName = overview.name || 'Riftbound Tournament';
+    if (tourneyName.toLowerCase().includes('singapore') || eventId === '889707' || eventId === '889532') {
+      eventLocation = '🇸🇬 Singapore (1 Expo Dr)';
+    } else if (tourneyName.toLowerCase().includes('barcelona') || eventId === '857452') {
+      eventLocation = '🇪🇸 Barcelona, Spain (Fira de Barcelona)';
+    } else if (tourneyName.toLowerCase().includes('speyer') || eventId === '835043') {
+      eventLocation = '🇩🇪 Speyer, Germany';
+    }
+
     if (!targetRound) {
       return res.status(200).json({
         upcoming: true,
         tournamentId: eventId,
-        tournamentName: overview.name || 'Riftbound Regional Qualifier - Barcelona',
-        location: '🇪🇸 Barcelona, Spain (Fira de Barcelona)',
-        totalPlayers: 2208,
+        tournamentName: tourneyName,
+        location: eventLocation,
+        totalPlayers: overview.registered_users_count || 1475,
         roundNumber: 1,
         totalRounds: totalRounds,
         status: 'UPCOMING',
@@ -248,8 +258,8 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({
       upcoming: false,
       tournamentId: eventId,
-      tournamentName: overview.name || 'Riftbound Regional Qualifier - Barcelona',
-      location: '🇪🇸 Barcelona, Spain (Fira de Barcelona)',
+      tournamentName: tourneyName,
+      location: eventLocation,
       roundNumber: targetRound.round_number || 1,
       totalRounds: totalRounds,
       status: targetRound.status || 'IN_PROGRESS',

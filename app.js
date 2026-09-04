@@ -1192,6 +1192,20 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 
 const TOURNAMENTS = {
+  'pre-singapore': {
+    id: '889707',
+    tabBtnId: 'tabPreSingapore',
+    title: '⚔️ Riftbound Pre-Regional Challenge - Singapore',
+    location: '🇸🇬 Singapore (1 Expo Dr)',
+    format: 'Constructed • 6 Swiss Rounds (Bo3)',
+    isLiveEvent: true,
+    eventId: 889707,
+    dataFile: '/singapore_pre_data.json',
+    locatorUrl: 'https://locator.riftbound.uvsgames.com/events/889707',
+    route: '/pre-singapore',
+    totalPlayers: 1475,
+    scheduleInfo: 'Friday Sep 3 • 6 Swiss Rounds (Bo3)'
+  },
   barcelona: {
     id: '857452',
     tabBtnId: 'tabBarcelona',
@@ -1268,7 +1282,7 @@ const TOURNAMENTS = {
   }
 };
 
-let currentTournamentKey = 'barcelona';
+let currentTournamentKey = 'pre-singapore';
 const tournamentDataCache = {};
 
 window.toggleArchiveDropdown = function(event) {
@@ -1288,7 +1302,9 @@ function checkInitialRoute() {
   const path = (window.location.pathname || '').toLowerCase();
   const hash = (window.location.hash || '').toLowerCase();
   
-  if (path === '/barcelona' || path === '/bcn' || hash === '#barcelona') {
+  if (path === '/pre-singapore' || path === '/singapore' || path === '/sg' || path === '/pre-sg' || hash === '#pre-singapore' || hash === '#singapore') {
+    window.switchTab('pre-singapore', false);
+  } else if (path === '/barcelona' || path === '/bcn' || hash === '#barcelona') {
     window.switchTab('barcelona', false);
   } else if (path === '/pre-barcelona' || path === '/pre' || hash === '#pre') {
     window.switchTab('pre-barcelona', false);
@@ -1301,7 +1317,7 @@ function checkInitialRoute() {
   } else if (path === '/ottawa' || hash === '#ottawa') {
     window.switchTab('ottawa', false);
   } else if (path === '/' || path === '') {
-    window.switchTab('barcelona', false);
+    window.switchTab('pre-singapore', false);
   } else {
     window.switchTab('leaderboard', false);
   }
@@ -1327,7 +1343,7 @@ window.switchTab = function(tabId, updateUrl = true) {
 
   // Handle Tournament tabs
   currentTournamentKey = tabId;
-  const tourney = TOURNAMENTS[tabId] || TOURNAMENTS.barcelona;
+  const tourney = TOURNAMENTS[tabId] || TOURNAMENTS['pre-singapore'] || TOURNAMENTS.barcelona;
   const tabBtn = document.getElementById(tourney.tabBtnId);
   if (tabBtn) tabBtn.classList.add('active');
 
@@ -1391,13 +1407,18 @@ window.fetchTournamentData = async function(dataFile) {
 
 window.fetchLiveTournament = async function(tourney, isSilent = false) {
   try {
-    if (!isSilent) {
+    // If pre-generated dataset exists, load it immediately for snappy response
+    if (tourney.dataFile && !tournamentDataCache[tourney.dataFile]) {
+      window.fetchTournamentData(tourney.dataFile);
+    }
+
+    if (!isSilent && (!speyerState.data || speyerState.data.length === 0)) {
       const statusEl = document.getElementById('speyerStatusText');
       if (statusEl) statusEl.textContent = '📡 Sincronizando en directo...';
     }
 
     if (!tourney.eventId) {
-      showUpcomingHub(tourney);
+      if (!tourney.dataFile) showUpcomingHub(tourney);
       return;
     }
 
@@ -1405,16 +1426,16 @@ window.fetchLiveTournament = async function(tourney, isSilent = false) {
     if (res.ok) {
       const data = await res.json();
       if (data.upcoming || !data.data || data.data.length === 0) {
-        showUpcomingHub(tourney);
+        if (!tourney.dataFile) showUpcomingHub(tourney);
       } else {
         applySpeyerTournamentData(data);
       }
     } else {
-      showUpcomingHub(tourney);
+      if (!tourney.dataFile) showUpcomingHub(tourney);
     }
   } catch (err) {
     console.error('Error fetching live tournament:', err);
-    showUpcomingHub(tourney);
+    if (!tourney.dataFile) showUpcomingHub(tourney);
   }
 };
 

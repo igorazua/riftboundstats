@@ -5,6 +5,22 @@
   "outputDirectory": ".",
   "rewrites": [
     {
+      "source": "/pre-singapore",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/singapore",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/sg",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/pre-sg",
+      "destination": "/index.html"
+    },
+    {
       "source": "/barcelona",
       "destination": "/index.html"
     },
