@@ -1192,6 +1192,20 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 
 const TOURNAMENTS = {
+  singapore: {
+    id: '889532',
+    tabBtnId: 'tabSingapore',
+    title: '🏆 Riftbound Regional Qualifier - Singapore',
+    location: '🇸🇬 Singapore (1 Expo Dr)',
+    format: 'Swiss Day 1 (8 Rds) + Day 2 (5 Rds) + Top 8 Cut',
+    isLiveEvent: true,
+    eventId: 889532,
+    dataFile: '/singapore_data.json',
+    locatorUrl: 'https://locator.riftbound.uvsgames.com/events/889532',
+    route: '/singapore',
+    totalPlayers: 2055,
+    scheduleInfo: 'Day 1: Sábado (8 Rondas) • Day 2: Domingo (5 Rondas + Top 8 Cut)'
+  },
   'pre-singapore': {
     id: '889707',
     tabBtnId: 'tabPreSingapore',
@@ -1282,7 +1296,7 @@ const TOURNAMENTS = {
   }
 };
 
-let currentTournamentKey = 'pre-singapore';
+let currentTournamentKey = 'singapore';
 const tournamentDataCache = {};
 
 window.toggleArchiveDropdown = function(event) {
@@ -1302,7 +1316,9 @@ function checkInitialRoute() {
   const path = (window.location.pathname || '').toLowerCase();
   const hash = (window.location.hash || '').toLowerCase();
   
-  if (path === '/pre-singapore' || path === '/singapore' || path === '/sg' || path === '/pre-sg' || hash === '#pre-singapore' || hash === '#singapore') {
+  if (path === '/singapore' || path === '/sg' || hash === '#singapore' || hash === '#sg') {
+    window.switchTab('singapore', false);
+  } else if (path === '/pre-singapore' || path === '/pre-sg' || hash === '#pre-singapore' || hash === '#pre-sg') {
     window.switchTab('pre-singapore', false);
   } else if (path === '/barcelona' || path === '/bcn' || hash === '#barcelona') {
     window.switchTab('barcelona', false);
@@ -1317,7 +1333,7 @@ function checkInitialRoute() {
   } else if (path === '/ottawa' || hash === '#ottawa') {
     window.switchTab('ottawa', false);
   } else if (path === '/' || path === '') {
-    window.switchTab('pre-singapore', false);
+    window.switchTab('singapore', false);
   } else {
     window.switchTab('leaderboard', false);
   }
