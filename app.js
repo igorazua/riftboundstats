@@ -101,6 +101,54 @@ function calculateSegmentedWinrates(playerStats, eloTable, threshold) {
 // API LAYER
 // ==========================================
 
+let isFetchingAllPages = false;
+
+async function fetchAllRemainingLeaderboardPages(totalPages) {
+  if (isFetchingAllPages || state.allPagesLoaded) return;
+  isFetchingAllPages = true;
+  try {
+    const pagePromises = [];
+    for (let p = 2; p <= totalPages; p++) {
+      pagePromises.push(
+        fetch(`${API_BASE}/api/v2/leaderboard/${GUILD_ID}/${CHANNEL_ID}?sort=mmr&month=alltime&page=${p}`)
+          .then(res => res.ok ? res.json() : null)
+          .catch(() => null)
+      );
+    }
+    const results = await Promise.all(pagePromises);
+    const existingIds = new Set(state.players.map(p => p.id));
+    results.forEach(data => {
+      if (data?.months?.length > 0) {
+        const allTimeData = data.months.find(m => m.month === 'alltime') || data.months[0];
+        const rawPlayers = allTimeData.data || [];
+        rawPlayers.forEach(p => {
+          if (!existingIds.has(p.id)) {
+            existingIds.add(p.id);
+            state.players.push(p);
+          }
+        });
+      }
+    });
+
+    state.players.sort((a, b) => (b.stats?.mmr || 0) - (a.stats?.mmr || 0));
+    state.players.forEach(p => { state.eloTable[p.id] = p.stats.mmr; });
+    state.loadedPages = totalPages;
+    state.allPagesLoaded = true;
+
+    // Update count info if on leaderboard
+    const countInfo = document.getElementById('leaderboardCountInfo');
+    const visibleCount = Math.min(state.showCount, state.players.length);
+    const totalDisplay = state.totalItems || state.players.length;
+    if (countInfo) {
+      countInfo.textContent = `Showing ${visibleCount} of ${totalDisplay} players`;
+    }
+  } catch (err) {
+    console.warn('Error pre-fetching all leaderboard pages:', err);
+  } finally {
+    isFetchingAllPages = false;
+  }
+}
+
 async function fetchLeaderboard(retry = false, page = 1) {
   try {
     const response = await fetch(
@@ -138,6 +186,12 @@ async function fetchLeaderboard(retry = false, page = 1) {
       state.players.forEach(p => { state.eloTable[p.id] = p.stats.mmr; });
 
       document.getElementById('errorMessage').style.display = 'none';
+
+      // Preload all remaining pages in background so search instantly finds all 3700+ players
+      if (page === 1 && state.totalPages > 1 && !state.allPagesLoaded) {
+        fetchAllRemainingLeaderboardPages(state.totalPages);
+      }
+
       return true;
     }
     return false;
@@ -1316,7 +1370,9 @@ function checkInitialRoute() {
   const path = (window.location.pathname || '').toLowerCase();
   const hash = (window.location.hash || '').toLowerCase();
   
-  if (path === '/singapore' || path === '/sg' || hash === '#singapore' || hash === '#sg') {
+  if (path === '/queue' || path === '/leaderboard' || hash === '#queue' || hash === '#leaderboard') {
+    window.switchMainCategory('queue', false);
+  } else if (path === '/singapore' || path === '/sg' || hash === '#singapore' || hash === '#sg') {
     window.switchTab('singapore', false);
   } else if (path === '/pre-singapore' || path === '/pre-sg' || hash === '#pre-singapore' || hash === '#pre-sg') {
     window.switchTab('pre-singapore', false);
@@ -1335,31 +1391,65 @@ function checkInitialRoute() {
   } else if (path === '/' || path === '') {
     window.switchTab('singapore', false);
   } else {
-    window.switchTab('leaderboard', false);
+    window.switchTab('singapore', false);
   }
 }
+
+window.switchMainCategory = function(category, updateUrl = true) {
+  const btnTournaments = document.getElementById('btnNavTournaments');
+  const btnQueue = document.getElementById('btnNavQueue');
+  const tournamentsSubtabs = document.getElementById('tournamentsSubtabs');
+  const leaderboardSection = document.getElementById('leaderboardSection');
+  const speyerSection = document.getElementById('speyerSection');
+
+  if (category === 'queue' || category === 'leaderboard') {
+    if (btnTournaments) btnTournaments.classList.remove('active');
+    if (btnQueue) btnQueue.classList.add('active');
+    if (tournamentsSubtabs) tournamentsSubtabs.style.display = 'none';
+    if (leaderboardSection) leaderboardSection.style.display = 'block';
+    if (speyerSection) speyerSection.style.display = 'none';
+
+    document.body.classList.remove('profile-open-desktop');
+    document.body.classList.remove('profile-open-mobile');
+
+    if (updateUrl && window.location.pathname !== '/queue') {
+      history.pushState({ category: 'queue' }, '', '/queue');
+    }
+  } else {
+    if (btnTournaments) btnTournaments.classList.add('active');
+    if (btnQueue) btnQueue.classList.remove('active');
+    if (tournamentsSubtabs) tournamentsSubtabs.style.display = 'flex';
+    if (leaderboardSection) leaderboardSection.style.display = 'none';
+    if (speyerSection) speyerSection.style.display = 'flex';
+
+    const activeKey = currentTournamentKey || 'singapore';
+    window.switchTab(activeKey, updateUrl);
+  }
+};
 
 window.switchTab = function(tabId, updateUrl = true) {
   // Close archive dropdown if open
   const dropdown = document.getElementById('archiveDropdown');
   if (dropdown) dropdown.classList.remove('open');
 
-  document.querySelectorAll('.tab-btn, .dropdown-item').forEach(btn => btn.classList.remove('active'));
-  
-  if (tabId === 'leaderboard') {
-    const btn = document.getElementById('tabLeaderboard');
-    if (btn) btn.classList.add('active');
-    document.getElementById('leaderboardSection').style.display = 'block';
-    document.getElementById('speyerSection').style.display = 'none';
-    if (updateUrl && window.location.pathname !== '/') {
-      history.pushState({ tab: 'leaderboard' }, '', '/');
-    }
+  if (tabId === 'leaderboard' || tabId === 'queue') {
+    window.switchMainCategory('queue', updateUrl);
     return;
   }
 
+  // Ensure tournaments category is active
+  const btnTournaments = document.getElementById('btnNavTournaments');
+  const btnQueue = document.getElementById('btnNavQueue');
+  const tournamentsSubtabs = document.getElementById('tournamentsSubtabs');
+  if (btnTournaments) btnTournaments.classList.add('active');
+  if (btnQueue) btnQueue.classList.remove('active');
+  if (tournamentsSubtabs) tournamentsSubtabs.style.display = 'flex';
+
+  document.querySelectorAll('.tab-btn, .dropdown-item').forEach(btn => btn.classList.remove('active'));
+
   // Handle Tournament tabs
   currentTournamentKey = tabId;
-  const tourney = TOURNAMENTS[tabId] || TOURNAMENTS['pre-singapore'] || TOURNAMENTS.barcelona;
+  const tourney = TOURNAMENTS[tabId] || TOURNAMENTS['singapore'] || TOURNAMENTS['pre-singapore'] || TOURNAMENTS.barcelona;
   const tabBtn = document.getElementById(tourney.tabBtnId);
   if (tabBtn) tabBtn.classList.add('active');
 
