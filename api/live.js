@@ -119,6 +119,8 @@ module.exports = async function handler(req, res) {
       eventLocation = '🇪🇸 Barcelona, Spain (Fira de Barcelona)';
     } else if (tourneyName.toLowerCase().includes('speyer') || eventId === '835043') {
       eventLocation = '🇩🇪 Speyer, Germany';
+    } else if (tourneyName.toLowerCase().includes('lucca') || eventId === '926094') {
+      eventLocation = '🇮🇹 Lucca, Italy (Polo Fiere Lucca)';
     }
 
     if (!targetRound) {
@@ -137,20 +139,49 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // Fetch Standings
-    const standingsRes = await fetch(`https://api.riftbound.uvsgames.com/api/v2/tournament-rounds/${targetRound.id}/standings/`, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-        'Accept': 'application/json'
+    // Collect all active rounds (COMPLETE or IN_PROGRESS) across all phases
+    const activeRounds = [];
+    for (const phase of (overview.tournament_phases || [])) {
+      for (const r of (phase.rounds || [])) {
+        if (r.status === 'COMPLETE' || r.status === 'IN_PROGRESS') {
+          activeRounds.push(r);
+        }
       }
-    });
-
-    if (!standingsRes.ok) {
-      return res.status(standingsRes.status).json({ error: `Standings API returned ${standingsRes.status}` });
     }
 
-    const standingsData = await standingsRes.json();
-    const rawStandings = standingsData.standings || [];
+    // Fetch Standings for all active rounds concurrently to build round progression
+    const roundStandingsMap = {};
+    await Promise.all(activeRounds.map(async (r) => {
+      try {
+        const sRes = await fetch(`https://api.riftbound.uvsgames.com/api/v2/tournament-rounds/${r.id}/standings/`, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+            'Accept': 'application/json'
+          }
+        });
+        if (sRes.ok) {
+          const sData = await sRes.json();
+          roundStandingsMap[r.round_number] = sData.standings || [];
+        }
+      } catch (err) {
+        console.warn(`Failed to fetch standings for round ${r.round_number}:`, err);
+      }
+    }));
+
+    const rawStandings = roundStandingsMap[targetRound.round_number] || [];
+    if (rawStandings.length === 0) {
+      // Fallback single fetch if map was empty
+      const standingsRes = await fetch(`https://api.riftbound.uvsgames.com/api/v2/tournament-rounds/${targetRound.id}/standings/`, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+          'Accept': 'application/json'
+        }
+      });
+      if (standingsRes.ok) {
+        const sData = await standingsRes.json();
+        rawStandings.push(...(sData.standings || []));
+      }
+    }
 
     const legendMap = {};
     const playersList = [];
@@ -175,9 +206,55 @@ module.exports = async function handler(req, res) {
       const gw = (st.game_win_percentage || 0) * 100;
 
       const setInfo = getSetInfo(legendName);
+      const pId = st.player?.id || ues.user?.id || st.id || idx;
+
+      // Build round progression
+      const roundProgression = [];
+      let prevPoints = 0;
+
+      for (const r of activeRounds) {
+        const rNum = r.round_number;
+        const rStandings = roundStandingsMap[rNum] || [];
+        const rPlayerStanding = rStandings.find(ps => (ps.player?.id || ps.id) === pId);
+
+        if (rPlayerStanding) {
+          const pts = rPlayerStanding.points !== undefined ? rPlayerStanding.points : (rPlayerStanding.match_points || 0);
+          const ptsGained = pts - prevPoints;
+
+          if (r.status === 'IN_PROGRESS') {
+            roundProgression.push({
+              round: rNum,
+              result: 'IN_PROGRESS',
+              score: 'En juego',
+              points: pts,
+              rank: rPlayerStanding.rank,
+              matchRecord: rPlayerStanding.match_record || `${rPlayerStanding.user_event_status?.matches_won || 0}-${rPlayerStanding.user_event_status?.matches_lost || 0}`
+            });
+          } else {
+            let result = 'WIN';
+            let score = '2-0';
+            if (ptsGained === 0) {
+              result = 'LOSS';
+              score = '0-2';
+            } else if (ptsGained === 1) {
+              result = 'DRAW';
+              score = '1-1';
+            }
+            roundProgression.push({
+              round: rNum,
+              result: result,
+              score: score,
+              points: pts,
+              rank: rPlayerStanding.rank,
+              matchRecord: rPlayerStanding.match_record || `${rPlayerStanding.user_event_status?.matches_won || 0}-${rPlayerStanding.user_event_status?.matches_lost || 0}`
+            });
+          }
+          prevPoints = pts;
+        }
+      }
 
       playersList.push({
-        id: st.id || st.player?.id || idx,
+        id: pId,
         rank: rank,
         name: playerName,
         avatar: avatar,
@@ -191,7 +268,8 @@ module.exports = async function handler(req, res) {
         matchesDrawn: mD,
         points: points,
         omw: omw,
-        gw: gw
+        gw: gw,
+        rounds: roundProgression
       });
 
       if (!legendMap[legendName]) {
@@ -254,6 +332,8 @@ module.exports = async function handler(req, res) {
         recordNoWins: lm.recordNoWins
       };
     });
+
+    playersList.sort((a, b) => a.rank - b.rank);
 
     return res.status(200).json({
       upcoming: false,

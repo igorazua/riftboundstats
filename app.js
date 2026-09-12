@@ -1246,6 +1246,20 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 
 const TOURNAMENTS = {
+  lucca: {
+    id: '926094',
+    tabBtnId: 'tabLucca',
+    title: '⚔️ Riftbound Showdown Series - Lucca',
+    location: '🇮🇹 Lucca, Italy (Polo Fiere Lucca)',
+    format: 'Swiss Day 1 (10 Rds) + Day 2 (4 Rds) + Top 8 Cut',
+    isLiveEvent: true,
+    eventId: 926094,
+    dataFile: '/lucca_data.json',
+    locatorUrl: 'https://locator.riftbound.uvsgames.com/events/926094',
+    route: '/lucca',
+    totalPlayers: 600,
+    scheduleInfo: 'Day 1: Sábado (10 Rondas) • Day 2: Domingo (4 Rondas + Top 8 Cut)'
+  },
   singapore: {
     id: '889532',
     tabBtnId: 'tabSingapore',
@@ -1350,7 +1364,7 @@ const TOURNAMENTS = {
   }
 };
 
-let currentTournamentKey = 'singapore';
+let currentTournamentKey = 'lucca';
 const tournamentDataCache = {};
 
 window.toggleArchiveDropdown = function(event) {
@@ -1372,6 +1386,8 @@ function checkInitialRoute() {
   
   if (path === '/queue' || path === '/leaderboard' || hash === '#queue' || hash === '#leaderboard') {
     window.switchMainCategory('queue', false);
+  } else if (path === '/lucca' || path === '/it' || hash === '#lucca' || hash === '#it') {
+    window.switchTab('lucca', false);
   } else if (path === '/singapore' || path === '/sg' || hash === '#singapore' || hash === '#sg') {
     window.switchTab('singapore', false);
   } else if (path === '/pre-singapore' || path === '/pre-sg' || hash === '#pre-singapore' || hash === '#pre-sg') {
@@ -1389,9 +1405,9 @@ function checkInitialRoute() {
   } else if (path === '/ottawa' || hash === '#ottawa') {
     window.switchTab('ottawa', false);
   } else if (path === '/' || path === '') {
-    window.switchTab('singapore', false);
+    window.switchTab('lucca', false);
   } else {
-    window.switchTab('singapore', false);
+    window.switchTab('lucca', false);
   }
 }
 
@@ -1422,7 +1438,7 @@ window.switchMainCategory = function(category, updateUrl = true) {
     if (leaderboardSection) leaderboardSection.style.display = 'none';
     if (speyerSection) speyerSection.style.display = 'flex';
 
-    const activeKey = currentTournamentKey || 'singapore';
+    const activeKey = currentTournamentKey || 'lucca';
     window.switchTab(activeKey, updateUrl);
   }
 };
@@ -1449,7 +1465,7 @@ window.switchTab = function(tabId, updateUrl = true) {
 
   // Handle Tournament tabs
   currentTournamentKey = tabId;
-  const tourney = TOURNAMENTS[tabId] || TOURNAMENTS['singapore'] || TOURNAMENTS['pre-singapore'] || TOURNAMENTS.barcelona;
+  const tourney = TOURNAMENTS[tabId] || TOURNAMENTS['lucca'] || TOURNAMENTS['singapore'] || TOURNAMENTS['pre-singapore'] || TOURNAMENTS.barcelona;
   const tabBtn = document.getElementById(tourney.tabBtnId);
   if (tabBtn) tabBtn.classList.add('active');
 
@@ -1725,10 +1741,18 @@ function showUpcomingHub(tourney, overview) {
 }
 
 window.fetchSpeyerData = function(isSilent = false) {
-  const currentTourney = TOURNAMENTS[currentTournamentKey] || TOURNAMENTS.barcelona;
+  const currentTourney = TOURNAMENTS[currentTournamentKey] || TOURNAMENTS.lucca || TOURNAMENTS.singapore;
+  if (!isSilent) {
+    const refreshBtn = document.querySelector('.speyer__refresh-btn') || document.getElementById('btnRefreshMobile');
+    if (refreshBtn) {
+      refreshBtn.classList.add('rotating');
+      setTimeout(() => refreshBtn.classList.remove('rotating'), 1000);
+    }
+  }
   if (currentTourney.isLiveEvent) {
     window.fetchLiveTournament(currentTourney, isSilent);
   } else if (currentTourney.dataFile) {
+    if (!isSilent) delete tournamentDataCache[currentTourney.dataFile];
     window.fetchTournamentData(currentTourney.dataFile);
   }
 };

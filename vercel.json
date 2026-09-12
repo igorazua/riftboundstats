@@ -5,6 +5,14 @@
   "outputDirectory": ".",
   "rewrites": [
     {
+      "source": "/lucca",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/it",
+      "destination": "/index.html"
+    },
+    {
       "source": "/queue",
       "destination": "/index.html"
     },
