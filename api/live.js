@@ -121,6 +121,8 @@ module.exports = async function handler(req, res) {
       eventLocation = '🇩🇪 Speyer, Germany';
     } else if (tourneyName.toLowerCase().includes('lucca') || eventId === '926094') {
       eventLocation = '🇮🇹 Lucca, Italy (Polo Fiere Lucca)';
+    } else if (tourneyName.toLowerCase().includes('los angeles') || tourneyName.toLowerCase().includes('angeles') || eventId === '892089' || eventId === '889549' || eventId === '892341') {
+      eventLocation = '🇺🇸 Los Angeles, CA (Los Angeles Convention Center)';
     }
 
     if (!targetRound) {

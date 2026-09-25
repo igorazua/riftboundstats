@@ -1246,6 +1246,46 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 
 const TOURNAMENTS = {
+  'pre-la': {
+    id: '892089',
+    tabBtnId: 'tabPreLa',
+    title: '⚔️ Riftbound Pre-Regional Challenge - Los Angeles',
+    location: '🇺🇸 Los Angeles, CA (Los Angeles Convention Center)',
+    format: 'Constructed • 5 Swiss Rounds (Bo3)',
+    isLiveEvent: true,
+    eventId: 892089,
+    dataFile: '/la_pre_data.json',
+    locatorUrl: 'https://locator.riftbound.uvsgames.com/events/892089',
+    route: '/pre-la',
+    totalPlayers: 2021,
+    scheduleInfo: 'Friday Sep 25 • 5 Swiss Rounds (Bo3)'
+  },
+  la: {
+    id: '889549',
+    tabBtnId: 'tabLa',
+    title: '🏆 Riftbound Regional Qualifier - Los Angeles',
+    location: '🇺🇸 Los Angeles, CA (Los Angeles Convention Center)',
+    format: 'Swiss Day 1 (8 Rds) + Day 2 (5 Rds) + Top 8 Cut',
+    isLiveEvent: true,
+    eventId: 889549,
+    locatorUrl: 'https://locator.riftbound.uvsgames.com/events/889549',
+    route: '/la',
+    totalPlayers: 2200,
+    scheduleInfo: 'Day 1: Saturday 10:00 AM (8 Swiss Rounds) • Day 2: Sunday (5 Swiss Rounds + Top 8 Cut)'
+  },
+  'rebound-la': {
+    id: '892341',
+    tabBtnId: 'tabReboundLa',
+    title: '🔥 Secretlab Regional Rebound - Los Angeles',
+    location: '🇺🇸 Los Angeles, CA (Los Angeles Convention Center)',
+    format: 'Constructed • 6 Swiss Rounds (Bo3)',
+    isLiveEvent: true,
+    eventId: 892341,
+    locatorUrl: 'https://locator.riftbound.uvsgames.com/events/892341',
+    route: '/rebound-la',
+    totalPlayers: 512,
+    scheduleInfo: 'Sunday Sep 27 11:00 AM • 6 Swiss Rounds (Bo3)'
+  },
   lucca: {
     id: '926094',
     tabBtnId: 'tabLucca',
@@ -1258,7 +1298,7 @@ const TOURNAMENTS = {
     locatorUrl: 'https://locator.riftbound.uvsgames.com/events/926094',
     route: '/lucca',
     totalPlayers: 600,
-    scheduleInfo: 'Day 1: Sábado (10 Rondas) • Day 2: Domingo (4 Rondas + Top 8 Cut)'
+    isArchive: true
   },
   singapore: {
     id: '889532',
@@ -1272,7 +1312,7 @@ const TOURNAMENTS = {
     locatorUrl: 'https://locator.riftbound.uvsgames.com/events/889532',
     route: '/singapore',
     totalPlayers: 2055,
-    scheduleInfo: 'Day 1: Sábado (8 Rondas) • Day 2: Domingo (5 Rondas + Top 8 Cut)'
+    isArchive: true
   },
   'pre-singapore': {
     id: '889707',
@@ -1286,7 +1326,7 @@ const TOURNAMENTS = {
     locatorUrl: 'https://locator.riftbound.uvsgames.com/events/889707',
     route: '/pre-singapore',
     totalPlayers: 1475,
-    scheduleInfo: 'Friday Sep 3 • 6 Swiss Rounds (Bo3)'
+    isArchive: true
   },
   barcelona: {
     id: '857452',
@@ -1299,7 +1339,7 @@ const TOURNAMENTS = {
     locatorUrl: 'https://locator.riftbound.uvsgames.com/events/857452',
     route: '/barcelona',
     totalPlayers: 2208,
-    scheduleInfo: 'Day 1: Sábado 10:00 AM (8 Rondas) • Day 2: Domingo (8 Rondas + Top 8 Cut)'
+    isArchive: true
   },
   'pre-barcelona': {
     id: 'pre-barcelona',
@@ -1312,7 +1352,7 @@ const TOURNAMENTS = {
     locatorUrl: 'https://locator.riftbound.uvsgames.com/events/857452',
     route: '/pre-barcelona',
     totalPlayers: 512,
-    scheduleInfo: 'Friday Aug 21 • 5 Swiss Rounds (Bo3)'
+    isArchive: true
   },
   speyer: {
     id: '835043',
@@ -1364,7 +1404,7 @@ const TOURNAMENTS = {
   }
 };
 
-let currentTournamentKey = 'lucca';
+let currentTournamentKey = 'pre-la';
 const tournamentDataCache = {};
 
 window.toggleArchiveDropdown = function(event) {
@@ -1386,6 +1426,12 @@ function checkInitialRoute() {
   
   if (path === '/queue' || path === '/leaderboard' || hash === '#queue' || hash === '#leaderboard') {
     window.switchMainCategory('queue', false);
+  } else if (path === '/pre-la' || path === '/pre-losangeles' || hash === '#pre-la') {
+    window.switchTab('pre-la', false);
+  } else if (path === '/la' || path === '/losangeles' || path === '/regional-la' || hash === '#la') {
+    window.switchTab('la', false);
+  } else if (path === '/rebound-la' || path === '/rebound' || hash === '#rebound-la' || hash === '#rebound') {
+    window.switchTab('rebound-la', false);
   } else if (path === '/lucca' || path === '/it' || hash === '#lucca' || hash === '#it') {
     window.switchTab('lucca', false);
   } else if (path === '/singapore' || path === '/sg' || hash === '#singapore' || hash === '#sg') {
@@ -1398,16 +1444,16 @@ function checkInitialRoute() {
     window.switchTab('pre-barcelona', false);
   } else if (path === '/speyer' || hash === '#speyer') {
     window.switchTab('speyer', false);
-  } else if (path === '/geng' || path === '/la' || hash === '#geng') {
+  } else if (path === '/geng' || hash === '#geng') {
     window.switchTab('geng', false);
   } else if (path === '/australia' || hash === '#australia') {
     window.switchTab('australia', false);
   } else if (path === '/ottawa' || hash === '#ottawa') {
     window.switchTab('ottawa', false);
   } else if (path === '/' || path === '') {
-    window.switchTab('lucca', false);
+    window.switchTab('pre-la', false);
   } else {
-    window.switchTab('lucca', false);
+    window.switchTab('pre-la', false);
   }
 }
 
@@ -1438,7 +1484,7 @@ window.switchMainCategory = function(category, updateUrl = true) {
     if (leaderboardSection) leaderboardSection.style.display = 'none';
     if (speyerSection) speyerSection.style.display = 'flex';
 
-    const activeKey = currentTournamentKey || 'lucca';
+    const activeKey = currentTournamentKey || 'pre-la';
     window.switchTab(activeKey, updateUrl);
   }
 };
@@ -1465,7 +1511,7 @@ window.switchTab = function(tabId, updateUrl = true) {
 
   // Handle Tournament tabs
   currentTournamentKey = tabId;
-  const tourney = TOURNAMENTS[tabId] || TOURNAMENTS['lucca'] || TOURNAMENTS['singapore'] || TOURNAMENTS['pre-singapore'] || TOURNAMENTS.barcelona;
+  const tourney = TOURNAMENTS[tabId] || TOURNAMENTS['pre-la'] || TOURNAMENTS['la'] || TOURNAMENTS['rebound-la'];
   const tabBtn = document.getElementById(tourney.tabBtnId);
   if (tabBtn) tabBtn.classList.add('active');
 

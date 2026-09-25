@@ -5,6 +5,22 @@
   "outputDirectory": ".",
   "rewrites": [
     {
+      "source": "/pre-la",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/rebound-la",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/rebound",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/losangeles",
+      "destination": "/index.html"
+    },
+    {
       "source": "/lucca",
       "destination": "/index.html"
     },
