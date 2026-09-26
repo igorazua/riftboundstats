@@ -1846,21 +1846,21 @@ const speyerState = {
 };
 
 const LEGEND_SETS = {
-  // Set 1: Origins (OGN)
+  // Set 1: Origins (OGN) / Proving Grounds
   'Annie': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
   'Ahri': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
   'Darius': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
   'Garen': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
   'Kai\'Sa': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
-  'Kennen': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
   'Lee Sin': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
   'Leona': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
   'Lux': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
   'Master Yi, Wuju Bladesman': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
   'Miss Fortune': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
-  'Nasus': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
-  'Renekton': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
+  'Renata Glasc': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
+  'Sett': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
   'Teemo': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
+  'Viktor': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
   'Yasuo': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
 
   // Set 2: Spiritforged (SPF)
@@ -1875,6 +1875,7 @@ const LEGEND_SETS = {
   'Rek\'Sai': { set: 'Spiritforged', num: 'Set 2', code: 'SPF', color: 'spiritforged' },
   'Rumble': { set: 'Spiritforged', num: 'Set 2', code: 'SPF', color: 'spiritforged' },
   'Sivir': { set: 'Spiritforged', num: 'Set 2', code: 'SPF', color: 'spiritforged' },
+  'Volibear': { set: 'Spiritforged', num: 'Set 2', code: 'SPF', color: 'spiritforged' },
 
   // Set 3: Unleashed (UNL)
   'Diana': { set: 'Unleashed', num: 'Set 3', code: 'UNL', color: 'unleashed' },
@@ -1883,6 +1884,7 @@ const LEGEND_SETS = {
   'Kha\'Zix': { set: 'Unleashed', num: 'Set 3', code: 'UNL', color: 'unleashed' },
   'LeBlanc': { set: 'Unleashed', num: 'Set 3', code: 'UNL', color: 'unleashed' },
   'Lillia': { set: 'Unleashed', num: 'Set 3', code: 'UNL', color: 'unleashed' },
+  'Master Yi, Wuju Master': { set: 'Unleashed', num: 'Set 3', code: 'UNL', color: 'unleashed' },
   'Poppy': { set: 'Unleashed', num: 'Set 3', code: 'UNL', color: 'unleashed' },
   'Pyke': { set: 'Unleashed', num: 'Set 3', code: 'UNL', color: 'unleashed' },
   'Rengar': { set: 'Unleashed', num: 'Set 3', code: 'UNL', color: 'unleashed' },
@@ -1893,13 +1895,12 @@ const LEGEND_SETS = {
   'Ambessa': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
   'Jayce': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
   'Jinx': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
-  'Master Yi, Wuju Master': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
+  'Kennen': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
   'Mel': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
-  'Renata Glasc': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
-  'Sett': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
+  'Nasus': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
+  'Renekton': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
   'Shen': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
   'Vi': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
-  'Viktor': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
   'Zed': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' }
 };
 
