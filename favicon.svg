@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bgGlow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="#182a4d"/>
+      <stop offset="60%" stop-color="#0d1424"/>
+      <stop offset="100%" stop-color="#050811"/>
+    </radialGradient>
+
+    <!-- Time Warp Spiral Gradient -->
+    <linearGradient id="cyanGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f5ff"/>
+      <stop offset="50%" stop-color="#00a8ff"/>
+      <stop offset="100%" stop-color="#7000ff"/>
+    </linearGradient>
+
+    <linearGradient id="goldGlow" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffd000"/>
+      <stop offset="60%" stop-color="#ff7b00"/>
+      <stop offset="100%" stop-color="#ff0077"/>
+    </linearGradient>
+
+    <radialGradient id="corePulse" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="35%" stop-color="#70f3ff" stop-opacity="0.9"/>
+      <stop offset="70%" stop-color="#0077ff" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#7000ff" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Filters for Magical Glow -->
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Base Shield / Rounded Background Plate -->
+  <rect width="128" height="128" rx="28" fill="url(#bgGlow)"/>
+  <rect width="124" height="124" x="2" y="2" rx="26" fill="none" stroke="url(#cyanGlow)" stroke-width="2" stroke-opacity="0.6"/>
+
+  <!-- Celestial Astrolabe / Temporal Outer Ring -->
+  <circle cx="64" cy="64" r="48" fill="none" stroke="#1f355b" stroke-width="1.5" stroke-dasharray="3 5"/>
+  <circle cx="64" cy="64" r="42" fill="none" stroke="url(#cyanGlow)" stroke-width="2.5" stroke-opacity="0.8" filter="url(#softGlow)"/>
+
+  <!-- Clockwork Tick Marks (12 Hours) -->
+  <g stroke="#5ce1e6" stroke-width="2" stroke-linecap="round" opacity="0.8">
+    <line x1="64" y1="19" x2="64" y2="25"/>
+    <line x1="64" y1="103" x2="64" y2="109"/>
+    <line x1="19" y1="64" x2="25" y2="64"/>
+    <line x1="103" y1="64" x2="109" y2="64"/>
+    
+    <line x1="32.2" y1="32.2" x2="36.5" y2="36.5" stroke-width="1.5"/>
+    <line x1="95.8" y1="32.2" x2="91.5" y2="36.5" stroke-width="1.5"/>
+    <line x1="32.2" y1="95.8" x2="36.5" y2="91.5" stroke-width="1.5"/>
+    <line x1="95.8" y1="95.8" x2="91.5" y2="91.5" stroke-width="1.5"/>
+  </g>
+
+  <!-- Temporal Warp Curved Spirals / Time Rift Waves -->
+  <g fill="none" stroke-linecap="round" filter="url(#glow)">
+    <!-- Outer Swirl Arc 1 -->
+    <path d="M64 22 C88 22 106 40 106 64 C106 82 92 98 74 103 C56 108 38 96 32 80 C26 64 36 46 50 38 C64 30 80 38 86 52 C92 66 82 80 68 82 C54 84 46 72 50 60" 
+          stroke="url(#cyanGlow)" stroke-width="3.5"/>
+
+    <!-- Counter Swirl Arc 2 (Gold/Pink Temporal Energy) -->
+    <path d="M64 106 C40 106 22 88 22 64 C22 46 36 30 54 25 C72 20 90 32 96 48 C102 64 92 82 78 90 C64 98 48 90 42 76 C36 62 46 48 60 46" 
+          stroke="url(#goldGlow)" stroke-width="2.5" opacity="0.85"/>
+  </g>
+
+  <!-- Hourglass / Chrono Diamond Silhouette -->
+  <g fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linejoin="round" filter="url(#softGlow)" opacity="0.95">
+    <!-- Top Glass -->
+    <path d="M48 40 L80 40 L64 64 Z" fill="rgba(0, 245, 255, 0.15)" stroke="url(#cyanGlow)" stroke-width="2"/>
+    <!-- Bottom Glass -->
+    <path d="M64 64 L80 88 L48 88 Z" fill="rgba(255, 123, 0, 0.15)" stroke="url(#goldGlow)" stroke-width="2"/>
+  </g>
+
+  <!-- Temporal Sand & Energy Streams -->
+  <line x1="64" y1="52" x2="64" y2="76" stroke="#ffffff" stroke-width="2" stroke-linecap="round" filter="url(#softGlow)"/>
+
+  <!-- Orbiting Chrono Orbs / Time Sparks -->
+  <circle cx="84" cy="38" r="3.5" fill="#00ffff" filter="url(#glow)"/>
+  <circle cx="44" cy="90" r="3" fill="#ffb700" filter="url(#glow)"/>
+  <circle cx="96" cy="78" r="2.5" fill="#ff00a0" filter="url(#glow)"/>
+  <circle cx="30" cy="50" r="2.5" fill="#7000ff" filter="url(#glow)"/>
+
+  <!-- Core Radiant Time Rift Portal -->
+  <circle cx="64" cy="64" r="16" fill="url(#corePulse)" filter="url(#glow)"/>
+  <circle cx="64" cy="64" r="5" fill="#ffffff" filter="url(#softGlow)"/>
+
+  <!-- Central Star Cross Flare -->
+  <path d="M64 48 L65.5 62.5 L80 64 L65.5 65.5 L64 80 L62.5 65.5 L48 64 L62.5 62.5 Z" fill="#ffffff" opacity="0.9"/>
+</svg>

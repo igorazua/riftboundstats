@@ -9,7 +9,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="index.css?v=20260819_4">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="alternate icon" href="favicon.svg">
+  <link rel="apple-touch-icon" href="favicon.svg">
+  <link rel="stylesheet" href="index.css?v=20260926_1">
 </head>
 <body>
   <div id="errorMessage" style="background:var(--negative-red);color:#fff;padding:0.75rem;text-align:center;display:none;font-weight:500;position:fixed;top:0;left:0;right:0;z-index:300;">
@@ -18,7 +21,10 @@
 
   <header class="topbar">
     <div class="topbar__header-row">
-      <h1 class="topbar__title">⚔️ <span>Riftbound</span> Stats</h1>
+      <h1 class="topbar__title">
+        <img src="favicon.svg" alt="Time Warp" class="topbar__logo-icon">
+        <span>Riftbound</span> Stats
+      </h1>
       <div class="topbar__actions">
         <div class="refresh-indicator" id="refreshIndicator">
           <span id="lastUpdate">--</span>

@@ -119,6 +119,21 @@ body.profile-open-desktop .main-content__right {
   align-items: center;
   gap: 10px;
   white-space: nowrap;
+  cursor: pointer;
+}
+
+.topbar__logo-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  filter: drop-shadow(0 0 8px rgba(0, 245, 255, 0.45));
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), filter 0.35s ease;
+  vertical-align: middle;
+}
+
+.topbar__title:hover .topbar__logo-icon {
+  transform: rotate(15deg) scale(1.08);
+  filter: drop-shadow(0 0 14px rgba(0, 245, 255, 0.85));
 }
 
 .topbar__title span {
