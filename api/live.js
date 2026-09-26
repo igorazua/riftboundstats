@@ -126,6 +126,8 @@ module.exports = async function handler(req, res) {
       eventLocation = '🇺🇸 Los Angeles, CA (Los Angeles Convention Center)';
     } else if (tourneyName.toLowerCase().includes('bristol') || eventId === '951302') {
       eventLocation = '🇬🇧 Bristol, United Kingdom (Ashton Gate Stadium)';
+    } else if (tourneyName.toLowerCase().includes('malm') || eventId === '964781') {
+      eventLocation = '🇸🇪 Malmö, Sweden (Malmö Mässan)';
     }
 
     if (!targetRound) {

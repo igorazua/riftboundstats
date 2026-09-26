@@ -25,6 +25,22 @@
       "destination": "/index.html"
     },
     {
+      "source": "/malmo",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/malmö",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/se",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/sweden",
+      "destination": "/index.html"
+    },
+    {
       "source": "/lucca",
       "destination": "/index.html"
     },

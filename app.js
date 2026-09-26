@@ -1299,6 +1299,20 @@ const TOURNAMENTS = {
     totalPlayers: 350,
     scheduleInfo: 'Saturday Sep 26 9:00 AM • 9 Swiss Rounds (Bo3)'
   },
+  malmo: {
+    id: '964781',
+    tabBtnId: 'tabMalmo',
+    title: '⚔️ Riftbound Showdown Series @ Malmö Game Week',
+    location: '🇸🇪 Malmö, Sweden (Malmö Mässan)',
+    format: 'Swiss Day 1 (7 Rds) + Day 2 (5 Rds) + Top 8 Cut',
+    isLiveEvent: true,
+    eventId: 964781,
+    dataFile: '/malmo_data.json',
+    locatorUrl: 'https://locator.riftbound.uvsgames.com/events/964781',
+    route: '/malmo',
+    totalPlayers: 345,
+    scheduleInfo: 'Day 1: Saturday Sep 26 (7 Swiss Rounds) • Day 2: Sunday Sep 27 (5 Swiss Rounds + Top 8 Cut)'
+  },
   lucca: {
     id: '926094',
     tabBtnId: 'tabLucca',
@@ -1447,6 +1461,8 @@ function checkInitialRoute() {
     window.switchTab('rebound-la', false);
   } else if (path === '/bristol' || path === '/uk' || hash === '#bristol' || hash === '#uk') {
     window.switchTab('bristol', false);
+  } else if (path === '/malmo' || path === '/malmö' || path === '/se' || path === '/sweden' || hash === '#malmo' || hash === '#malmö') {
+    window.switchTab('malmo', false);
   } else if (path === '/lucca' || path === '/it' || hash === '#lucca' || hash === '#it') {
     window.switchTab('lucca', false);
   } else if (path === '/singapore' || path === '/sg' || hash === '#singapore' || hash === '#sg') {
