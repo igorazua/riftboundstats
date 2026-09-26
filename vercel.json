@@ -17,7 +17,11 @@
       "destination": "/index.html"
     },
     {
-      "source": "/losangeles",
+      "source": "/bristol",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/uk",
       "destination": "/index.html"
     },
     {

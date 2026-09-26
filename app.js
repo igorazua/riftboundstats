@@ -1286,6 +1286,19 @@ const TOURNAMENTS = {
     totalPlayers: 512,
     scheduleInfo: 'Sunday Sep 27 11:00 AM • 6 Swiss Rounds (Bo3)'
   },
+  bristol: {
+    id: '951302',
+    tabBtnId: 'tabBristol',
+    title: '⚔️ Showdown Series Bristol by OPE',
+    location: '🇬🇧 Bristol, United Kingdom (Ashton Gate Stadium)',
+    format: 'Swiss Format • 9 Swiss Rounds (Bo3)',
+    isLiveEvent: true,
+    eventId: 951302,
+    locatorUrl: 'https://locator.riftbound.uvsgames.com/events/951302',
+    route: '/bristol',
+    totalPlayers: 350,
+    scheduleInfo: 'Saturday Sep 26 9:00 AM • 9 Swiss Rounds (Bo3)'
+  },
   lucca: {
     id: '926094',
     tabBtnId: 'tabLucca',
@@ -1432,6 +1445,8 @@ function checkInitialRoute() {
     window.switchTab('la', false);
   } else if (path === '/rebound-la' || path === '/rebound' || hash === '#rebound-la' || hash === '#rebound') {
     window.switchTab('rebound-la', false);
+  } else if (path === '/bristol' || path === '/uk' || hash === '#bristol' || hash === '#uk') {
+    window.switchTab('bristol', false);
   } else if (path === '/lucca' || path === '/it' || hash === '#lucca' || hash === '#it') {
     window.switchTab('lucca', false);
   } else if (path === '/singapore' || path === '/sg' || hash === '#singapore' || hash === '#sg') {

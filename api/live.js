@@ -123,6 +123,8 @@ module.exports = async function handler(req, res) {
       eventLocation = '🇮🇹 Lucca, Italy (Polo Fiere Lucca)';
     } else if (tourneyName.toLowerCase().includes('los angeles') || tourneyName.toLowerCase().includes('angeles') || eventId === '892089' || eventId === '889549' || eventId === '892341') {
       eventLocation = '🇺🇸 Los Angeles, CA (Los Angeles Convention Center)';
+    } else if (tourneyName.toLowerCase().includes('bristol') || eventId === '951302') {
+      eventLocation = '🇬🇧 Bristol, United Kingdom (Ashton Gate Stadium)';
     }
 
     if (!targetRound) {
