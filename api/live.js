@@ -158,22 +158,41 @@ module.exports = async function handler(req, res) {
 
     // Fetch Standings for all active rounds concurrently to build round progression
     const roundStandingsMap = {};
-    await Promise.all(activeRounds.map(async (r) => {
-      try {
-        const sRes = await fetch(`https://api.riftbound.uvsgames.com/api/v2/tournament-rounds/${r.id}/standings/`, {
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-            'Accept': 'application/json'
+    const boundRiftLegendMap = {};
+
+    await Promise.all([
+      ...activeRounds.map(async (r) => {
+        try {
+          const sRes = await fetch(`https://api.riftbound.uvsgames.com/api/v2/tournament-rounds/${r.id}/standings/`, {
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+              'Accept': 'application/json'
+            }
+          });
+          if (sRes.ok) {
+            const sData = await sRes.json();
+            roundStandingsMap[r.round_number] = sData.standings || [];
           }
-        });
-        if (sRes.ok) {
-          const sData = await sRes.json();
-          roundStandingsMap[r.round_number] = sData.standings || [];
+        } catch (err) {
+          console.warn(`Failed to fetch standings for round ${r.round_number}:`, err);
         }
-      } catch (err) {
-        console.warn(`Failed to fetch standings for round ${r.round_number}:`, err);
-      }
-    }));
+      }),
+      (async () => {
+        try {
+          const brRes = await fetch(`https://boundrift.com/api/events/${eventId}/standings`, {
+            headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json' }
+          });
+          if (brRes.ok) {
+            const brData = await brRes.json();
+            for (const s of (brData.standings || [])) {
+              if (s.playerId && s.legendName && s.legendName !== 'Unknown') {
+                boundRiftLegendMap[s.playerId] = s.legendName;
+              }
+            }
+          }
+        } catch (e) {}
+      })()
+    ]);
 
     const rawStandings = roundStandingsMap[targetRound.round_number] || [];
     if (rawStandings.length === 0) {
@@ -196,7 +215,10 @@ module.exports = async function handler(req, res) {
     rawStandings.forEach((st, idx) => {
       const ues = st.user_event_status || {};
       const card = ues.deck_defining_card || {};
-      const legendName = card.name || 'Unknown Legend';
+      const pId = st.player?.id || ues.user?.id || st.id || idx;
+      const rawLegendName = card.name || boundRiftLegendMap[pId] || null;
+      const hasLegend = Boolean(rawLegendName && rawLegendName !== 'Unknown Legend' && rawLegendName !== 'Unknown');
+      const legendName = hasLegend ? rawLegendName : 'No registrada';
       const legendImg = card.image_url || null;
       const playerName = cleanName(ues.best_identifier || st.player?.best_identifier || `Player #${st.rank || idx + 1}`);
       const avatar = ues.full_profile_picture_url || 'https://storage.googleapis.com/spicerack_media/game_images/3_riftbound/profile/7cc85539-e3b.png';
@@ -212,8 +234,7 @@ module.exports = async function handler(req, res) {
       const omw = (st.opponent_match_win_percentage || 0) * 100;
       const gw = (st.game_win_percentage || 0) * 100;
 
-      const setInfo = getSetInfo(legendName);
-      const pId = st.player?.id || ues.user?.id || st.id || idx;
+      const setInfo = hasLegend ? getSetInfo(legendName) : { set: 'Sin set', num: '-', code: 'NONE' };
 
       // Build round progression
       const roundProgression = [];
@@ -279,43 +300,45 @@ module.exports = async function handler(req, res) {
         rounds: roundProgression
       });
 
-      if (!legendMap[legendName]) {
-        legendMap[legendName] = {
-          legend: legendName,
-          image: legendImg,
-          set: setInfo.set,
-          setNum: setInfo.num,
-          setCode: setInfo.code,
-          setName: `${setInfo.set} (${setInfo.num})`,
-          isOrigins: setInfo.set === 'Origins',
-          count: 0,
-          totalWins: 0,
-          totalLosses: 0,
-          totalDraws: 0,
-          ranks: [],
-          bestRank: 999999,
-          top32: 0,
-          recordUndefeated: 0,
-          recordOneLoss: 0,
-          recordNoWins: 0
-        };
+      if (hasLegend) {
+        if (!legendMap[legendName]) {
+          legendMap[legendName] = {
+            legend: legendName,
+            image: legendImg,
+            set: setInfo.set,
+            setNum: setInfo.num,
+            setCode: setInfo.code,
+            setName: `${setInfo.set} (${setInfo.num})`,
+            isOrigins: setInfo.set === 'Origins',
+            count: 0,
+            totalWins: 0,
+            totalLosses: 0,
+            totalDraws: 0,
+            ranks: [],
+            bestRank: 999999,
+            top32: 0,
+            recordUndefeated: 0,
+            recordOneLoss: 0,
+            recordNoWins: 0
+          };
+        }
+
+        const lm = legendMap[legendName];
+        lm.count += 1;
+        lm.totalWins += mW;
+        lm.totalLosses += mL;
+        lm.totalDraws += mD;
+        lm.ranks.push(rank);
+        if (rank < lm.bestRank) lm.bestRank = rank;
+        if (rank <= 32) lm.top32 += 1;
+
+        if (mL === 0 && mW > 0) lm.recordUndefeated += 1;
+        else if (mL === 1) lm.recordOneLoss += 1;
+        else if (mW === 0 && mL > 0) lm.recordNoWins += 1;
       }
-
-      const lm = legendMap[legendName];
-      lm.count += 1;
-      lm.totalWins += mW;
-      lm.totalLosses += mL;
-      lm.totalDraws += mD;
-      lm.ranks.push(rank);
-      if (rank < lm.bestRank) lm.bestRank = rank;
-      if (rank <= 32) lm.top32 += 1;
-
-      if (mL === 0 && mW > 0) lm.recordUndefeated += 1;
-      else if (mL === 1) lm.recordOneLoss += 1;
-      else if (mW === 0 && mL > 0) lm.recordNoWins += 1;
     });
 
-    const totalPilots = playersList.length;
+    const totalIdentifiedPilots = Object.values(legendMap).reduce((acc, lm) => acc + lm.count, 0) || 1;
     const metaList = Object.values(legendMap).map(lm => {
       const totalM = lm.totalWins + lm.totalLosses + lm.totalDraws;
       const wr = totalM > 0 ? (lm.totalWins / totalM) * 100 : 50.0;
@@ -329,7 +352,7 @@ module.exports = async function handler(req, res) {
         setName: lm.setName,
         isOrigins: lm.isOrigins,
         players: lm.count,
-        meta: (lm.count / (totalPilots || 1)) * 100,
+        meta: (lm.count / totalIdentifiedPilots) * 100,
         winrate: wr,
         bestRank: lm.bestRank,
         avgRank: avgR,
@@ -339,6 +362,8 @@ module.exports = async function handler(req, res) {
         recordNoWins: lm.recordNoWins
       };
     });
+
+    metaList.sort((a, b) => b.players - a.players || b.winrate - a.winrate);
 
     playersList.sort((a, b) => a.rank - b.rank);
 
@@ -350,7 +375,8 @@ module.exports = async function handler(req, res) {
       roundNumber: targetRound.round_number || 1,
       totalRounds: totalRounds,
       status: targetRound.status || 'IN_PROGRESS',
-      totalPlayers: totalPilots,
+      totalPlayers: playersList.length,
+      totalIdentified: totalIdentifiedPilots,
       updatedAt: new Date().toISOString(),
       data: metaList,
       players: playersList

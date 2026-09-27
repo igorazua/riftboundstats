@@ -2203,7 +2203,9 @@ window.renderSpeyerTable = function() {
   }
   
   // Sort data
-  const sorted = [...speyerState.data].sort((a, b) => {
+  const sorted = [...speyerState.data]
+    .filter(d => d.legend && d.legend !== 'Unknown Legend' && d.legend !== 'No registrada' && d.legend !== 'Unknown')
+    .sort((a, b) => {
     let va = a[speyerState.sortCol];
     let vb = b[speyerState.sortCol];
     
@@ -2385,7 +2387,8 @@ window.renderSpeyerPlayersTable = function() {
 
   filtered.forEach((p, idx) => {
     const tr = document.createElement('tr');
-    const setInfo = getLegendSetInfo(p.legend);
+    const isUnregistered = !p.legend || p.legend === 'Unknown Legend' || p.legend === 'No registrada' || p.legend === 'Unknown';
+    const setInfo = isUnregistered ? { color: 'neutral', set: '-' } : getLegendSetInfo(p.legend);
     tr.className = `speyer-player-row row-${setInfo.color}`;
     tr.onclick = () => window.showSpeyerPlayerDetail(p.id);
 
@@ -2395,8 +2398,8 @@ window.renderSpeyerPlayersTable = function() {
     else if (p.rank === 3) rankBadge = '<span class="rank-medal rank-medal--3">3</span>';
 
     const avatarSrc = p.avatar || DEFAULT_SPEYER_AVATAR;
-    const playerLegendImg = p.legendImage || getLegendImage(p.legend);
-    const playerLegendImgTag = playerLegendImg ? `<img src="${playerLegendImg}" alt="" onerror="this.style.display='none'">` : '<span class="legend-avatar-placeholder">⚔️</span>';
+    const playerLegendImg = isUnregistered ? null : (p.legendImage || getLegendImage(p.legend));
+    const playerLegendImgTag = playerLegendImg ? `<img src="${playerLegendImg}" alt="" onerror="this.style.display='none'">` : '<span class="legend-avatar-placeholder" style="opacity:0.4;">—</span>';
 
     let recordClass = 'pill-neutral';
     let recordIcon = '';
@@ -2408,7 +2411,8 @@ window.renderSpeyerPlayersTable = function() {
       recordIcon = '💀 ';
     }
 
-    const setBadge = `<span class="badge badge--${setInfo.color}">${setInfo.set}</span>`;
+    const setBadge = isUnregistered ? '<span class="badge" style="opacity:0.4;background:rgba(255,255,255,0.06);color:var(--text-muted);">-</span>' : `<span class="badge badge--${setInfo.color}">${setInfo.set}</span>`;
+    const legendLabel = isUnregistered ? '<span style="color:var(--text-muted);font-style:italic;">No registrada</span>' : `<span>${escapeHTML(p.legend)}</span>`;
 
     tr.innerHTML = `
       <td>${rankBadge}</td>
@@ -2421,7 +2425,7 @@ window.renderSpeyerPlayersTable = function() {
       <td>
         <div class="speyer-player-cell">
           ${playerLegendImgTag}
-          <span>${escapeHTML(p.legend)}</span>
+          ${legendLabel}
         </div>
       </td>
       <td>${setBadge}</td>
