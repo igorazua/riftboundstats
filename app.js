@@ -1867,6 +1867,7 @@ const LEGEND_SETS = {
   'Ahri': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
   'Darius': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
   'Garen': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
+  'Jinx': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
   'Kai\'Sa': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
   'Lee Sin': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
   'Leona': { set: 'Origins', num: 'Set 1', code: 'OGN', color: 'origins' },
@@ -1905,18 +1906,17 @@ const LEGEND_SETS = {
   'Pyke': { set: 'Unleashed', num: 'Set 3', code: 'UNL', color: 'unleashed' },
   'Rengar': { set: 'Unleashed', num: 'Set 3', code: 'UNL', color: 'unleashed' },
   'Vex': { set: 'Unleashed', num: 'Set 3', code: 'UNL', color: 'unleashed' },
+  'Vi': { set: 'Unleashed', num: 'Set 3', code: 'UNL', color: 'unleashed' },
 
   // Set 4: Vendetta (VDT)
   'Akali': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
   'Ambessa': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
   'Jayce': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
-  'Jinx': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
   'Kennen': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
   'Mel': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
   'Nasus': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
   'Renekton': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
   'Shen': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
-  'Vi': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
   'Zed': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' }
 };
 

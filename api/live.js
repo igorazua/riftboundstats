@@ -15,6 +15,7 @@ module.exports = async function handler(req, res) {
     'Ahri': { set: 'Origins', num: 'Set 1', code: 'OGN' },
     'Darius': { set: 'Origins', num: 'Set 1', code: 'OGN' },
     'Garen': { set: 'Origins', num: 'Set 1', code: 'OGN' },
+    'Jinx': { set: 'Origins', num: 'Set 1', code: 'OGN' },
     'Kai\'Sa': { set: 'Origins', num: 'Set 1', code: 'OGN' },
     'Lee Sin': { set: 'Origins', num: 'Set 1', code: 'OGN' },
     'Leona': { set: 'Origins', num: 'Set 1', code: 'OGN' },
@@ -53,18 +54,17 @@ module.exports = async function handler(req, res) {
     'Pyke': { set: 'Unleashed', num: 'Set 3', code: 'UNL' },
     'Rengar': { set: 'Unleashed', num: 'Set 3', code: 'UNL' },
     'Vex': { set: 'Unleashed', num: 'Set 3', code: 'UNL' },
+    'Vi': { set: 'Unleashed', num: 'Set 3', code: 'UNL' },
 
     // Set 4: Vendetta (VDT)
     'Akali': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
     'Ambessa': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
     'Jayce': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
-    'Jinx': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
     'Kennen': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
     'Mel': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
     'Nasus': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
     'Renekton': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
     'Shen': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
-    'Vi': { set: 'Vendetta', num: 'Set 4', code: 'VDT' },
     'Zed': { set: 'Vendetta', num: 'Set 4', code: 'VDT' }
   };
 
