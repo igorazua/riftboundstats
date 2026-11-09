@@ -1451,7 +1451,9 @@ function checkInitialRoute() {
   const path = (window.location.pathname || '').toLowerCase();
   const hash = (window.location.hash || '').toLowerCase();
   
-  if (path === '/queue' || path === '/leaderboard' || hash === '#queue' || hash === '#leaderboard') {
+  if (path === '/stuttgart' || path === '/mrbaiter' || hash === '#stuttgart' || hash === '#mrbaiter') {
+    window.switchMainCategory('mrbaiter', false);
+  } else if (path === '/queue' || path === '/leaderboard' || hash === '#queue' || hash === '#leaderboard') {
     window.switchMainCategory('queue', false);
   } else if (path === '/pre-la' || path === '/pre-losangeles' || hash === '#pre-la') {
     window.switchTab('pre-la', false);
@@ -1491,9 +1493,41 @@ function checkInitialRoute() {
 window.switchMainCategory = function(category, updateUrl = true) {
   const btnTournaments = document.getElementById('btnNavTournaments');
   const btnQueue = document.getElementById('btnNavQueue');
+  const btnMrBaiter = document.getElementById('btnNavMrBaiter');
+  const tabStuttgartMrBaiter = document.getElementById('tabStuttgartMrBaiter');
   const tournamentsSubtabs = document.getElementById('tournamentsSubtabs');
   const leaderboardSection = document.getElementById('leaderboardSection');
   const speyerSection = document.getElementById('speyerSection');
+  const mrbaiterSection = document.getElementById('mrbaiterSection');
+
+  if (category === 'mrbaiter' || category === 'stuttgart') {
+    if (btnTournaments) btnTournaments.classList.remove('active');
+    if (btnQueue) btnQueue.classList.remove('active');
+    if (btnMrBaiter) btnMrBaiter.classList.add('active');
+    if (tabStuttgartMrBaiter) tabStuttgartMrBaiter.classList.add('active');
+    document.querySelectorAll('.tab-btn, .dropdown-item').forEach(btn => {
+      if (btn !== tabStuttgartMrBaiter) btn.classList.remove('active');
+    });
+
+    if (tournamentsSubtabs) tournamentsSubtabs.style.display = 'flex';
+    if (leaderboardSection) leaderboardSection.style.display = 'none';
+    if (speyerSection) speyerSection.style.display = 'none';
+    if (mrbaiterSection) mrbaiterSection.style.display = 'flex';
+
+    document.body.classList.remove('profile-open-desktop');
+    document.body.classList.remove('profile-open-mobile');
+
+    if (updateUrl && window.location.pathname !== '/stuttgart' && window.location.pathname !== '/mrbaiter') {
+      history.pushState({ category: 'mrbaiter' }, '', '/stuttgart');
+    }
+
+    window.loadMrBaiterData();
+    return;
+  }
+
+  if (mrbaiterSection) mrbaiterSection.style.display = 'none';
+  if (btnMrBaiter) btnMrBaiter.classList.remove('active');
+  if (tabStuttgartMrBaiter) tabStuttgartMrBaiter.classList.remove('active');
 
   if (category === 'queue' || category === 'leaderboard') {
     if (btnTournaments) btnTournaments.classList.remove('active');
@@ -1524,6 +1558,11 @@ window.switchTab = function(tabId, updateUrl = true) {
   // Close archive dropdown if open
   const dropdown = document.getElementById('archiveDropdown');
   if (dropdown) dropdown.classList.remove('open');
+
+  if (tabId === 'mrbaiter' || tabId === 'stuttgart') {
+    window.switchMainCategory('mrbaiter', updateUrl);
+    return;
+  }
 
   if (tabId === 'leaderboard' || tabId === 'queue') {
     window.switchMainCategory('queue', updateUrl);
@@ -1917,7 +1956,10 @@ const LEGEND_SETS = {
   'Nasus': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
   'Renekton': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
   'Shen': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
-  'Zed': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' }
+  'Zed': { set: 'Vendetta', num: 'Set 4', code: 'VDT', color: 'vendetta' },
+
+  // Set 5: Radiance (RAD)
+  'Riven': { set: 'Radiance', num: 'Set 5', code: 'RAD', color: 'radiance' }
 };
 
 function getLegendSetInfo(fullName) {
@@ -2568,3 +2610,408 @@ window.showSpeyerPlayerDetail = function(playerId) {
   document.body.classList.add('profile-open-mobile');
 };
 
+
+
+// ==========================================
+// MRBAITER @ RC STUTTGART MODULE
+// ==========================================
+
+let stuttgartState = {
+  data: null,
+  activeFilter: 'all',
+  loading: false
+};
+
+const COUNTRY_NAMES = {
+  'DE': 'Alemania',
+  'ES': 'España',
+  'FR': 'Francia',
+  'GB': 'Reino Unido',
+  'UK': 'Reino Unido',
+  'BE': 'Bélgica',
+  'EE': 'Estonia',
+  'IT': 'Italia',
+  'NL': 'Países Bajos',
+  'US': 'Estados Unidos',
+  'CA': 'Canadá',
+  'SE': 'Suecia',
+  'DK': 'Dinamarca',
+  'AT': 'Austria',
+  'CH': 'Suiza',
+  'PL': 'Polonia',
+  'PT': 'Portugal'
+};
+
+function getCountryFlagEmoji(code) {
+  if (!code) return '🌐';
+  const c = code.toUpperCase();
+  if (c === 'UK') return '🇬🇧';
+  if (c.length === 2) {
+    return String.fromCodePoint(...[...c].map(char => 127397 + char.charCodeAt(0)));
+  }
+  return '🌐';
+}
+
+function getCountryLabel(code) {
+  if (!code) return 'Internacional';
+  return COUNTRY_NAMES[code.toUpperCase()] || code;
+}
+
+window.loadMrBaiterData = async function(forceRefresh = false) {
+  const container = document.getElementById('mrbaiterMatchesBody');
+  const eventsGrid = document.getElementById('mrbaiterEventsList');
+  if (!container || !eventsGrid) return;
+
+  if (stuttgartState.data && !forceRefresh) {
+    window.renderMrBaiterUI();
+    return;
+  }
+
+  container.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:3rem;color:var(--text-muted);">Cargando datos de MrBaiter en RC Stuttgart...</td></tr>';
+
+  try {
+    const res = await fetch('./stuttgart_mrbaiter.json?t=' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    stuttgartState.data = data;
+    window.renderMrBaiterUI();
+  } catch (err) {
+    console.error('Error loading MrBaiter data:', err);
+    container.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:3rem;color:var(--negative-red);">Error al cargar los datos del torneo.</td></tr>';
+  }
+};
+
+window.renderMrBaiterUI = function() {
+  const data = stuttgartState.data;
+  if (!data) return;
+
+  const eventsGrid = document.getElementById('mrbaiterEventsList');
+  if (eventsGrid && data.mrbaiter.events) {
+    eventsGrid.innerHTML = data.mrbaiter.events.map(ev => {
+      const legendImg = ev.legendName ? (getLegendImage(ev.legendName) || (ev.legendName.includes('Lillia') ? 'https://ddragon.leagueoflegends.com/cdn/14.20.1/img/champion/Lillia.png' : 'https://ddragon.leagueoflegends.com/cdn/14.20.1/img/champion/Ornn.png')) : '';
+      const isTopRank = ev.rank && ev.rank <= 64;
+      const rankColor = isTopRank ? '#fbbf24' : (ev.rank <= 250 ? '#38bdf8' : 'var(--text-primary)');
+      const isActive = stuttgartState.activeFilter == ev.eventId;
+
+      const dateStr = new Date(ev.date).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
+
+      return `
+        <div class="mrbaiter__event-card ${isActive ? 'active' : ''}" onclick="window.filterMrBaiterMatches(${ev.eventId})">
+          <div>
+            <div class="mrbaiter__event-card-top">
+              <span class="mrbaiter__event-date">${dateStr}</span>
+              <span class="badge" style="background:rgba(56,189,248,0.12);color:#38bdf8;font-size:0.7rem;">${escapeHTML(ev.label || 'Evento')}</span>
+            </div>
+            <div class="mrbaiter__event-name">${escapeHTML(ev.eventName.split('-')[0].trim())}</div>
+          </div>
+          <div>
+            <div class="mrbaiter__event-stats">
+              <div class="mrbaiter__event-stat-item">
+                <span class="mrbaiter__event-stat-label">Puesto Final</span>
+                <span class="mrbaiter__event-stat-val" style="color:${rankColor}">#${ev.rank || '-'} <span style="font-size:0.75rem;font-weight:400;color:var(--text-muted)">/ ${ev.totalPlayers}</span></span>
+              </div>
+              <div class="mrbaiter__event-stat-item">
+                <span class="mrbaiter__event-stat-label">Record (W-L-D)</span>
+                <span class="mrbaiter__event-stat-val text-green">${ev.wins}W - ${ev.losses}L - ${ev.draws}D</span>
+              </div>
+            </div>
+            <div class="mrbaiter__event-footer">
+              <div class="mrbaiter__event-legend">
+                ${legendImg ? `<img src="${legendImg}" alt="">` : '<span style="font-size:1.1rem">🌙</span>'}
+                <span>${ev.legendName ? escapeHTML(ev.legendName.split(',')[0]) : 'Formato Abierto'}</span>
+              </div>
+              <span style="font-size:0.72rem;color:var(--accent-cyan);font-weight:600;">Ver combates ➔</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  window.renderMrBaiterMatchesTable();
+};
+
+window.renderMrBaiterMatchesTable = function() {
+  const data = stuttgartState.data;
+  const tbody = document.getElementById('mrbaiterMatchesBody');
+  const countBadge = document.getElementById('mrbaiterMatchesCount');
+  if (!data || !tbody) return;
+
+  let matches = data.mrbaiter.matches || [];
+  if (stuttgartState.activeFilter && stuttgartState.activeFilter !== 'all') {
+    matches = matches.filter(m => String(m.eventId) === String(stuttgartState.activeFilter));
+  }
+
+  if (countBadge) countBadge.textContent = matches.length;
+
+  if (matches.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">No hay partidas para este filtro.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = matches.map(m => {
+    let resClass = 'match-result-badge--loss';
+    let resLabel = 'DERROTA';
+    if (m.result === 'W') {
+      resClass = 'match-result-badge--win';
+      resLabel = 'VICTORIA';
+    } else if (m.result === 'D') {
+      resClass = 'match-result-badge--draw';
+      resLabel = 'EMPATE';
+    }
+
+    const scoreStr = (m.gamesWon !== null && m.gamesLost !== null) ? '(' + m.gamesWon + '-' + m.gamesLost + ')' : '';
+
+    // MrBaiter Legend
+    const pLeg = m.playerLegend ? m.playerLegend.split(',')[0].trim() : 'Formato Abierto';
+    const pImg = m.playerLegend ? (getLegendImage(m.playerLegend) || (m.playerLegend.includes('Lillia') ? 'https://ddragon.leagueoflegends.com/cdn/14.20.1/img/champion/Lillia.png' : 'https://ddragon.leagueoflegends.com/cdn/14.20.1/img/champion/Ornn.png')) : '';
+    const pSet = m.playerLegend ? getLegendSetInfo(m.playerLegend) : null;
+
+    // Opponent info
+    const oppProfile = (data.opponents && data.opponents[m.opponentId]) || {};
+    const flag = getCountryFlagEmoji(oppProfile.countryCode || m.opponentCountry);
+    const countryName = getCountryLabel(oppProfile.countryCode || m.opponentCountry);
+    const realName = oppProfile.realName || m.opponentRealName || 'Nombre no público';
+    const username = oppProfile.username || m.opponentName || ('Jugador #' + m.opponentId);
+
+    // Opponent Legend
+    const oLeg = m.opponentLegend ? m.opponentLegend.split(',')[0].trim() : 'No registrada';
+    const oImg = m.opponentLegend ? (getLegendImage(m.opponentLegend) || (m.opponentLegend.includes('Riven') ? 'https://ddragon.leagueoflegends.com/cdn/14.20.1/img/champion/Riven.png' : '')) : '';
+    const oSet = m.opponentLegend ? getLegendSetInfo(m.opponentLegend) : null;
+
+    return `
+      <tr class="mrbaiter-match-row">
+        <td>
+          <div style="font-weight:700;color:var(--text-primary);margin-bottom:2px;">${escapeHTML(m.eventName)}</div>
+          <span style="font-size:0.74rem;color:var(--text-muted);font-family:monospace;">Match #${m.matchId}</span>
+        </td>
+        <td>
+          <div style="display:flex;align-items:center;gap:0.5rem;">
+            ${pImg ? `<img src="${pImg}" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.2);">` : '<span style="font-size:1.1rem">🌙</span>'}
+            <div>
+              <div style="font-weight:600;">${escapeHTML(pLeg)}</div>
+              ${pSet ? `<span class="badge badge--${pSet.color}" style="font-size:0.65rem;padding:1px 6px;">${pSet.set}</span>` : ''}
+            </div>
+          </div>
+        </td>
+        <td style="text-align:center;">
+          <span class="match-result-badge ${resClass}">
+            ${resLabel} ${scoreStr}
+          </span>
+        </td>
+        <td>
+          <div class="rival-pill" onclick="window.openRivalModal(${m.opponentId})" title="Click para ver puestos y estadísticas completas de este rival">
+            <span class="rival-pill__flag">${flag}</span>
+            <div class="rival-pill__info">
+              <span class="rival-pill__name">${escapeHTML(realName)} <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg></span>
+              <span class="rival-pill__sub">@${escapeHTML(username)} · ${countryName}</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div style="display:flex;align-items:center;gap:0.5rem;">
+            ${oImg ? `<img src="${oImg}" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.2);">` : '<span style="opacity:0.4;font-size:0.8rem;">-</span>'}
+            <div>
+              <div style="font-weight:600;">${escapeHTML(oLeg)}</div>
+              ${oSet ? `<span class="badge badge--${oSet.color}" style="font-size:0.65rem;padding:1px 6px;">${oSet.set}</span>` : ''}
+            </div>
+          </div>
+        </td>
+        <td style="text-align:right;">
+          <button class="rival-action-btn" onclick="window.openRivalModal(${m.opponentId})">
+            Ver Rival ➔
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+};
+
+window.filterMrBaiterMatches = function(filterId) {
+  stuttgartState.activeFilter = filterId;
+
+  document.querySelectorAll('.mrbaiter__filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-filter') == String(filterId));
+  });
+
+  const data = stuttgartState.data;
+  if (data && data.mrbaiter.events) {
+    const cards = document.querySelectorAll('.mrbaiter__event-card');
+    data.mrbaiter.events.forEach((ev, idx) => {
+      if (cards[idx]) {
+        cards[idx].classList.toggle('active', String(filterId) === String(ev.eventId));
+      }
+    });
+  }
+
+  window.renderMrBaiterMatchesTable();
+};
+
+window.openRivalModal = function(opponentId) {
+  const data = stuttgartState.data;
+  if (!data || !data.opponents) return;
+
+  const opp = data.opponents[opponentId];
+  if (!opp) return;
+
+  const modal = document.getElementById('rivalModal');
+  const modalFlag = document.getElementById('rivalModalFlag');
+  const modalName = document.getElementById('rivalModalName');
+  const modalSub = document.getElementById('rivalModalSub');
+  const modalBody = document.getElementById('rivalModalBody');
+
+  const flag = getCountryFlagEmoji(opp.countryCode);
+  const countryName = getCountryLabel(opp.countryCode);
+  const realName = opp.realName || 'Nombre Real no disponible';
+  const username = opp.username || ('Jugador #' + opp.playerId);
+
+  if (modalFlag) modalFlag.textContent = flag;
+  if (modalName) modalName.textContent = realName;
+  if (modalSub) {
+    let sub = '@' + username + ' · ' + countryName;
+    if (opp.countryRank && opp.countryPoolSize) {
+      sub += ' (Rank #' + opp.countryRank + ' de ' + opp.countryPoolSize + ' en ' + countryName + ')';
+    }
+    modalSub.textContent = sub;
+  }
+
+  // Build Weekend Finishes Table
+  let weekendHtml = '<div><div class="rival-section-title">🏆 Puestos en los Torneos del Fin de Semana (RC Stuttgart)</div>';
+
+  if (opp.weekendEvents && opp.weekendEvents.length > 0) {
+    weekendHtml += `
+      <div style="overflow-x:auto;">
+        <table class="rival-tourneys-table">
+          <thead>
+            <tr>
+              <th>Torneo</th>
+              <th>Puesto Final</th>
+              <th>Record (W-L-D)</th>
+              <th>Puntos</th>
+              <th>Leyenda Jugada</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${opp.weekendEvents.map(we => {
+              const leg = we.legendName ? we.legendName.split(',')[0].trim() : 'Formato Abierto';
+              const setInfo = we.legendName ? getLegendSetInfo(we.legendName) : null;
+              const legImg = we.legendName ? (getLegendImage(we.legendName) || (we.legendName.includes('Riven') ? 'https://ddragon.leagueoflegends.com/cdn/14.20.1/img/champion/Riven.png' : '')) : '';
+              const rankColor = we.rank <= 64 ? '#fbbf24' : (we.rank <= 250 ? '#38bdf8' : 'var(--text-primary)');
+              return `
+                <tr>
+                  <td>
+                    <div style="font-weight:600;color:var(--text-primary);">${escapeHTML(we.eventName.split('-')[0].trim())}</div>
+                    <span style="font-size:0.7rem;color:var(--text-muted);">${escapeHTML(we.label || '')}</span>
+                  </td>
+                  <td>
+                    <span class="rival-rank-badge" style="color:${rankColor}">#${we.rank || '-'}</span>
+                    <span style="font-size:0.72rem;color:var(--text-muted);">/ ${we.totalPlayers}</span>
+                  </td>
+                  <td>
+                    <span style="font-weight:700;color:${we.wins > we.losses ? '#34d399' : (we.wins === we.losses ? '#fbbf24' : '#f87171')}">
+                      ${we.wins !== null ? (we.wins + 'W - ' + we.losses + 'L - ' + (we.draws || 0) + 'D') : '-'}
+                    </span>
+                  </td>
+                  <td><span style="font-weight:700;">${we.matchPoints !== null ? we.matchPoints : '-'} pts</span></td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:0.4rem;">
+                      ${legImg ? `<img src="${legImg}" alt="" style="width:20px;height:20px;border-radius:50%;object-fit:cover;">` : ''}
+                      <span>${escapeHTML(leg)}</span>
+                      ${setInfo ? `<span class="badge badge--${setInfo.color}" style="font-size:0.6rem;padding:0 5px;">${setInfo.set}</span>` : ''}
+                    </div>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  } else {
+    weekendHtml += '<p style="color:var(--text-muted);font-size:0.85rem;">No se encontraron otros eventos registrados para este jugador durante el fin de semana.</p>';
+  }
+  weekendHtml += '</div>';
+
+  // Career Stats Summary & Ratings By Set
+  let careerHtml = '<div><div class="rival-section-title">📊 Estadísticas de Carrera & Winrates por Expansión</div>';
+
+  const bestRank = opp.bestRank || '-';
+  const totalEvents = opp.totalEvents || '-';
+  const top4 = opp.placements ? opp.placements.top4 : '-';
+  const top8 = opp.placements ? opp.placements.top8 : '-';
+  const mostPlayed = opp.mostPlayedLegend ? opp.mostPlayedLegend.split(',')[0].trim() : 'N/A';
+
+  careerHtml += `
+    <div class="rival-quick-stats" style="margin-bottom:1rem;">
+      <div class="rival-quick-card">
+        <div class="rival-quick-val text-gold">#${bestRank}</div>
+        <div class="rival-quick-lbl">Mejor Rank Carrera</div>
+      </div>
+      <div class="rival-quick-card">
+        <div class="rival-quick-val">${totalEvents}</div>
+        <div class="rival-quick-lbl">Torneos Totales</div>
+      </div>
+      <div class="rival-quick-card">
+        <div class="rival-quick-val text-cyan">${top4}</div>
+        <div class="rival-quick-lbl">Top 4 Alcanzados</div>
+      </div>
+      <div class="rival-quick-card">
+        <div class="rival-quick-val text-green">${top8}</div>
+        <div class="rival-quick-lbl">Top 8 Alcanzados</div>
+      </div>
+      <div class="rival-quick-card" style="grid-column: span 2;">
+        <div class="rival-quick-val" style="font-size:0.95rem;font-weight:700;">${escapeHTML(mostPlayed)}</div>
+        <div class="rival-quick-lbl">Leyenda Más Jugada</div>
+      </div>
+    </div>
+  `;
+
+  if (opp.ratings && opp.ratings.length > 0) {
+    careerHtml += `
+      <div class="rival-ratings-grid">
+        ${opp.ratings.map(r => {
+          const totalGames = (r.wins || 0) + (r.losses || 0) + (r.draws || 0);
+          const wr = totalGames > 0 ? ((r.wins / totalGames) * 100).toFixed(1) : '0.0';
+          return `
+            <div class="rival-rating-card">
+              <div class="rival-rating-header">
+                <span class="rival-rating-set">${escapeHTML(r.setName)}</span>
+                <span class="rival-rating-elo">${r.rating ? Math.round(r.rating) : '-'} <span style="font-size:0.7rem;font-weight:400;color:var(--text-muted)">MMR</span></span>
+              </div>
+              <div class="rival-rating-bar">
+                <div class="rival-rating-fill" style="width:${Math.min(100, Math.max(0, wr))}%;"></div>
+              </div>
+              <div class="rival-rating-footer">
+                <span>Record: ${r.wins}W - ${r.losses}L</span>
+                <span style="font-weight:700;color:${wr >= 60 ? '#34d399' : (wr >= 50 ? '#38bdf8' : '#f87171')}">${wr}% WR</span>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  } else {
+    careerHtml += '<p style="color:var(--text-muted);font-size:0.85rem;">Sin historial de ratings disponible.</p>';
+  }
+
+  careerHtml += '</div>';
+
+  if (modalBody) {
+    modalBody.innerHTML = weekendHtml + careerHtml;
+  }
+
+  if (modal) {
+    modal.style.display = 'flex';
+  }
+};
+
+window.closeRivalModal = function() {
+  const modal = document.getElementById('rivalModal');
+  if (modal) modal.style.display = 'none';
+};
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    window.closeRivalModal();
+  }
+});

@@ -56,6 +56,10 @@
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.45 1-1 1H7c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h10c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-2c-.55 0-1-.45-1-1v-2.34"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
           <span>🏆 Torneos & Regionales</span>
         </button>
+        <button class="main-nav-btn" id="btnNavMrBaiter" onclick="window.switchMainCategory('mrbaiter')">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>🇩🇪 MrBaiter @ RC Stuttgart</span>
+        </button>
         <button class="main-nav-btn" id="btnNavQueue" onclick="window.switchMainCategory('queue')">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
           <span>📊 NeatQueue Leaderboard</span>
@@ -64,6 +68,7 @@
 
       <!-- Tournament Sub-tabs -->
       <div class="tabs-container" id="tournamentsSubtabs">
+        <button class="tab-btn" id="tabStuttgartMrBaiter" onclick="window.switchMainCategory('mrbaiter')">🇩🇪 MrBaiter @ RC Stuttgart</button>
         <button class="tab-btn active" id="tabPreLa" onclick="window.switchTab('pre-la')">⚔️ Pre-RQ Los Angeles 🇺🇸</button>
         <button class="tab-btn" id="tabLa" onclick="window.switchTab('la')">🏆 Regional Los Angeles 🇺🇸</button>
         <button class="tab-btn" id="tabReboundLa" onclick="window.switchTab('rebound-la')">🔥 Sunday Rebound LA 🇺🇸</button>
@@ -234,6 +239,100 @@
           </table>
         </div>
       </section>
+
+      <!-- MrBaiter RC Stuttgart Section -->
+      <section class="mrbaiter-section" id="mrbaiterSection" style="display: none;">
+        <div class="mrbaiter__header">
+          <div class="mrbaiter__title-row">
+            <div class="mrbaiter__title-group">
+              <h2 class="mrbaiter__title">🇩🇪 MrBaiter @ Riftbound Regional Championship Stuttgart</h2>
+              <div class="mrbaiter__badges">
+                <span class="mrbaiter__badge mrbaiter__badge--location">📍 Messepiazza 1, Stuttgart, Alemania (06-08 Nov 2026)</span>
+                <span class="mrbaiter__badge mrbaiter__badge--format">🇪🇺 European Championship Weekend</span>
+              </div>
+            </div>
+            <div class="mrbaiter__actions">
+              <button class="mrbaiter__refresh-btn" onclick="window.loadMrBaiterData(true)" title="Recargar datos">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="23 4 23 10 17 10"></polyline>
+                  <polyline points="1 20 1 14 7 14"></polyline>
+                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                </svg>
+                <span>Recargar</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Highlight KPI Summary Cards -->
+          <div class="mrbaiter__kpis">
+            <div class="mrbaiter__kpi-card">
+              <div class="mrbaiter__kpi-label">Torneos Jugados</div>
+              <div class="mrbaiter__kpi-value">4</div>
+              <div class="mrbaiter__kpi-sub">Viernes a Domingo</div>
+            </div>
+            <div class="mrbaiter__kpi-card mrbaiter__kpi-card--highlight">
+              <div class="mrbaiter__kpi-label">Mejor Resultado</div>
+              <div class="mrbaiter__kpi-value text-gold">Top 55</div>
+              <div class="mrbaiter__kpi-sub">#55 / 1.208 (Sunday Standard)</div>
+            </div>
+            <div class="mrbaiter__kpi-card">
+              <div class="mrbaiter__kpi-label">Record Total Finde</div>
+              <div class="mrbaiter__kpi-value text-green">10W - 7L - 1D</div>
+              <div class="mrbaiter__kpi-sub">58.8% Winrate (19 matches)</div>
+            </div>
+            <div class="mrbaiter__kpi-card">
+              <div class="mrbaiter__kpi-label">Imbatido Nexus Night</div>
+              <div class="mrbaiter__kpi-value text-cyan">3 - 0</div>
+              <div class="mrbaiter__kpi-sub">#219 / 2.756 jugadores</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Events List Breakdown -->
+        <div class="mrbaiter__section-heading">
+          <h3>🏆 Torneos Disputados en el Fin de Semana</h3>
+          <span class="mrbaiter__section-sub">Haz click en cualquier evento para filtrar sus enfrentamientos</span>
+        </div>
+        <div class="mrbaiter__events-grid" id="mrbaiterEventsList">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Filter tabs for matchups -->
+        <div class="mrbaiter__matchups-container">
+          <div class="mrbaiter__matchups-header">
+            <div class="mrbaiter__matchups-title-group">
+              <h3>⚔️ Matchups & Enfrentamientos (<span id="mrbaiterMatchesCount">19</span>)</h3>
+              <span class="mrbaiter__hint">💡 Pincha en cualquier rival para ver sus puestos en todos los torneos del finde, winrates y datos completos</span>
+            </div>
+            <div class="mrbaiter__filter-tabs" id="mrbaiterFilterTabs">
+              <button class="mrbaiter__filter-btn active" data-filter="all" onclick="window.filterMrBaiterMatches('all')">Todos (19)</button>
+              <button class="mrbaiter__filter-btn" data-filter="1227196" onclick="window.filterMrBaiterMatches(1227196)">⭐ Standard Sunday (Lillia)</button>
+              <button class="mrbaiter__filter-btn" data-filter="1227217" onclick="window.filterMrBaiterMatches(1227217)">🌙 Super Nexus Night (3-0)</button>
+              <button class="mrbaiter__filter-btn" data-filter="1227188" onclick="window.filterMrBaiterMatches(1227188)">⚔️ Standard Friday (Ornn)</button>
+              <button class="mrbaiter__filter-btn" data-filter="1231374" onclick="window.filterMrBaiterMatches(1231374)">🛡️ Nation Clash (Ornn)</button>
+            </div>
+          </div>
+
+          <!-- Matchups Table -->
+          <div class="mrbaiter__table-wrapper">
+            <table class="mrbaiter__table">
+              <thead>
+                <tr>
+                  <th style="width: 220px;">Torneo</th>
+                  <th>Leyenda MrBaiter</th>
+                  <th style="text-align: center; width: 140px;">Resultado</th>
+                  <th>Rival (Click para detalles)</th>
+                  <th>Leyenda Rival</th>
+                  <th style="text-align: right; width: 120px;">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="mrbaiterMatchesBody">
+                <!-- Rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
     </div>
 
     <div class="main-content__right">
@@ -244,5 +343,29 @@
   </div>
 
   <script src="app.js?v=20260819_4"></script>
+
+  <!-- Modal for Rival Details -->
+  <div class="rival-modal" id="rivalModal" style="display: none;" onclick="if(event.target === this) window.closeRivalModal()">
+    <div class="rival-modal__dialog">
+      <div class="rival-modal__header">
+        <div class="rival-modal__title-group">
+          <div class="rival-modal__flag" id="rivalModalFlag">🇩🇪</div>
+          <div>
+            <div class="rival-modal__name" id="rivalModalName">Nombre del Rival</div>
+            <div class="rival-modal__sub" id="rivalModalSub">@Username · País</div>
+          </div>
+        </div>
+        <button class="rival-modal__close-btn" onclick="window.closeRivalModal()" title="Cerrar ventana">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="rival-modal__body" id="rivalModalBody">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
 </body>
 </html>

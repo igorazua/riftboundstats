@@ -5,6 +5,14 @@
   "outputDirectory": ".",
   "rewrites": [
     {
+      "source": "/stuttgart",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/mrbaiter",
+      "destination": "/index.html"
+    },
+    {
       "source": "/pre-la",
       "destination": "/index.html"
     },
